@@ -1,0 +1,5 @@
+# Handle line endings: Checkout as-is, commit as-is.
+# The following line corresponds to set core.autocrlf to false.
+* -text
+# For older Git versions.
+* -crlf
