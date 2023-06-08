@@ -12,18 +12,20 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      10/05/2023
+# Created:      08/06/2023
 # Copyright:    RosettaCNC (c) 2016-2023
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
+# pylint: disable=C0301 -> line-too-long
 # pylint: disable=C0302 -> too-many-lines
 # pylint: disable=R0902 -> too-many-instance-attributes
 # pylint: disable=R0903 -> too-few-public-methods
 # pylint: disable=R0904 -> too-many-public-methods
 # pylint: disable=R0915 -> too-many-statements
 # pylint: disable=W0702 -> bare-except
+# pylint: disable=W0719 -> broad-exception-raised           ## take care when you use that ##
 #-------------------------------------------------------------------------------
 import json
 import socket
@@ -349,9 +351,10 @@ class APIProgrammedPoints:
 class APIScan3DInfo:
     """API data structure for scan3d info."""
     has_data                        = False
-    analog_out_bit                  = 0
-    analog_out_umf                  = 0.0
-    analog_measure                  = 0.0
+    laser_out_bit                   = 0
+    laser_out_umf                   = 0
+    laser_h_measure                 = 0.0
+    laser_z_position                = 0.0
 
 class APISystemInfo:
     """API data structure for system info."""
@@ -904,9 +907,10 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response != "":
                 j = json.loads(response)
-                data.analog_out_bit                 = j['res']['analog.out.bit']
-                data.analog_out_umf                 = j['res']['analog.out.umf']
-                data.analog_measure                 = j['res']['analog.measure']
+                data.laser_out_bit                  = j['res']['laser.out.bit']
+                data.laser_out_umf                  = j['res']['laser.out.umf']
+                data.laser_h_measure                = j['res']['laser.h.measure']
+                data.laser_z_position               = j['res']['laser.z.position']
                 data.has_data = True
             return data
         except:
@@ -983,7 +987,7 @@ class CncAPIClientCore:
                 return False
             request = '{"set":"cnc.parameters", "address":' + str(address) + ', "parameters":['
             for idx, value in enumerate(values):
-                if not (isinstance(value, int) or isinstance(value, float)):
+                if not isinstance(value, (float, int)):
                     return False
                 request = request + str(value)
                 if idx < (len(values) - 1):
