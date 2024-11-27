@@ -10,19 +10,16 @@ in one of the following paths, depending on the RosettaCNC version:
 
 - **RosettaCNC STD version:**<br>
   %LOCALAPPDATA%\Programs\RosettaCNC.python\
-  <br><br>
 
 - **RosettaCNC PPH version:**<br>
   %LOCALAPPDATA%\Programs\RosettaCNCPPH.python\
-  <br><br>
 
 - **RosettaCNC PPV version:**<br>
   %LOCALAPPDATA%\Programs\RosettaCNCPPV.python\
-  <br><br>
 
 **NC Embedded Python** comes preloaded with numerous packages to facilitate seamless integration and development.
 
-The **NC Embedded Python** path was not voluntarily added to the **system** or **user****** path, so as not to invalidate<br>
+The **NC Embedded Python** path was not voluntarily added to the **system** or **user** path, so as not to invalidate<br>
 eventualy existing Python versions.
 
 ### List of pre-installed packages on RosettaCNC NC Embedded Python:
