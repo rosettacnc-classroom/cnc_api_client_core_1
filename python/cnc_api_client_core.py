@@ -27,7 +27,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      26/11/2024
+# Created:      29/11/2024
 # Copyright:    RosettaCNC (c) 2016-2024
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -225,6 +225,35 @@ WO_LI_FILE_STOPPED                  = 6         # work order log id: stopped
 WO_LI_FILE_FINISHED                 = 7         # work order log id: finished
 WO_LI_ARCHIVED                      = 8         # work order log id: archived
 
+# machine type
+MT_MILL                             = 0         # machine type: mill
+MT_LATHE                            = 1         # machine type: lathe
+
+# kinematics model
+KM_TRIVIAL                          = 0         # kinematics model: trivial
+KM_INDEPENDENT_ROT_AXES             = 1         # kinematics model: independent rotational axes
+KM_ROTARY_TABLE_A                   = 10        # kinematics model: rotary table A
+KM_ROTARY_TABLE_B                   = 11        # kinematics model: rotary table B
+KM_TILTING_HEAD_A                   = 20        # kinematics model: tilting head A
+KM_TILTING_HEAD_B                   = 21        # kinematics model: tilting head B
+KM_ROTARY_TABLE_AB                  = 30        # kinematics model: rotary table A/B
+KM_ROTARY_TABLE_BA                  = 31        # kinematics model: rotary table B/A
+KM_ROTARY_TABLE_AC                  = 32        # kinematics model: rotary table A/C
+KM_ROTARY_TABLE_BC                  = 33        # kinematics model: rotary table B/C
+KM_TILTING_HEAD_AB                  = 40        # kinematics model: tilting head A/B
+KM_TILTING_HEAD_BA                  = 41        # kinematics model: tilting head B/A
+KM_TILTING_HEAD_CA                  = 42        # kinematics model: tilting head C/A
+KM_TILTING_HEAD_CB                  = 43        # kinematics model: tilting head C/B
+KM_TILTING_HEAD_CB_CUSTOM           = 100       # kinematics model: tilting head C/B custom
+
+# axis type
+AT_DISABLED                         = 0         # axis type: disabled
+AT_LINEAR                           = 1         # axis type: linear axis
+AT_ROTARY_FREE                      = 2         # axis type: rotary axis free
+AT_ROTARY_HEAD                      = 3         # axis type: rotary axis for head
+AT_ROTARY_TABLE                     = 4         # axis type: rotary axis for table
+AT_GANTRY_1                         = 5         # axis type: slave axis for gantry 1
+AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: NOT IMPLEMENTED YET !!!
 
 class APIAnalogInputs:
     """API data structure for analog inputs."""
@@ -313,16 +342,16 @@ class APICncInfo:
         self.override_feed_custom_2_max         = 100
         self.override_feed_custom_2_enabled     = False
         self.override_feed_custom_2_locked      = False
-        self.plasma_power                       = 0
-        self.plasma_power_min                   = 0
-        self.plasma_power_max                   = 100
-        self.plasma_power_enabled               = False
-        self.plasma_power_locked                = False
-        self.plasma_voltage                     = 0
-        self.plasma_voltage_min                 = 0
-        self.plasma_voltage_max                 = 100
-        self.plasma_voltage_enabled             = False
-        self.plasma_voltage_locked              = False
+        self.override_plasma_power              = 0
+        self.override_plasma_power_min          = 0
+        self.override_plasma_power_max          = 100
+        self.override_plasma_power_enabled      = False
+        self.override_plasma_power_locked       = False
+        self.override_plasma_voltage            = 0
+        self.override_plasma_voltage_min        = 0
+        self.override_plasma_voltage_max        = 100
+        self.override_plasma_voltage_enabled    = False
+        self.override_plasma_voltage_locked     = False
         self.tool_id                            = 0
         self.tool_slot                          = 0
         self.tool_slot_enabled                  = False
@@ -397,6 +426,49 @@ class APIEnabledCommands:
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
         self.set_program_position               = 0
+
+class APIMachineSettings:
+    """API data structure with machine settings."""
+    def __init__(self):
+        self.has_data                           = False
+        self.axis_machine_type                  = MT_MILL
+        self.axis_kinematics_model              = KM_TRIVIAL
+        self.axis_x_type                        = AT_DISABLED
+        self.axis_x_max_vel                     = 0.0
+        self.axis_x_acc                         = 0.0
+        self.axis_x_min_lim                     = 0.0
+        self.axis_x_max_lim                     = 0.0
+        self.axis_y_type                        = AT_DISABLED
+        self.axis_y_max_vel                     = 0.0
+        self.axis_y_acc                         = 0.0
+        self.axis_y_min_lim                     = 0.0
+        self.axis_y_max_lim                     = 0.0
+        self.axis_z_type                        = AT_DISABLED
+        self.axis_z_max_vel                     = 0.0
+        self.axis_z_acc                         = 0.0
+        self.axis_z_min_lim                     = 0.0
+        self.axis_z_max_lim                     = 0.0
+        self.axis_a_type                        = AT_DISABLED
+        self.axis_a_max_vel                     = 0.0
+        self.axis_a_acc                         = 0.0
+        self.axis_a_min_lim                     = 0.0
+        self.axis_a_max_lim                     = 0.0
+        self.axis_b_type                        = AT_DISABLED
+        self.axis_b_max_vel                     = 0.0
+        self.axis_b_acc                         = 0.0
+        self.axis_b_min_lim                     = 0.0
+        self.axis_b_max_lim                     = 0.0
+        self.axis_c_type                        = AT_DISABLED
+        self.axis_c_max_vel                     = 0.0
+        self.axis_c_acc                         = 0.0
+        self.axis_c_min_lim                     = 0.0
+        self.axis_c_max_lim                     = 0.0
+        self.kinematics_h_x                     = 0.0
+        self.kinematics_h_y                     = 0.0
+        self.kinematics_h_z                     = 0.0
+        self.kinematics_j_x                     = 0.0
+        self.kinematics_j_y                     = 0.0
+        self.kinematics_j_z                     = 0.0
 
 class APIMachiningInfoUsedTool:
     """API data structure with used tool info."""
@@ -1266,16 +1338,16 @@ class CncAPIClientCore:
                 data.override_feed_custom_2_max         = j['res']['override']['feed.custom.2.max']
                 data.override_feed_custom_2_enabled     = j['res']['override']['feed.custom.2.enabled']
                 data.override_feed_custom_2_locked      = j['res']['override']['feed.custom.2.locked']
-                data.plasma_power                       = j['res']['override']['plasma.power']
-                data.plasma_power_min                   = j['res']['override']['plasma.power.min']
-                data.plasma_power_max                   = j['res']['override']['plasma.power.max']
-                data.plasma_power_enabled               = j['res']['override']['plasma.power.enabled']
-                data.plasma_power_locked                = j['res']['override']['plasma.power.locked']
-                data.plasma_voltage                     = j['res']['override']['plasma.voltage']
-                data.plasma_voltage_min                 = j['res']['override']['plasma.voltage.min']
-                data.plasma_voltage_max                 = j['res']['override']['plasma.voltage.max']
-                data.plasma_voltage_enabled             = j['res']['override']['plasma.voltage.enabled']
-                data.plasma_voltage_locked              = j['res']['override']['plasma.voltage.locked']
+                data.override_plasma_power              = j['res']['override']['plasma.power']
+                data.override_plasma_power_min          = j['res']['override']['plasma.power.min']
+                data.override_plasma_power_max          = j['res']['override']['plasma.power.max']
+                data.override_plasma_power_enabled      = j['res']['override']['plasma.power.enabled']
+                data.override_plasma_power_locked       = j['res']['override']['plasma.power.locked']
+                data.override_plasma_voltage            = j['res']['override']['plasma.voltage']
+                data.override_plasma_voltage_min        = j['res']['override']['plasma.voltage.min']
+                data.override_plasma_voltage_max        = j['res']['override']['plasma.voltage.max']
+                data.override_plasma_voltage_enabled    = j['res']['override']['plasma.voltage.enabled']
+                data.override_plasma_voltage_locked     = j['res']['override']['plasma.voltage.locked']
                 data.tool_id                            = j['res']['tool']['id']
                 data.tool_slot                          = j['res']['tool']['slot']
                 data.tool_slot_enabled                  = j['res']['tool']['slot.enabled']
@@ -1409,6 +1481,59 @@ class CncAPIClientCore:
             return data
         except:
             return APIEnabledCommands()
+
+    def get_machine_settings(self) -> APIMachineSettings:
+        """Requests the API Server for the machine settings."""
+        try:
+            data = APIMachineSettings()
+            if not self.is_connected:
+                return data
+            request = '{"get":"machine.settings"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.axis_machine_type                  = j['res']['axis']['machine.type']
+                data.axis_kinematics_model              = j['res']['axis']['kinematics.model']
+                data.axis_x_type                        = j['res']['axis']['x.type']
+                data.axis_x_max_vel                     = j['res']['axis']['x.max.vel']
+                data.axis_x_acc                         = j['res']['axis']['x.acc']
+                data.axis_x_min_lim                     = j['res']['axis']['x.min.lim']
+                data.axis_x_max_lim                     = j['res']['axis']['x.max.lim']
+                data.axis_y_type                        = j['res']['axis']['y.type']
+                data.axis_y_max_vel                     = j['res']['axis']['y.max.vel']
+                data.axis_y_acc                         = j['res']['axis']['y.acc']
+                data.axis_y_min_lim                     = j['res']['axis']['y.min.lim']
+                data.axis_y_max_lim                     = j['res']['axis']['y.max.lim']
+                data.axis_z_type                        = j['res']['axis']['z.type']
+                data.axis_z_max_vel                     = j['res']['axis']['z.max.vel']
+                data.axis_z_acc                         = j['res']['axis']['z.acc']
+                data.axis_z_min_lim                     = j['res']['axis']['z.min.lim']
+                data.axis_z_max_lim                     = j['res']['axis']['z.max.lim']
+                data.axis_a_type                        = j['res']['axis']['a.type']
+                data.axis_a_max_vel                     = j['res']['axis']['a.max.vel']
+                data.axis_a_acc                         = j['res']['axis']['a.acc']
+                data.axis_a_min_lim                     = j['res']['axis']['a.min.lim']
+                data.axis_a_max_lim                     = j['res']['axis']['a.max.lim']
+                data.axis_b_type                        = j['res']['axis']['b.type']
+                data.axis_b_max_vel                     = j['res']['axis']['b.max.vel']
+                data.axis_b_acc                         = j['res']['axis']['b.acc']
+                data.axis_b_min_lim                     = j['res']['axis']['b.min.lim']
+                data.axis_b_max_lim                     = j['res']['axis']['b.max.lim']
+                data.axis_c_type                        = j['res']['axis']['c.type']
+                data.axis_c_max_vel                     = j['res']['axis']['c.max.vel']
+                data.axis_c_acc                         = j['res']['axis']['c.acc']
+                data.axis_c_min_lim                     = j['res']['axis']['c.min.lim']
+                data.axis_c_max_lim                     = j['res']['axis']['c.max.lim']
+                data.kinematics_h_x                     = j['res']['axis']['kinematics.h.x']
+                data.kinematics_h_y                     = j['res']['axis']['kinematics.h.y']
+                data.kinematics_h_z                     = j['res']['axis']['kinematics.h.z']
+                data.kinematics_j_x                     = j['res']['axis']['kinematics.j.x']
+                data.kinematics_j_y                     = j['res']['axis']['kinematics.j.y']
+                data.kinematics_j_z                     = j['res']['axis']['kinematics.j.z']
+                data.has_data                           = True
+            return data
+        except:
+            return APIMachineSettings()
 
     def get_machining_info(self) -> APIMachiningInfo:
         """Requests the API Server for the machining information of the analyzed NC program."""
@@ -1792,12 +1917,12 @@ class CncAPIClientCore:
         Set CNC parameters with validation for values and descriptions.
 
         Args:
-        address (int)                   : The address for the parameters.
-        values (list, optional)         : A list of numeric values (int or float).
-        descriptions (list, optional)   : A list of string descriptions.
+            address (int)                   : The address for the parameters.
+            values (list, optional)         : A list of numeric values (int or float).
+            descriptions (list, optional)   : A list of string descriptions.
 
         Returns:
-            bool                        : True if parameters are valid and processed; False otherwise.
+            bool                            : True if parameters are valid and processed; False otherwise.
 
         NOTE:
             - The `values` argument must contain at least one element if provided.
@@ -1858,36 +1983,76 @@ class CncAPIClientCore:
 
 
     def set_override_fast(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"fast", "value":' + str(int(value)) + '}')
+        """Set FAST override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"fast", "value":{value}}}')
+        except:
+            return False
 
     def set_override_feed(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"feed", "value":' + str(int(value)) + '}')
+        """Set FEED override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"feed", "value":{value}}}')
+        except:
+            return False
 
     def set_override_feed_custom_1(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"feed.custom.1", "value":' + str(int(value)) + '}')
+        """Set FEED CSM1 override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"feed.custom.1", "value":{value}}}')
+        except:
+            return False
 
     def set_override_feed_custom_2(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"feed.custom.2", "value":' + str(int(value)) + '}')
+        """Set FEED CSM2 override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"feed.custom.2", "value":{value}}}')
+        except:
+            return False
 
     def set_override_jog(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"jog", "value":' + str(int(value)) + '}')
+        """Set JOG override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"jog", "value":{value}}}')
+        except:
+            return False
 
     def set_override_plasma_power(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"plasma.power", "value":' + str(int(value)) + '}')
+        """Set PLASMA POWER override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"plasma.power", "value":{value}}}')
+        except:
+            return False
 
     def set_override_plasma_voltage(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"plasma.voltage", "value":' + str(int(value)) + '}')
+        """Set PLASMA VOLTAGE override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"plasma.voltage", "value":{value}}}')
+        except:
+            return False
 
     def set_override_spindle(self, value: int):
-        """Xxx..."""
-        return self.__execute_request('{"set":"override", "name":"spindle", "value":' + str(int(value)) + '}')
+        """Set SPINDLE override value."""
+        try:
+            if not isinstance(value, int):
+                return False
+            return self.__execute_request(f'{{"set":"override", "name":"spindle", "value":{value}}}')
+        except:
+            return False
 
     def set_program_position_a(self, value: float):
         """Xxx..."""
