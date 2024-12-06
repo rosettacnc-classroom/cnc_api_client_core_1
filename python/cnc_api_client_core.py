@@ -27,7 +27,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      29/11/2024
+# Created:      05/12/2024
 # Copyright:    RosettaCNC (c) 2016-2024
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -276,7 +276,7 @@ class APIAxesInfo:
         self.program_position                   = [0.0] * 6
         self.machine_target_position            = [0.0] * 6
         self.program_target_position            = [0.0] * 6
-        self.actual_velocity                    = [0] * 6
+        self.actual_velocity                    = [0.0] * 6
         self.working_wcs                        = 0
         self.working_offset                     = [0.0] * 6
         self.dynamic_offset                     = [0.0] * 3
@@ -299,9 +299,9 @@ class APICncInfo:
         self.lube_axis_time_to_next_cycle       = 0
         self.lube_spindle_cycles_made           = 0
         self.lube_spindle_time_to_next_cycle    = 0
-        self.feed_programmed                    = 0
-        self.feed_target                        = 0
-        self.feed_reference                     = 0
+        self.feed_programmed                    = 0.0
+        self.feed_target                        = 0.0
+        self.feed_reference                     = 0.0
         self.spindle_programmed                 = 0
         self.spindle_target                     = 0
         self.spindle_actual                     = 0
@@ -421,6 +421,7 @@ class APIEnabledCommands:
         self.program_load                       = False
         self.program_new                        = False
         self.program_save                       = False
+        self.program_save_as                    = False
         self.reset_alarms                       = False
         self.reset_alarms_history               = False
         self.reset_warnings                     = False
@@ -729,7 +730,7 @@ class APIWorkOrderAddData:
     item_code: str                              = None
     material_code: str                          = None
     order_notes: str                            = None
-    use_deadline_datetime: datetime             = None
+    use_deadline_datetime: bool                 = None
     deadline_datetime: datetime                 = None
     files                                       = None
 
@@ -767,7 +768,7 @@ class APIWorkOrderData:
     material_code: str                          = ''
     order_notes: str                            = ''
     files: List[FileData]                       = []
-    use_deadline_datetime: datetime             = False
+    use_deadline_datetime: boot                 = False
     creation_datetime: datetime                 = datetime.min
     deadline_datetime: datetime                 = datetime.min
     reception_datetime: datetime                = datetime.min
@@ -1079,45 +1080,38 @@ class CncAPIClientCore:
         """Xxx..."""
         return self.__execute_request('{"cmd":"program.new"}')
 
-    def program_save(self, file_name: str) -> bool:
-        """Xxx..."""
-        file_name = json.dumps(file_name)
-        return self.__execute_request('{"cmd":"program.save","name":' + file_name + '}')
+    def program_save(self) -> bool:
+        """Requests the Server API to save the current NC program."""
+        return self.__execute_request('{"cmd":"program.save"}')
+
+    def program_save_as(self, file_name: str) -> bool:
+        """Requests the Server API to save the current NC program to the specified file."""
+        try:
+            if not isinstance(file_name, str):
+                return False
+            file_name = json.dumps(file_name)
+            return self.__execute_request('{"cmd":"program.save.as","file.name":' + file_name + '}')
+        except:
+            return False
 
     def reset_alarms(self) -> bool:
-        """
-        Requires a reset of curent alarms.
-
-        return      True if the request was successful.
-        """
+        """Requests the Server API to reset the current alarms in the numerical control."""
         return self.__execute_request('{"cmd":"reset.alarms"}')
 
     def reset_alarms_history(self) -> bool:
-        """
-        Requires a reset of alarms history.
-
-        return      True if the request was successful.
-        """
+        """Requests the Server API to reset the alarm history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.alarms.history"}')
 
     def reset_warnings(self) -> bool:
-        """
-        Requires a reset of curent warnings.
-
-        return      True if the request was successful.
-        """
+        """Requests the Server API to reset the current warnings in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings"}')
 
     def reset_warnings_history(self) -> bool:
-        """
-        Requires a reset of warnings history.
-
-        return      True if the request was successful.
-        """
+        """Requests the Server API to reset the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
 
     def work_order_add(self, order_code: str, data: APIWorkOrderAddData = None) -> bool:
-        """Add a work order."""
+        """Requests the Server API to add a work order to the list of orders in the control software."""
 
         if not self.is_connected:
             return False
@@ -1178,7 +1172,7 @@ class CncAPIClientCore:
             if data.use_deadline_datetime is not None:
                 if isinstance(data.use_deadline_datetime, bool):
                     order_data["use.deadline.datetime"] = data.use_deadline_datetime
-                    if data.deadline_datetime is not None:
+                    if data.deadline_datetime:
                         if isinstance(data.deadline_datetime, datetime):
                             order_data["deadline.datetime"] = self.datetime_to_filetime(data.deadline_datetime)
                         else:
@@ -1205,9 +1199,14 @@ class CncAPIClientCore:
         return self.__execute_request(request_json)
 
     def work_order_delete(self, order_code: str) -> bool:
-        """Xxx..."""
-        order_code = json.dumps(order_code)
-        return self.__execute_request('{"cmd":"work.order.delete","order.code":' + order_code + '}')
+        """Requests the Server API to delete a work order from the list of orders in the control software."""
+        try:
+            if not isinstance(order_code, str):
+                return False
+            order_code = json.dumps(order_code)
+            return self.__execute_request(f'{{"cmd":"work.order.delete","order.code":{order_code_json}}}')
+        except:
+            return False
 
     #
     # == END: API Server "cmd" requests
@@ -1472,6 +1471,7 @@ class CncAPIClientCore:
                 data.program_load                       = j['res']['program.load']
                 data.program_new                        = j['res']['program.new']
                 data.program_save                       = j['res']['program.save']
+                data.program_save_as                    = j['res']['program.save.as']
                 data.reset_alarms                       = j['res']['reset.alarms']
                 data.reset_alarms_history               = j['res']['reset.alarms.history']
                 data.reset_warnings                     = j['res']['reset.warnings']
@@ -2194,6 +2194,19 @@ class CncAPIClientCore:
     def datetime_to_filetime(dt: datetime) -> int:
         """Converts an UTC datetime to FILETIME timestamps (100 ns intervals from 1 January 1601)."""
         epoch_start = datetime(1601, 1, 1)
+
+        # TAKE CARE
+        # =========
+        # I'm not totally sure that dt or epoch must be converted to UTC
+        # I've placed this workaround to avoid errors with OPC UA Server which add timezone.
+        # RosettaCNC does not have timezone date.
+        # To check better!!!
+
+        # normalize dt to the local time (remove timezone if present)
+        if dt.tzinfo is not None:
+            # convert dt to naive using the local timezone
+            dt = dt.astimezone().replace(tzinfo=None)
+
         delta = dt - epoch_start
         filetime = int((delta.days * 86400 + delta.seconds) * 10**7 + delta.microseconds * 10)
         return filetime

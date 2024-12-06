@@ -47,7 +47,7 @@
 #-------------------------------------------------------------------------------
 import sys
 import time
-import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 import cnc_api_client_core as api
@@ -76,6 +76,39 @@ def format_digital_values(values):
 
 #
 # == END: support methods
+
+# == BEG: API Server "cmd" requests
+#
+
+def eval_cmd_work_oder_add():
+    log_command('CMD: WORK ORDER ADD')
+    order_code = 'W_20240618_0001'
+    order_data = api.APIWorkOrderAddData()
+    order_data.order_locked = False
+    order_data.order_priority = api.WO_PR_HIGHEST
+    order_data.job_order_code = 'J_00021234'
+    order_data.customer_code = 'LABMEC srl'
+    order_data.item_code = 'bridge structure'
+    order_data.material_code = 'aluminium (H95)'
+    order_data.order_notes = 'Use only aluminium tools\r\nPlease!'
+    order_data.use_deadline_datetime = True
+    order_data.deadline_datetime = datetime(2024, 6, 19, 10, 20, 30)
+    order_data.files[0].file_name = "W_0001.ngc"
+    order_data.files[0].pieces_per_file = 5
+    order_data.files[0].requested_pieces = 50
+    order_data.files[2].file_name = "W_0003.ngc"
+    order_data.files[2].pieces_per_file = 1
+    order_data.files[2].requested_pieces = 10
+    res = core.work_order_add(order_code, order_data)
+    print('ADDED' if res else 'NOT ADDED')
+
+def eval_cmd_work_order_delete():
+    log_command('CMD: WORK ORDER DELETE')
+    res = core.work_order_delete('W_20240618_0001')
+    print('DELETED' if res else 'NOT DELETED')
+
+#
+# == END: API Server "cmd" requests
 
 # == BEG: API Server "get" requests
 #
@@ -262,6 +295,11 @@ def eval_get_enabled_commands():
         print('program_load                     =', enabled_commands.program_load)
         print('program_new                      =', enabled_commands.program_new)
         print('program_save                     =', enabled_commands.program_save)
+        print('program_save_as                  =', enabled_commands.program_save_as)
+        print('reset_alarms                     =', enabled_commands.reset_alarms)
+        print('reset_alarms_history             =', enabled_commands.reset_alarms_history)
+        print('reset_warnings                   =', enabled_commands.reset_warnings)
+        print('reset_warnings_history           =', enabled_commands.reset_warnings_history)
         print('set_program_position             =', enabled_commands.set_program_position)
 
 def eval_get_machine_settings():
@@ -695,14 +733,17 @@ def eval_set_program_position():
 #
 # == BEG: API Server "set" requests
 
-
-
 # get and check connection with API Server
 core = api.CncAPIClientCore()
 core.connect('127.0.0.1', 8000)
 if not core.is_connected:
     print("No connection with API Server")
     sys.exit()
+
+"""
+eval_cmd_work_oder_add()
+time.sleep(2)
+eval_cmd_work_order_delete()
 
 eval_get_analog_inputs()
 eval_get_analog_outputs()
@@ -728,53 +769,17 @@ eval_set_cnc_parameters()
 eval_set_override()
 eval_set_program_position()
 
+"""
+eval_get_enabled_commands()
+
+
 quit()
-
-# eval_get_machine_settings()
-
-
-quit()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # ======================================================================================================================
 
 
 # ======================================================================================================================
 
-print()
-print('CREATE WORK ORDER "W_20240618_0001"')
-print('======================')
-order_code = 'W_20240618_0001'
-order_data = APIWorkOrderAddData()
-order_data.order_locked = False
-order_data.order_priority = api.WO_PR_HIGHEST
-order_data.job_order_code = 'J_00021234'
-order_data.customer_code = 'LABMEC srl'
-order_data.item_code = 'bridge structure'
-order_data.material_code = 'aluminium (H95)'
-order_data.order_notes = 'Use only aluminium tools\r\nPlease!'
-order_data.use_deadline_datetime = True
-order_data.deadline_datetime = datetime(2024, 6, 19, 10, 20, 30)
-order_data.files[0].file_name = "W_0001.ngc"
-order_data.files[0].pieces_per_file = 5
-order_data.files[0].requested_pieces = 50
-order_data.files[2].file_name = "W_0003.ngc"
-order_data.files[2].pieces_per_file = 1
-order_data.files[2].requested_pieces = 10
-res = core.work_order_add(order_code, order_data)
-print(res)
 
 # ======================================================================================================================
 
