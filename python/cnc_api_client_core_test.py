@@ -83,7 +83,7 @@ def format_digital_values(values):
 def eval_cmd_work_oder_add():
     log_command('CMD: WORK ORDER ADD')
     order_code = 'W_20240618_0001'
-    order_data = api.APIWorkOrderAddData()
+    order_data = api.APIWorkOrderDataForAdd()
     order_data.order_locked = False
     order_data.order_priority = api.WO_PR_HIGHEST
     order_data.job_order_code = 'J_00021234'
@@ -730,6 +730,52 @@ def eval_set_program_position():
         check_set_position_by_name('b')
         check_set_position_by_name('c')
 
+def eval_set_work_order_data():
+    log_command('SET: WORK ORDER DATA')
+    data = api.APIWorkOrderDataForSet()
+    #data.order_state = api.WO_ST_RELEASED
+    data.order_locked = True
+    data.order_priority = api.WO_PR_HIGH
+    data.job_order_code = 'job order code'
+    data.customer_code = 'customer code'
+    data.item_code = 'item code'
+    data.material_code = 'material code'
+    data.order_notes = 'order notes'
+    data.files[0].file_name = 'W_0001.ngc'
+    data.files[0].requested_pieces = 2
+    data.files[0].pieces_per_file = 1
+    data.files[1].file_name = 'W_0002.ngc'
+    data.files[1].requested_pieces = 4
+    data.files[1].pieces_per_file = 2
+    data.files[2].file_name = 'W_0003.ngc'
+    data.files[2].requested_pieces = 8
+    data.files[2].pieces_per_file = 4
+    data.files[3].file_name = 'W_0004.ngc'
+    data.files[3].requested_pieces = 10
+    data.files[3].pieces_per_file = 5
+    data.files[4].file_name = 'W_0005.ngc'
+    data.files[4].requested_pieces = 12
+    data.files[4].pieces_per_file = 6
+    data.files[5].file_name = 'W_0006.ngc'
+    data.files[5].requested_pieces = 14
+    data.files[5].pieces_per_file = 7
+    data.files[6].file_name = 'W_0007.ngc'
+    data.files[6].requested_pieces = 16
+    data.files[6].pieces_per_file = 8
+    data.files[7].file_name = 'W_0008.ngc'
+    data.files[7].requested_pieces = 18
+    data.files[7].pieces_per_file = 9
+
+    res = core.work_order_delete("test")
+    print(f' deletion of work order test: {res}')
+    time.sleep(4)
+    res = core.work_order_add("test")
+    print(f' creation of work order test: {res}')
+    time.sleep(4)
+    res = core.set_work_order_data("test", data)
+    print(f' set data of work order test: {res}')
+
+
 #
 # == BEG: API Server "set" requests
 
@@ -740,7 +786,6 @@ if not core.is_connected:
     print("No connection with API Server")
     sys.exit()
 
-"""
 eval_cmd_work_oder_add()
 time.sleep(2)
 eval_cmd_work_order_delete()
@@ -768,26 +813,4 @@ eval_get_work_order_file_list()
 eval_set_cnc_parameters()
 eval_set_override()
 eval_set_program_position()
-
-"""
-eval_get_enabled_commands()
-
-
-quit()
-
-# ======================================================================================================================
-
-
-# ======================================================================================================================
-
-
-# ======================================================================================================================
-
-print()
-print('CREATE & DELETE WORK ORDER "DUMMY"')
-print('==================================')
-order_code = 'DUMMY'
-res = core.work_order_add(order_code)
-time.sleep(4)
-res = core.work_order_delete(order_code)
-print(res)
+eval_set_work_order_data()

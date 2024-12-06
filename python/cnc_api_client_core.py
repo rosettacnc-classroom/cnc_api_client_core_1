@@ -714,29 +714,6 @@ class APIWorkOrderCodeList:
     has_data: bool                              = False
     data: List[ListData]                        = []
 
-class APIWorkOrderAddData:
-    """API data structure for work order add data."""
-
-    class FileData:
-        """Data structure for work order add data file list data."""
-        file_name: str                          = None
-        pieces_per_file: int                    = None
-        requested_pieces: int                   = None
-
-    order_locked: bool                          = None
-    order_priority: int                         = None
-    job_order_code: str                         = None
-    customer_code: str                          = None
-    item_code: str                              = None
-    material_code: str                          = None
-    order_notes: str                            = None
-    use_deadline_datetime: bool                 = None
-    deadline_datetime: datetime                 = None
-    files                                       = None
-
-    def __init__(self):
-        self.files = [self.FileData() for _ in range(8)]
-
 class APIWorkOrderData:
     """API data structure for work order data."""
 
@@ -768,7 +745,7 @@ class APIWorkOrderData:
     material_code: str                          = ''
     order_notes: str                            = ''
     files: List[FileData]                       = []
-    use_deadline_datetime: boot                 = False
+    use_deadline_datetime: bool                 = False
     creation_datetime: datetime                 = datetime.min
     deadline_datetime: datetime                 = datetime.min
     reception_datetime: datetime                = datetime.min
@@ -782,6 +759,53 @@ class APIWorkOrderData:
     time_total: int                             = 0
     operator_notes: str                         = ''
     log_items: List[LogItemData]                = []
+
+    def __init__(self):
+        self.files = [self.FileData() for _ in range(8)]
+
+class APIWorkOrderDataForAdd:
+    """API data structure of work order data for add."""
+
+    class FileData:
+        """Data structure for work order data file list data."""
+        file_name: str                          = None
+        pieces_per_file: int                    = None
+        requested_pieces: int                   = None
+
+    order_locked: bool                          = None
+    order_priority: int                         = None
+    job_order_code: str                         = None
+    customer_code: str                          = None
+    item_code: str                              = None
+    material_code: str                          = None
+    order_notes: str                            = None
+    use_deadline_datetime: bool                 = None
+    deadline_datetime: datetime                 = None
+    files                                       = None
+
+    def __init__(self):
+        self.files = [self.FileData() for _ in range(8)]
+
+class APIWorkOrderDataForSet:
+    """API data structure of work order data for set."""
+
+    class FileData:
+        """Data structure for work order data file list data."""
+        file_name: str                          = None
+        pieces_per_file: int                    = None
+        requested_pieces: int                   = None
+
+    order_state: int                            = None
+    order_locked: bool                          = None
+    order_priority: int                         = None
+    job_order_code: str                         = None
+    customer_code: str                          = None
+    item_code: str                              = None
+    material_code: str                          = None
+    order_notes: str                            = None
+    use_deadline_datetime: bool                 = None
+    deadline_datetime: datetime                 = None
+    files                                       = None
 
     def __init__(self):
         self.files = [self.FileData() for _ in range(8)]
@@ -962,56 +986,30 @@ class CncAPIClientCore:
         """Not implemented yet!"""
 
     def cnc_continue(self) -> bool:
-        """
-        Requires a CONTINUE command.
-
-        return      True if the request was successful.
-        """
+        """Xxx..."""
         return self.__execute_request('{"cmd":"cnc.continue"}')
 
     def cnc_homing(self, axes_mask: int) -> bool:
-        """
-        Requires the HOMING command for specified axes in the axes mask.
-
-        Homing can be requested only for X, Y, Z, A, B and C axes.
-        Look at *_AXIS_MASK constants for axes mask constant.
-
-        axes_mask   Mask with axes affected by the command.
-        return      True if the request was successful.
-        """
+        """Xxx..."""
         if not isinstance(axes_mask, int) or ((axes_mask <= 0) or (axes_mask > X2C_AXIS_MASK)):
             return False
         return self.__execute_request('{"cmd":"cnc.homing","axes.mask":' + str(axes_mask) + '}')
 
     def cnc_jog_command(self, command: int) -> bool:
-        """
-        Requires a JOG command.
-
-        command     Jog command. Available commands are in JC_xxx constants.
-        return      True if the request was successful.
-        """
+        """Xxx..."""
         if not isinstance(command, int) or (not command in range(JC_NONE, JC_C_FW + 1)):
             return False
         return self.__execute_request('{"cmd":"cnc.jog.command","command":' + str(command) + '}')
 
     def cnc_mdi_command(self, command: str) -> bool:
-        """
-        Requires an MDI command execution.
-
-        command     MDI command.
-        return      True if the request was successful.
-        """
+        """Xxx..."""
         if not isinstance(command, str):
             return False
         command = json.dumps(command)
         return self.__execute_request('{"cmd":"cnc.mdi.command","command":' + command + '}')
 
     def cnc_pause(self) -> bool:
-        """
-        Requires to NC to enter in PAUSE state.
-
-        return      True if the request was successful.
-        """
+        """Xxx..."""
         return self.__execute_request('{"cmd":"cnc.pause"}')
 
     def cnc_resume(self, line: int) -> bool:
@@ -1110,7 +1108,7 @@ class CncAPIClientCore:
         """Requests the Server API to reset the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
 
-    def work_order_add(self, order_code: str, data: APIWorkOrderAddData = None) -> bool:
+    def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
         """Requests the Server API to add a work order to the list of orders in the control software."""
 
         if not self.is_connected:
@@ -1122,7 +1120,7 @@ class CncAPIClientCore:
         }
 
         if data:
-            if not isinstance(data, APIWorkOrderAddData):
+            if not isinstance(data, APIWorkOrderDataForAdd):
                 return False
 
             order_data = {}
@@ -1203,7 +1201,7 @@ class CncAPIClientCore:
         try:
             if not isinstance(order_code, str):
                 return False
-            order_code = json.dumps(order_code)
+            order_code_json = json.dumps(order_code)
             return self.__execute_request(f'{{"cmd":"work.order.delete","order.code":{order_code_json}}}')
         except:
             return False
@@ -2106,9 +2104,98 @@ class CncAPIClientCore:
         except:
             return False
 
-    def set_work_order_data(self, order_code: str, data: any) -> bool:
-        """Xxx..."""
-        return False
+    def set_work_order_data(self, order_code: str, data: APIWorkOrderDataForSet) -> bool:
+        """Requests the Server API to set one or more fields of a work order in the control software."""
+        if not self.is_connected:
+            return False
+
+        request_data = {
+            "set": "work.order.data",
+            "order.code": order_code
+        }
+
+        if data:
+            if not isinstance(data, APIWorkOrderDataForSet):
+                return False
+
+            order_data = {}
+
+            if data.order_state is not None:
+                if isinstance(data.order_priority, int) and WO_ST_DRAFT <= data.order_priority <= WO_ST_ARCHIVED:
+                    order_data["order.state"] = data.order_state
+                else:
+                    return False
+
+            if data.order_locked is not None:
+                if isinstance(data.order_locked, bool):
+                    order_data["order.locked"] = data.order_locked
+                else:
+                    return False
+
+            if data.order_priority is not None:
+                if isinstance(data.order_priority, int) and WO_PR_LOWEST <= data.order_priority <= WO_PR_HIGHEST:
+                    order_data["order.priority"] = data.order_priority
+                else:
+                    return False
+
+            if data.job_order_code is not None:
+                if isinstance(data.job_order_code, str):
+                    order_data["job.order.code"] = data.job_order_code
+                else:
+                    return False
+
+            if data.customer_code is not None:
+                if isinstance(data.customer_code, str):
+                    order_data["customer.code"] = data.customer_code
+                else:
+                    return False
+
+            if data.item_code is not None:
+                if isinstance(data.item_code, str):
+                    order_data["item.code"] = data.item_code
+                else:
+                    return False
+
+            if data.material_code is not None:
+                if isinstance(data.material_code, str):
+                    order_data["material.code"] = data.material_code
+                else:
+                    return False
+
+            if data.order_notes is not None:
+                if isinstance(data.order_notes, str):
+                    order_data["order.notes"] = data.order_notes
+                else:
+                    return False
+
+            if data.use_deadline_datetime is not None:
+                if isinstance(data.use_deadline_datetime, bool):
+                    order_data["use.deadline.datetime"] = data.use_deadline_datetime
+                    if data.deadline_datetime:
+                        if isinstance(data.deadline_datetime, datetime):
+                            order_data["deadline.datetime"] = self.datetime_to_filetime(data.deadline_datetime)
+                        else:
+                            return False
+                else:
+                    return False
+
+            if data.files:
+                files_data = []
+                for file in data.files:
+                    file_data = {}
+                    if file.file_name is not None:
+                        file_data["file.name"] = file.file_name
+                    if file.pieces_per_file is not None:
+                        file_data["pieces.per.file"] = file.pieces_per_file
+                    if file.requested_pieces is not None:
+                        file_data["requested.pieces"] = file.requested_pieces
+                    files_data.append(file_data)
+                order_data["files"] = files_data
+
+            request_data["data"] = order_data
+
+        request_json = json.dumps(request_data)
+        return self.__execute_request(request_json)
 
     #
     # == END: API Server "set" requests
