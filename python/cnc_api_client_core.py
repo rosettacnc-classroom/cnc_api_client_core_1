@@ -714,55 +714,6 @@ class APIWorkOrderCodeList:
     has_data: bool                              = False
     data: List[ListData]                        = []
 
-class APIWorkOrderData:
-    """API data structure for work order data."""
-
-    class FileData:
-        """Data structure for work order data file list data."""
-        file_name: str                          = ''
-        file_state: int                         = WO_FS_CLOSED
-        pieces_per_file: int                    = 0
-        requested_pieces: int                   = 0
-        produced_pieces: int                    = 0
-        discarded_pieces: int                   = 0
-
-    class LogItemData:
-        """Data structure for work order data log items data."""
-        log_id: int                             = WO_LI_NONE
-        log_datetime: datetime                  = datetime.min
-        log_info_1: str                         = ""
-        log_info_2: str                         = ""
-
-    has_data: bool                              = False
-    revision_number: int                        = 0
-    order_state: int                            = WO_ST_DRAFT
-    order_locked: bool                          = False
-    order_code: str                             = ''
-    order_priority: int                         = WO_PR_NORMAL
-    job_order_code: str                         = ''
-    customer_code: str                          = ''
-    item_code: str                              = ''
-    material_code: str                          = ''
-    order_notes: str                            = ''
-    files: List[FileData]                       = []
-    use_deadline_datetime: bool                 = False
-    creation_datetime: datetime                 = datetime.min
-    deadline_datetime: datetime                 = datetime.min
-    reception_datetime: datetime                = datetime.min
-    acceptance_datetime: datetime               = datetime.min
-    begin_datetime: datetime                    = datetime.min
-    end_datetime: datetime                      = datetime.min
-    archived_datetime: datetime                 = datetime.min
-    time_for_setup: int                         = 0
-    time_for_idle: int                          = 0
-    time_for_work: int                          = 0
-    time_total: int                             = 0
-    operator_notes: str                         = ''
-    log_items: List[LogItemData]                = []
-
-    def __init__(self):
-        self.files = [self.FileData() for _ in range(8)]
-
 class APIWorkOrderDataForAdd:
     """API data structure of work order data for add."""
 
@@ -1110,91 +1061,93 @@ class CncAPIClientCore:
 
     def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
         """Requests the Server API to add a work order to the list of orders in the control software."""
-
-        if not self.is_connected:
-            return False
-
-        request_data = {
-            "cmd": "work.order.add",
-            "order.code": order_code
-        }
-
-        if data:
-            if not isinstance(data, APIWorkOrderDataForAdd):
+        try:
+            if not self.is_connected:
                 return False
 
-            order_data = {}
+            request_data = {
+                "cmd": "work.order.add",
+                "order.code": order_code
+            }
 
-            if data.order_locked is not None:
-                if isinstance(data.order_locked, bool):
-                    order_data["order.locked"] = data.order_locked
-                else:
+            if data:
+                if not isinstance(data, APIWorkOrderDataForAdd):
                     return False
 
-            if data.order_priority is not None:
-                if isinstance(data.order_priority, int) and WO_PR_LOWEST <= data.order_priority <= WO_PR_HIGHEST:
-                    order_data["order.priority"] = data.order_priority
-                else:
-                    return False
+                order_data = {}
 
-            if data.job_order_code is not None:
-                if isinstance(data.job_order_code, str):
-                    order_data["job.order.code"] = data.job_order_code
-                else:
-                    return False
+                if data.order_locked is not None:
+                    if isinstance(data.order_locked, bool):
+                        order_data["order.locked"] = data.order_locked
+                    else:
+                        return False
 
-            if data.customer_code is not None:
-                if isinstance(data.customer_code, str):
-                    order_data["customer.code"] = data.customer_code
-                else:
-                    return False
+                if data.order_priority is not None:
+                    if isinstance(data.order_priority, int) and WO_PR_LOWEST <= data.order_priority <= WO_PR_HIGHEST:
+                        order_data["order.priority"] = data.order_priority
+                    else:
+                        return False
 
-            if data.item_code is not None:
-                if isinstance(data.item_code, str):
-                    order_data["item.code"] = data.item_code
-                else:
-                    return False
+                if data.job_order_code is not None:
+                    if isinstance(data.job_order_code, str):
+                        order_data["job.order.code"] = data.job_order_code
+                    else:
+                        return False
 
-            if data.material_code is not None:
-                if isinstance(data.material_code, str):
-                    order_data["material.code"] = data.material_code
-                else:
-                    return False
+                if data.customer_code is not None:
+                    if isinstance(data.customer_code, str):
+                        order_data["customer.code"] = data.customer_code
+                    else:
+                        return False
 
-            if data.order_notes is not None:
-                if isinstance(data.order_notes, str):
-                    order_data["order.notes"] = data.order_notes
-                else:
-                    return False
+                if data.item_code is not None:
+                    if isinstance(data.item_code, str):
+                        order_data["item.code"] = data.item_code
+                    else:
+                        return False
 
-            if data.use_deadline_datetime is not None:
-                if isinstance(data.use_deadline_datetime, bool):
-                    order_data["use.deadline.datetime"] = data.use_deadline_datetime
-                    if data.deadline_datetime:
-                        if isinstance(data.deadline_datetime, datetime):
-                            order_data["deadline.datetime"] = self.datetime_to_filetime(data.deadline_datetime)
-                        else:
-                            return False
-                else:
-                    return False
+                if data.material_code is not None:
+                    if isinstance(data.material_code, str):
+                        order_data["material.code"] = data.material_code
+                    else:
+                        return False
 
-            if data.files:
-                files_data = []
-                for file in data.files:
-                    file_data = {}
-                    if file.file_name is not None:
-                        file_data["file.name"] = file.file_name
-                    if file.pieces_per_file is not None:
-                        file_data["pieces.per.file"] = file.pieces_per_file
-                    if file.requested_pieces is not None:
-                        file_data["requested.pieces"] = file.requested_pieces
-                    files_data.append(file_data)
-                order_data["files"] = files_data
+                if data.order_notes is not None:
+                    if isinstance(data.order_notes, str):
+                        order_data["order.notes"] = data.order_notes
+                    else:
+                        return False
 
-            request_data["data"] = order_data
+                if data.use_deadline_datetime is not None:
+                    if isinstance(data.use_deadline_datetime, bool):
+                        order_data["use.deadline.datetime"] = data.use_deadline_datetime
+                        if data.use_deadline_datetime:
+                            if isinstance(data.deadline_datetime, datetime):
+                                order_data["deadline.datetime"] = self.datetime_to_filetime(data.deadline_datetime)
+                            else:
+                                return False
+                    else:
+                        return False
 
-        request_json = json.dumps(request_data)
-        return self.__execute_request(request_json)
+                if data.files:
+                    files_data = []
+                    for file in data.files:
+                        file_data = {}
+                        if file.file_name is not None:
+                            file_data["file.name"] = file.file_name
+                        if file.pieces_per_file is not None:
+                            file_data["pieces.per.file"] = file.pieces_per_file
+                        if file.requested_pieces is not None:
+                            file_data["requested.pieces"] = file.requested_pieces
+                        files_data.append(file_data)
+                    order_data["files"] = files_data
+
+                request_data["data"] = order_data
+
+            request_json = json.dumps(request_data)
+            return self.__execute_request(request_json)
+        except:
+            return False
 
     def work_order_delete(self, order_code: str) -> bool:
         """Requests the Server API to delete a work order from the list of orders in the control software."""
@@ -2280,20 +2233,7 @@ class CncAPIClientCore:
     @staticmethod
     def datetime_to_filetime(dt: datetime) -> int:
         """Converts an UTC datetime to FILETIME timestamps (100 ns intervals from 1 January 1601)."""
-        epoch_start = datetime(1601, 1, 1)
-
-        # TAKE CARE
-        # =========
-        # I'm not totally sure that dt or epoch must be converted to UTC
-        # I've placed this workaround to avoid errors with OPC UA Server which add timezone.
-        # RosettaCNC does not have timezone date.
-        # To check better!!!
-
-        # normalize dt to the local time (remove timezone if present)
-        if dt.tzinfo is not None:
-            # convert dt to naive using the local timezone
-            dt = dt.astimezone().replace(tzinfo=None)
-
+        epoch_start = datetime(1601, 1, 1, tzinfo=dt.tzinfo)
         delta = dt - epoch_start
         filetime = int((delta.days * 86400 + delta.seconds) * 10**7 + delta.microseconds * 10)
         return filetime
