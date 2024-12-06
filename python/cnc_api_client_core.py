@@ -27,7 +27,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      05/12/2024
+# Created:      06/12/2024
 # Copyright:    RosettaCNC (c) 2016-2024
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -42,6 +42,7 @@
 # pylint: disable=R0911 -> too-many-return-statements
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0915 -> too-many-statements
+# pylint: disable=R1702 -> too-many-nested-blocks
 # pylint: disable=W0702 -> bare-except
 # pylint: disable=W0719 -> broad-exception-raised           ## take care when you use that ##
 #-------------------------------------------------------------------------------
@@ -713,6 +714,55 @@ class APIWorkOrderCodeList:
 
     has_data: bool                              = False
     data: List[ListData]                        = []
+
+class APIWorkOrderData:
+    """API data structure for work order data."""
+
+    class FileData:
+        """Data structure for work order data file list data."""
+        file_name: str                          = ''
+        file_state: int                         = WO_FS_CLOSED
+        pieces_per_file: int                    = 0
+        requested_pieces: int                   = 0
+        produced_pieces: int                    = 0
+        discarded_pieces: int                   = 0
+
+    class LogItemData:
+        """Data structure for work order data log items data."""
+        log_id: int                             = WO_LI_NONE
+        log_datetime: datetime                  = datetime.min
+        log_info_1: str                         = ""
+        log_info_2: str                         = ""
+
+    has_data: bool                              = False
+    revision_number: int                        = 0
+    order_state: int                            = WO_ST_DRAFT
+    order_locked: bool                          = False
+    order_code: str                             = ''
+    order_priority: int                         = WO_PR_NORMAL
+    job_order_code: str                         = ''
+    customer_code: str                          = ''
+    item_code: str                              = ''
+    material_code: str                          = ''
+    order_notes: str                            = ''
+    files: List[FileData]                       = []
+    use_deadline_datetime: bool                 = False
+    creation_datetime: datetime                 = datetime.min
+    deadline_datetime: datetime                 = datetime.min
+    reception_datetime: datetime                = datetime.min
+    acceptance_datetime: datetime               = datetime.min
+    begin_datetime: datetime                    = datetime.min
+    end_datetime: datetime                      = datetime.min
+    archived_datetime: datetime                 = datetime.min
+    time_for_setup: int                         = 0
+    time_for_idle: int                          = 0
+    time_for_work: int                          = 0
+    time_total: int                             = 0
+    operator_notes: str                         = ''
+    log_items: List[LogItemData]                = []
+
+    def __init__(self):
+        self.files = [self.FileData() for _ in range(8)]
 
 class APIWorkOrderDataForAdd:
     """API data structure of work order data for add."""
