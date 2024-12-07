@@ -1,0 +1,3739 @@
+object DesktopView: TDesktopView
+  Left = 0
+  Top = 0
+  ActiveControl = ServerConnectDisconnectButton
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = Single
+  Caption = 'API Client Engine Demo'
+  ClientHeight = 763
+  ClientWidth = 941
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object MCSTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 16.000000000000000000
+    Position.Y = 13.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'MACHINE POSITIONS'
+    TabOrder = 0
+  end
+  object MCSXLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 1
+  end
+  object MCSXValue: TLabel
+    StyledSettings = [Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 2
+  end
+  object MCSYLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 8
+  end
+  object MCSYValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 79
+  end
+  object MCSZLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 80
+  end
+  object MCSZValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 63
+  end
+  object MCSALabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 64
+  end
+  object MCSAValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 3
+  end
+  object MCSBLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 5
+  end
+  object MCSBValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 6
+  end
+  object MCSCLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 7
+  end
+  object MCSCValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 40.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 4
+  end
+  object PRPTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 184.000000000000000000
+    Position.Y = 13.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'PROGRAM POSITIONS'
+    TabOrder = 102
+  end
+  object WCSXLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 98
+  end
+  object WCSXValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 89
+  end
+  object WCSYLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 93
+  end
+  object WCSYValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 69
+  end
+  object WCSZLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 76
+  end
+  object WCSZValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 51
+  end
+  object WCSALabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 52
+  end
+  object WCSAValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 35
+  end
+  object WCSBLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 36
+  end
+  object WCSBValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 23
+  end
+  object WCSCLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 24
+  end
+  object WCSCValue: TLabel
+    StyledSettings = [Size, Style]
+    Position.X = 208.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 13
+  end
+  object AVLTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 352.000000000000000000
+    Position.Y = 13.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'ACTUAL VELOCITIES'
+    TabOrder = 101
+  end
+  object AVLXLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 97
+  end
+  object AVLXValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 87
+  end
+  object AVLYLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 88
+  end
+  object AVLYValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 67
+  end
+  object AVLZLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 68
+  end
+  object AVLZValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 49
+  end
+  object AVLALabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 50
+  end
+  object AVLAValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 33
+  end
+  object AVLBLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 34
+  end
+  object AVLBValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 17
+  end
+  object AVLCLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 22
+  end
+  object AVLCValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 10
+  end
+  object WOFTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 517.000000000000000000
+    Position.Y = 13.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'WORKING OFFSETS'
+    TabOrder = 100
+  end
+  object WOFXLabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 96
+  end
+  object WOFXValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 81
+  end
+  object WOFYLabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 86
+  end
+  object WOFYValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 54.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 65
+  end
+  object WOFZLabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 66
+  end
+  object WOFZValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 70.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm/min'
+    TabOrder = 47
+  end
+  object WOFALabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 48
+  end
+  object WOFAValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 86.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 27
+  end
+  object WOFBLabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 32
+  end
+  object WOFBValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 102.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 15
+  end
+  object WOFCLabel: TLabel
+    Position.X = 520.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 16
+  end
+  object WOFCValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 544.000000000000000000
+    Position.Y = 118.000000000000000000
+    Size.Width = 117.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg/min'
+    TabOrder = 9
+  end
+  object MTPTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 16.000000000000000000
+    Position.Y = 149.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'MAC SET POSITIONS'
+    TabOrder = 103
+  end
+  object MTPXLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 99
+  end
+  object MTPXValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 94
+  end
+  object MTPYLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 95
+  end
+  object MTPYValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 77
+  end
+  object MTPZLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 78
+  end
+  object MTPZValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 53
+  end
+  object MTPALabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 62
+  end
+  object MTPAValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 37
+  end
+  object MTPBLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 38
+  end
+  object MTPBValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 25
+  end
+  object MTPCLabel: TLabel
+    Position.X = 19.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 26
+  end
+  object MTPCValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 40.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 14
+  end
+  object PTPTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 184.000000000000000000
+    Position.Y = 149.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'PRG SET POSITIONS'
+    TabOrder = 92
+  end
+  object PTPXLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 85
+  end
+  object PTPXValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 74
+  end
+  object PTPYLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 75
+  end
+  object PTPYValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 60
+  end
+  object PTPZLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 61
+  end
+  object PTPZValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 45
+  end
+  object PTPALabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 46
+  end
+  object PTPAValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 30
+  end
+  object PTPBLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 31
+  end
+  object PTPBValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 20
+  end
+  object PTPCLabel: TLabel
+    Position.X = 187.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 21
+  end
+  object PTPCValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 208.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 12
+  end
+  object TabControl: TTabControl
+    Position.X = 8.000000000000000000
+    Position.Y = 309.000000000000000000
+    Size.Width = 837.000000000000000000
+    Size.Height = 393.000000000000000000
+    Size.PlatformDefault = False
+    TabIndex = 0
+    TabOrder = 104
+    TabPosition = PlatformDefault
+    OnChange = TabControlChange
+    Sizes = (
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s
+      837s
+      367s)
+    object TabProgram: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = True
+      Size.Width = 66.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Program'
+      ExplicitSize.cx = 66.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object NewProgramLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 16.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'NEW PROGRAM'
+        TabOrder = 1
+      end
+      object NewProgramLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 33.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object ProgramNewButton: TButton
+        Action = ProgramNewAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 41.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        TextSettings.Trimming = None
+      end
+      object LoadProgramLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 80.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'LOAD PROGRAM'
+        TabOrder = 10
+      end
+      object LoadProgramLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 97.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object ProgramLoadButton: TButton
+        Action = ProgramLoadAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 140.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        TextSettings.Trimming = None
+      end
+      object ProgramLoadFileNameEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 13
+        Position.X = 16.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 768.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnKeyDown = EditKeyDown
+        OnExit = EditExit
+      end
+      object SaveProgramLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 176.000000000000000000
+        Size.Width = 289.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = ' SAVE PROGRAM'
+        TabOrder = 15
+      end
+      object SaveProgramLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 193.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object ProgramSaveFileNameEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 7
+        Position.X = 16.000000000000000000
+        Position.Y = 265.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnKeyDown = EditKeyDown
+        OnExit = EditExit
+      end
+      object ProgramSaveButton: TButton
+        Action = ProgramSaveAsAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 291.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 8
+        TextSettings.Trimming = None
+      end
+      object SelectFileButton: TButton
+        Action = SelectFileAction
+        ImageIndex = -1
+        Position.X = 792.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 30.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        TextSettings.Trimming = None
+      end
+      object Button1: TButton
+        Action = ProgramSaveAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 201.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        TextSettings.Trimming = None
+      end
+      object Line1: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 257.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object Label1: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 240.000000000000000000
+        Size.Width = 289.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = ' SAVE PROGRAM AS'
+        TabOrder = 11
+      end
+    end
+    object TabGCode: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 61.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'G-Code'
+      ExplicitSize.cx = 61.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object ProgramGCodeSetTextMemo: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Position.X = 8.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 822.000000000000000000
+        Size.Height = 209.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 818.000000000000000000
+        Viewport.Height = 205.000000000000000000
+      end
+      object ProgramGCodeSetTextButton: TButton
+        Action = ProgramGCodeSetTextAction
+        ImageIndex = -1
+        Position.X = 8.000000000000000000
+        Position.Y = 224.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        TextSettings.Trimming = None
+      end
+      object ProgramGCodeAddTextButton: TButton
+        Action = ProgramGCodeAddTextAction
+        ImageIndex = -1
+        Position.X = 8.000000000000000000
+        Position.Y = 296.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        TextSettings.Trimming = None
+      end
+      object ProgramGCodeClearButton: TButton
+        Action = ProgramGCodeClearAction
+        ImageIndex = -1
+        Position.X = 358.000000000000000000
+        Position.Y = 312.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        TextSettings.Trimming = None
+      end
+      object ProgramGCodeAddTextEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 2
+        Position.X = 8.000000000000000000
+        Position.Y = 270.000000000000000000
+        Size.Width = 822.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        OnKeyDown = EditKeyDown
+        OnExit = EditExit
+      end
+    end
+    object TabCNC: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 44.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'CNC'
+      ExplicitSize.cx = 44.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object CNCStartButton: TButton
+        Action = CNCStartAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 176.000000000000000000
+        TabOrder = 9
+        TextSettings.Trimming = None
+      end
+      object CNCPauseButton: TButton
+        Action = CNCPauseAction
+        ImageIndex = -1
+        Position.X = 208.000000000000000000
+        Position.Y = 176.000000000000000000
+        TabOrder = 10
+        TextSettings.Trimming = None
+      end
+      object CNCStopButton: TButton
+        Action = CNCStopAction
+        ImageIndex = -1
+        Position.X = 104.000000000000000000
+        Position.Y = 176.000000000000000000
+        TabOrder = 11
+        TextSettings.Trimming = None
+      end
+      object CNCContinueButton: TButton
+        Action = CNCContinueAction
+        ImageIndex = -1
+        Position.X = 296.000000000000000000
+        Position.Y = 176.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 12
+        TextSettings.Trimming = None
+      end
+      object CNCStartFromLineButton: TButton
+        Action = CNCStartFromLineAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 248.000000000000000000
+        Size.Width = 180.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 15
+        TextSettings.Trimming = None
+      end
+      object CNCResumeAfterStopButton: TButton
+        Action = CNCResumeAfterStopAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 280.000000000000000000
+        Size.Width = 180.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 17
+        TextSettings.Trimming = None
+      end
+      object CNCResumeAfterStopFromLineButton: TButton
+        Action = CNCResumeAfterStopFromLineAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 312.000000000000000000
+        Size.Width = 180.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 18
+        TextSettings.Trimming = None
+      end
+      object CNCCommandsLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 161.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object CNCCommandsLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 144.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'CNC COMMANDS'
+        TabOrder = 1
+      end
+      object CNCCommandsSpecialLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 216.000000000000000000
+        Size.Width = 265.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'CNC COMMANDS - SPECIAL'
+        TabOrder = 13
+      end
+      object CNCCommandsSpecialLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 233.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object CNCStartFromLineEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 16
+        Position.X = 208.000000000000000000
+        Position.Y = 248.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnExit = EditExit
+      end
+      object CNCResumeAfterStopFromLineEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 19
+        Position.X = 208.000000000000000000
+        Position.Y = 312.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnExit = EditExit
+      end
+      object ProgramAnalysisMTButton: TButton
+        Action = ProgramAnalysisMTAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 8
+        TextSettings.Trimming = None
+      end
+      object ProgramAnalysisRTButton: TButton
+        Action = ProgramAnalysisRTAction
+        ImageIndex = -1
+        Position.X = 146.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 6
+        TextSettings.Trimming = None
+      end
+      object ProgramAnalysisRFButton: TButton
+        Action = ProgramAnalysisRFAction
+        ImageIndex = -1
+        Position.X = 276.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        TextSettings.Trimming = None
+      end
+      object ProgramAnalysisRVButton: TButton
+        Action = ProgramAnalysisRVAction
+        ImageIndex = -1
+        Position.X = 406.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        TextSettings.Trimming = None
+      end
+      object ProgramAnalysisRZButton: TButton
+        Action = ProgramAnalysisRZAction
+        ImageIndex = -1
+        Position.X = 536.000000000000000000
+        Position.Y = 48.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        TextSettings.Trimming = None
+      end
+      object ProgramAnalysisLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 16.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'PROGRAM ANALYSIS'
+        TabOrder = 0
+      end
+      object ProgramAnalysisLine: TLine
+        LineType = Diagonal
+        Position.X = 16.000000000000000000
+        Position.Y = 33.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 1.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object ProgramAnalysisAbortButton: TButton
+        Action = ProgramAnalysisAbortAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 80.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 7
+        TextSettings.Trimming = None
+      end
+      object CompilationStateLabel: TLabel
+        Position.X = 146.000000000000000000
+        Position.Y = 80.000000000000000000
+        Size.Width = 511.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = ' Compilation state : '
+        TabOrder = 24
+      end
+      object CompilationMessageLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 112.000000000000000000
+        Size.Width = 641.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        Text = ' Message : '
+        TabOrder = 23
+      end
+    end
+    object TabJOG: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 42.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'JOG'
+      ExplicitSize.cx = 42.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object CNCJogCommandXMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 14.000000000000000000
+        TabOrder = 0
+        Text = 'X -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandXPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 14.000000000000000000
+        TabOrder = 1
+        Text = 'X +'
+        TextSettings.Trimming = None
+        OnClick = ActionMainExecute
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandYMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 46.000000000000000000
+        TabOrder = 2
+        Text = 'Y -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandYPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 46.000000000000000000
+        TabOrder = 3
+        Text = 'Y +'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandZMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 78.000000000000000000
+        TabOrder = 4
+        Text = 'Z -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandZPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 78.000000000000000000
+        TabOrder = 5
+        Text = 'Z +'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandAMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 110.000000000000000000
+        TabOrder = 6
+        Text = 'A -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandAPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 110.000000000000000000
+        TabOrder = 7
+        Text = 'A +'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandBMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 142.000000000000000000
+        TabOrder = 8
+        Text = 'B -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandBPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 142.000000000000000000
+        TabOrder = 9
+        Text = 'B +'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandCMButton: TButton
+        Position.X = 16.000000000000000000
+        Position.Y = 174.000000000000000000
+        TabOrder = 10
+        Text = 'C -'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object CNCJogCommandCPButton: TButton
+        Position.X = 104.000000000000000000
+        Position.Y = 174.000000000000000000
+        TabOrder = 11
+        Text = 'C +'
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object JOGSTOPButton: TButton
+        Action = CNCStopAction
+        StyledSettings = [Family, FontColor]
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 208.000000000000000000
+        Size.Width = 806.000000000000000000
+        Size.Height = 145.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 26
+        TextSettings.Font.Size = 50.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.Trimming = None
+      end
+      object SetProgramPositionXButton: TButton
+        Action = SetProgramPositionXAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 14.000000000000000000
+        TabOrder = 15
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionYButton: TButton
+        Action = SetProgramPositionYAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 46.000000000000000000
+        TabOrder = 17
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionZButton: TButton
+        Action = SetProgramPositionZAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 78.000000000000000000
+        TabOrder = 19
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionAButton: TButton
+        Action = SetProgramPositionAAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 110.000000000000000000
+        TabOrder = 21
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionBButton: TButton
+        Action = SetProgramPositionBAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 142.000000000000000000
+        TabOrder = 23
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionCButton: TButton
+        Action = SetProgramPositionCAction
+        ImageIndex = -1
+        Position.X = 742.000000000000000000
+        Position.Y = 174.000000000000000000
+        TabOrder = 25
+        TextSettings.Trimming = None
+        OnMouseDown = CNCJogCommandMouseDown
+        OnMouseUp = CNCJogCommandMouseUp
+      end
+      object SetProgramPositionXEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 14
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 14.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object SetProgramPositionYEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 16
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 46.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object SetProgramPositionZEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 18
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 78.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object SetProgramPositionAEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 20
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 110.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object SetProgramPositionBEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 22
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 142.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object SetProgramPositionCEdit: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        TabOrder = 24
+        Text = '0.0'
+        TextSettings.HorzAlign = Trailing
+        Position.X = 630.000000000000000000
+        Position.Y = 174.000000000000000000
+        OnKeyDown = EditKeyDown
+        OnClick = EditClick
+        OnEnter = EditEnter
+        OnExit = EditExit
+      end
+      object JOGSetSeparatorLine: TLine
+        LineType = Diagonal
+        Position.X = 216.000000000000000000
+        Position.Y = 14.000000000000000000
+        Size.Width = 1.000000000000000000
+        Size.Height = 182.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TextAxisPositionText: TText
+        Position.X = 224.000000000000000000
+        Position.Y = 14.000000000000000000
+        Size.Width = 398.000000000000000000
+        Size.Height = 182.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Set Axis Position'
+        TextSettings.Font.Size = 20.000000000000000000
+      end
+    end
+    object TabOverrides: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 71.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Overrides'
+      ExplicitSize.cx = 71.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object OverrideJog: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 22.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        OnChange = OverrideChange
+      end
+      object OverrideSpindle: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 56.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        OnChange = OverrideChange
+      end
+      object OverrideFast: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 90.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        OnChange = OverrideChange
+      end
+      object OverrideFeed: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 124.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        OnChange = OverrideChange
+      end
+      object OverrideFeedCustom1: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        OnChange = OverrideChange
+      end
+      object OverrideFeedCustom2: TTrackBar
+        CanParentFocus = True
+        Orientation = Horizontal
+        Position.X = 90.000000000000000000
+        Position.Y = 192.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        OnChange = OverrideChange
+      end
+      object OverrideJogLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 22.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'JOG'
+        TabOrder = 6
+      end
+      object OverrideSpindleLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 56.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'SPINDLE'
+        TabOrder = 7
+      end
+      object OverrideFastLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 90.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'FAST'
+        TabOrder = 8
+      end
+      object OverrideFeedLabel: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 124.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'FEED'
+        TabOrder = 9
+      end
+      object OverrideFeedCustom1Label: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'FEED CSM1'
+        TabOrder = 10
+      end
+      object OverrideFeedCustom2Label: TLabel
+        Position.X = 16.000000000000000000
+        Position.Y = 192.000000000000000000
+        Size.Width = 65.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'FEED CSM2'
+        TabOrder = 11
+      end
+      object OverrideJogValue: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 22.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 12
+      end
+      object OverrideSpindleValue: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 56.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 13
+      end
+      object OverrideFastValue: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 90.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 14
+      end
+      object OverrideFeedValue: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 124.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 15
+      end
+      object OverrideFeedCustom1Value: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 16
+      end
+      object OverrideFeedCustom2Value: TLabel
+        Position.X = 296.000000000000000000
+        Position.Y = 192.000000000000000000
+        Size.Width = 40.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = '100'
+        TabOrder = 17
+      end
+    end
+    object TabHoming: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 63.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Homing'
+      ExplicitSize.cx = 63.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object HomingXButton: TButton
+        Action = CNCHomingXAction
+        ImageIndex = -1
+        Position.X = 8.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        TextSettings.Trimming = None
+      end
+      object HomingYButton: TButton
+        Action = CNCHomingYAction
+        ImageIndex = -1
+        Position.X = 104.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        TextSettings.Trimming = None
+      end
+      object HomingZButton: TButton
+        Action = CNCHomingZAction
+        ImageIndex = -1
+        Position.X = 200.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 5
+        TextSettings.Trimming = None
+      end
+      object HomingAButton: TButton
+        Action = CNCHomingAAction
+        ImageIndex = -1
+        Position.X = 296.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 6
+        TextSettings.Trimming = None
+      end
+      object HomingCButton: TButton
+        Action = CNCHomingCAction
+        ImageIndex = -1
+        Position.X = 488.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        TextSettings.Trimming = None
+      end
+      object HomingAllButton: TButton
+        Action = CNCHomingAllAction
+        ImageIndex = -1
+        Position.X = 584.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 4
+        TextSettings.Trimming = None
+      end
+      object HomingBButton: TButton
+        Action = CNCHomingBAction
+        ImageIndex = -1
+        Position.X = 392.000000000000000000
+        Position.Y = 20.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        TextSettings.Trimming = None
+      end
+      object HomingSTOPButton: TButton
+        Action = CNCStopAction
+        StyledSettings = [Family, FontColor]
+        ImageIndex = -1
+        Position.X = 306.000000000000000000
+        Position.Y = 128.000000000000000000
+        Size.Width = 224.000000000000000000
+        Size.Height = 177.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 7
+        TextSettings.Font.Size = 50.000000000000000000
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.Trimming = None
+      end
+      object HomingXState: TRectangle
+        Position.X = 8.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingYState: TRectangle
+        Position.X = 104.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingZState: TRectangle
+        Position.X = 200.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingAState: TRectangle
+        Position.X = 296.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingBState: TRectangle
+        Position.X = 392.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingCState: TRectangle
+        Position.X = 488.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object HomingAllState: TRectangle
+        Position.X = 584.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 80.000000000000000000
+        Size.Height = 6.000000000000000000
+        Size.PlatformDefault = False
+      end
+    end
+    object TabMDI: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 43.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'MDI'
+      ExplicitSize.cx = 43.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object CNCMDICommandMemo: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        Position.X = 7.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 822.000000000000000000
+        Size.Height = 320.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 818.000000000000000000
+        Viewport.Height = 316.000000000000000000
+      end
+      object CNCMDICommandButton: TButton
+        Action = CNCMDICommandAction
+        ImageIndex = -1
+        Position.X = 7.000000000000000000
+        Position.Y = 336.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 22.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        TextSettings.Trimming = None
+      end
+    end
+    object TabDIO: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 49.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'D I/O'
+      ExplicitSize.cx = 49.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object DIOImage: TImage
+        MultiResBitmap = <
+          item
+          end>
+        Position.X = 8.000000000000000000
+        Position.Y = 40.000000000000000000
+        Size.Width = 822.000000000000000000
+        Size.Height = 321.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object DigitalInputsRadioButton: TRadioButton
+        StyledSettings = [Family, Size, FontColor]
+        GroupName = 'DIO'
+        IsChecked = True
+        Position.X = 16.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 94
+        Text = 'DIGITAL INPUTS'
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+      end
+      object DigitalOutputsRadioButton: TRadioButton
+        StyledSettings = [Family, Size, FontColor]
+        GroupName = 'DIO'
+        Position.X = 160.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 160.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 95
+        Text = 'DIGITAL OUTPUTS'
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+      end
+    end
+    object TabAIO: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 48.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'A I/O'
+      ExplicitSize.cx = 48.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object ANITitleLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 24.000000000000000000
+        Position.Y = 21.000000000000000000
+        Size.Width = 225.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        Text = 'ANALOG INPUTS'
+        TabOrder = 133
+      end
+      object ANI01Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.01 :'
+        TabOrder = 128
+      end
+      object ANI02Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.02 :'
+        TabOrder = 120
+      end
+      object ANI03Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.03 :'
+        TabOrder = 99
+      end
+      object ANI04Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.04 :'
+        TabOrder = 82
+      end
+      object ANI05Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.05 :'
+        TabOrder = 65
+      end
+      object ANI06Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.06 :'
+        TabOrder = 44
+      end
+      object ANI07Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.07 :'
+        TabOrder = 40
+      end
+      object ANI08Label: TLabel
+        Position.X = 27.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.08 :'
+        TabOrder = 31
+      end
+      object ANI01Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 126
+      end
+      object ANI02Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 118
+      end
+      object ANI03Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 97
+      end
+      object ANI04Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 81
+      end
+      object ANI05Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 63
+      end
+      object ANI06Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 43
+      end
+      object ANI07Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 38
+      end
+      object ANI08Value: TLabel
+        Position.X = 75.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 29
+      end
+      object ANI09Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.09 :'
+        TabOrder = 127
+      end
+      object ANI09Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 125
+      end
+      object ANI10Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 113
+      end
+      object ANI10Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.10 :'
+        TabOrder = 114
+      end
+      object ANI11Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.11 :'
+        TabOrder = 98
+      end
+      object ANI11Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 96
+      end
+      object ANI12Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 79
+      end
+      object ANI12Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.12 :'
+        TabOrder = 80
+      end
+      object ANI13Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.13 :'
+        TabOrder = 64
+      end
+      object ANI13Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 62
+      end
+      object ANI14Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 41
+      end
+      object ANI14Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.14 :'
+        TabOrder = 42
+      end
+      object ANI15Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.15 :'
+        TabOrder = 39
+      end
+      object ANI15Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 36
+      end
+      object ANI16Value: TLabel
+        Position.X = 203.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 24
+      end
+      object ANI16Label: TLabel
+        Position.X = 155.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.16 :'
+        TabOrder = 26
+      end
+      object ANO16Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 21
+      end
+      object ANO16Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.16 :'
+        TabOrder = 22
+      end
+      object ANO15Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.15 :'
+        TabOrder = 32
+      end
+      object ANO15Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 27
+      end
+      object ANO14Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 33
+      end
+      object ANO14Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.14 :'
+        TabOrder = 34
+      end
+      object ANO13Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.13 :'
+        TabOrder = 58
+      end
+      object ANO13Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 56
+      end
+      object ANO12Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 73
+      end
+      object ANO12Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.12 :'
+        TabOrder = 74
+      end
+      object ANO11Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.11 :'
+        TabOrder = 92
+      end
+      object ANO11Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 90
+      end
+      object ANO10Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 107
+      end
+      object ANO10Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.10 :'
+        TabOrder = 108
+      end
+      object ANO09Label: TLabel
+        Position.X = 427.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.09 :'
+        TabOrder = 121
+      end
+      object ANO09Value: TLabel
+        Position.X = 475.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 115
+      end
+      object ANO01Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 116
+      end
+      object ANO01Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 46.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.01 :'
+        TabOrder = 119
+      end
+      object ANO02Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.02 :'
+        TabOrder = 110
+      end
+      object ANO02Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 109
+      end
+      object ANO03Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 91
+      end
+      object ANO03Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 78.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.03 :'
+        TabOrder = 93
+      end
+      object ANO04Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.04 :'
+        TabOrder = 76
+      end
+      object ANO04Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 94.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 75
+      end
+      object ANO05Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 57
+      end
+      object ANO05Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.05 :'
+        TabOrder = 59
+      end
+      object ANO06Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.06 :'
+        TabOrder = 37
+      end
+      object ANO06Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 126.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 35
+      end
+      object ANO07Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 28
+      end
+      object ANO07Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 142.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.07 :'
+        TabOrder = 30
+      end
+      object ANO08Label: TLabel
+        Position.X = 299.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 46.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'AN.08 :'
+        TabOrder = 25
+      end
+      object ANO08Value: TLabel
+        Position.X = 347.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 52.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.HorzAlign = Trailing
+        Text = '0.00 %'
+        TabOrder = 23
+      end
+      object ANOTitleLabel: TLabel
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 296.000000000000000000
+        Position.Y = 21.000000000000000000
+        Size.Width = 225.000000000000000000
+        Size.Height = 17.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        TextSettings.HorzAlign = Center
+        Text = 'ANALOG OUTPUTS'
+        TabOrder = 117
+      end
+    end
+    object TabScanningLaser: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 99.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Scanning Laser'
+      ExplicitSize.cx = 99.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object LaserZeroXAxisButton: TButton
+        Action = LaserZeroXAxisAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 190.000000000000000000
+        Size.Width = 233.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        TextSettings.Trimming = None
+      end
+      object LaserOutBitLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 38.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Out BIT'
+        TabOrder = 13
+      end
+      object LaserOutBitValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 38.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 14
+      end
+      object LaserOutUMFLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'Out UMF'
+        TabOrder = 12
+      end
+      object LaserHMeasureLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 86.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'H Measure'
+        TabOrder = 11
+      end
+      object LaserOutUMFValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 62.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 7
+      end
+      object LaserHMeasureValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 86.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 6
+      end
+      object LaserMCSXPositionLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'MCS.Z Position'
+        TabOrder = 10
+      end
+      object LaserMCSXPositionValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 110.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 5
+      end
+      object LaserInfoLabel: TLabel
+        AutoSize = True
+        StyledSettings = [Family, Size, FontColor]
+        Position.X = 16.000000000000000000
+        Position.Y = 16.000000000000000000
+        Size.Width = 177.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+        Text = 'SCANNING LASER INFO'
+        TabOrder = 15
+      end
+      object LaserMCSYPositionLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 134.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'MCS.Y Position'
+        TabOrder = 9
+      end
+      object LaserMCSYPositionValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 134.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 4
+      end
+      object LaserMCSZPositionLabel: TLabel
+        AutoSize = True
+        Position.X = 16.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        Text = 'MCS.Z Position'
+        TabOrder = 8
+      end
+      object LaserMCSZPositionValue: TLabel
+        StyledSettings = [Size, Style, FontColor]
+        Position.X = 130.000000000000000000
+        Position.Y = 158.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 16.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Family = 'Consolas'
+        TextSettings.HorzAlign = Trailing
+        Text = '---'
+        TabOrder = 3
+      end
+      object LaserZeroYAxisButton: TButton
+        Action = LaserZeroYAxisAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 238.000000000000000000
+        Size.Width = 233.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        TextSettings.Trimming = None
+      end
+      object LaserZeroZAxisButton: TButton
+        Action = LaserZeroZAxisAction
+        ImageIndex = -1
+        Position.X = 16.000000000000000000
+        Position.Y = 286.000000000000000000
+        Size.Width = 233.000000000000000000
+        Size.Height = 41.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        TextSettings.Trimming = None
+      end
+    end
+    object TabMachiningInfo: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 100.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'Machining Info'
+      ExplicitSize.cx = 100.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object MachiningInfoImage: TImage
+        MultiResBitmap = <
+          item
+          end>
+        Position.X = 7.000000000000000000
+        Position.Y = 40.000000000000000000
+        Size.Width = 822.000000000000000000
+        Size.Height = 321.000000000000000000
+        Size.PlatformDefault = False
+      end
+      object TCPExtentsInfoRadioButton: TRadioButton
+        StyledSettings = [Family, Size, FontColor]
+        GroupName = 'MachiningInfo'
+        IsChecked = True
+        Position.X = 16.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 137.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 94
+        Text = 'TCP EXTENTS INFO'
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+      end
+      object JointsInfoRadioButton: TRadioButton
+        StyledSettings = [Family, Size, FontColor]
+        GroupName = 'MachiningInfo'
+        Position.X = 160.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 113.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 96
+        Text = 'JOINTS INFO'
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+      end
+      object UsedToolInfoRadioButton: TRadioButton
+        StyledSettings = [Family, Size, FontColor]
+        GroupName = 'MachiningInfo'
+        Position.X = 280.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 160.000000000000000000
+        Size.Height = 19.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 95
+        Text = 'USED TOOL INFO'
+        TextSettings.Font.StyleExt = {00070000000000000004000000}
+      end
+    end
+    object TabSystemInfo: TTabItem
+      CustomIcon = <
+        item
+        end>
+      TextSettings.Trimming = None
+      IsSelected = False
+      Size.Width = 82.000000000000000000
+      Size.Height = 26.000000000000000000
+      Size.PlatformDefault = False
+      StyleLookup = ''
+      TabOrder = 0
+      Text = 'System Info'
+      ExplicitSize.cx = 82.000000000000000000
+      ExplicitSize.cy = 26.000000000000000000
+      object SystemInfoMemo: TMemo
+        Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+        DataDetectorTypes = []
+        ReadOnly = True
+        StyledSettings = [Style, FontColor]
+        TextSettings.Font.Family = 'Consolas'
+        Align = Client
+        Locked = True
+        Padding.Left = 8.000000000000000000
+        Padding.Top = 6.000000000000000000
+        Padding.Right = 8.000000000000000000
+        Padding.Bottom = 6.000000000000000000
+        Size.Width = 837.000000000000000000
+        Size.Height = 367.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        Viewport.Width = 833.000000000000000000
+        Viewport.Height = 363.000000000000000000
+      end
+    end
+  end
+  object JOPTitleLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 352.000000000000000000
+    Position.Y = 149.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'JOINT POSITIONS'
+    TabOrder = 91
+  end
+  object JOPXLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'X'
+    TabOrder = 84
+  end
+  object JOPXValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 72
+  end
+  object JOPYLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Y'
+    TabOrder = 73
+  end
+  object JOPYValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 55
+  end
+  object JOPZLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Z'
+    TabOrder = 59
+  end
+  object JOPZValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 mm'
+    TabOrder = 43
+  end
+  object JOPALabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'A'
+    TabOrder = 44
+  end
+  object JOPAValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 28
+  end
+  object JOPBLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'B'
+    TabOrder = 29
+  end
+  object JOPBValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 18
+  end
+  object JOPCLabel: TLabel
+    Position.X = 355.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 22.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'C'
+    TabOrder = 19
+  end
+  object JOPCValue: TLabel
+    StyledSettings = [Size, Style, FontColor]
+    Position.X = 376.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Family = 'Consolas'
+    TextSettings.HorzAlign = Trailing
+    Text = '0.0 dg'
+    TabOrder = 11
+  end
+  object UpdateTimer: TTimer
+    Enabled = False
+    Interval = 1
+    OnTimer = UpdateTimerTimer
+    Left = 756
+    Top = 638
+  end
+  object StatusBar: TStatusBar
+    Margins.Left = 8.000000000000000000
+    Margins.Right = 8.000000000000000000
+    Margins.Bottom = 4.000000000000000000
+    Position.X = 8.000000000000000000
+    Position.Y = 737.000000000000000000
+    ShowSizeGrip = False
+    Size.Width = 925.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 111
+    object StateMachineLabel: TLabel
+      Align = Client
+      Margins.Left = 8.000000000000000000
+      Size.Width = 613.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+    object APIServerConnectionStateLabel: TLabel
+      Align = Right
+      Margins.Right = 8.000000000000000000
+      Position.X = 621.000000000000000000
+      Size.Width = 296.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.HorzAlign = Trailing
+      TabOrder = 1
+    end
+  end
+  object APIServerHostPortLabel: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 709.000000000000000000
+    Size.Width = 129.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'API Server Host && Port'
+    TabOrder = 105
+  end
+  object APIServerHostEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 106
+    Position.X = 144.000000000000000000
+    Position.Y = 709.000000000000000000
+    OnKeyDown = EditKeyDown
+    OnExit = EditExit
+  end
+  object APIServerPortEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 107
+    Position.X = 248.000000000000000000
+    Position.Y = 709.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnKeyDown = EditKeyDown
+    OnExit = EditExit
+  end
+  object ServerConnectDisconnectButton: TButton
+    Action = ServerConnectDisconnectAction
+    ImageIndex = -1
+    Position.X = 717.000000000000000000
+    Position.Y = 709.000000000000000000
+    Size.Width = 128.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 110
+    TextSettings.Trimming = None
+  end
+  object StayOnTopCheckBox: TCheckBox
+    Position.X = 440.000000000000000000
+    Position.Y = 709.000000000000000000
+    Size.Width = 89.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 109
+    Text = 'Stay on Top'
+    OnChange = CheckBoxChange
+  end
+  object MachineInfoLabel: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 520.000000000000000000
+    Position.Y = 149.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.StyleExt = {00070000000000000004000000}
+    TextSettings.HorzAlign = Center
+    Text = 'MACHINE INFO'
+    TabOrder = 90
+  end
+  object WorkedTimeLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 78.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Worked Time'
+    TabOrder = 83
+  end
+  object WorkedTimeValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 238.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = '00:00:00'
+    TabOrder = 71
+  end
+  object GCodeLineLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 70.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'GCode Line'
+    TabOrder = 58
+  end
+  object GCodeLineValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 222.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = '0'
+    TabOrder = 42
+  end
+  object SpindleStatusLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 70.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Spindle'
+    TabOrder = 57
+  end
+  object SpindleStatusValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 174.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = '0'
+    TabOrder = 41
+  end
+  object CoolantMistLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 70.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Mist'
+    TabOrder = 56
+  end
+  object CoolantMistValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 190.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = 'OFF'
+    TabOrder = 40
+  end
+  object CoolantFloodLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 70.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Flood'
+    TabOrder = 54
+  end
+  object CoolantFloodValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 206.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = 'OFF'
+    TabOrder = 39
+  end
+  object ToolInfoPanel: TPanel
+    Position.X = 8.000000000000000000
+    Position.Y = 275.000000000000000000
+    Size.Width = 837.000000000000000000
+    Size.Height = 25.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 112
+    object ToolInfoLabel: TLabel
+      Align = Client
+      Margins.Left = 11.000000000000000000
+      Margins.Right = 8.000000000000000000
+      Size.Width = 818.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+  end
+  object UseTLSCheckBox: TCheckBox
+    Position.X = 336.000000000000000000
+    Position.Y = 709.000000000000000000
+    Size.Width = 97.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 108
+    Text = 'Use TLS 1.2'
+    OnChange = CheckBoxChange
+  end
+  object PlannedTimeLabel: TLabel
+    Position.X = 523.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 78.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Planned Time'
+    TabOrder = 82
+  end
+  object PlannedTimeValue: TLabel
+    Position.X = 600.000000000000000000
+    Position.Y = 254.000000000000000000
+    Size.Width = 64.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.HorzAlign = Trailing
+    Text = '00:00:00'
+    TabOrder = 70
+  end
+  object Panel1: TPanel
+    Position.X = 853.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 80.000000000000000000
+    Size.Height = 723.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 113
+    object ResetAlarmsButton: TButton
+      Action = ResetAlarmsAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 475.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 8
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object ResetAlarmsHistoryButton: TButton
+      Action = ResetAlarmsHistoryAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 537.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object ResetWarningsButton: TButton
+      Action = ResetWarningsAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 599.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object ResetWarningsHistoryButton: TButton
+      Action = ResetWarningsHistoryAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 661.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object CommandsLabel: TLabel
+      Align = Top
+      StyledSettings = [Family, FontColor]
+      Size.Width = 80.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 11.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      TextSettings.HorzAlign = Center
+      Text = 'COMMANDS'
+      TabOrder = 10
+    end
+    object TBCNCStartButton: TButton
+      Action = CNCStartAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 25.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 7
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object TBCNCStopButton: TButton
+      Action = CNCStopAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 87.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object TBCNCPauseButton: TButton
+      Action = CNCPauseAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 149.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object TBCNCContinueButton: TButton
+      Action = CNCContinueAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 211.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+    object TBCNCResumeAfterStopButton: TButton
+      Action = CNCResumeAfterStopAction
+      ImageIndex = -1
+      Position.X = 8.000000000000000000
+      Position.Y = 273.000000000000000000
+      Size.Width = 64.000000000000000000
+      Size.Height = 54.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      TextSettings.WordWrap = True
+      TextSettings.Trimming = None
+    end
+  end
+  object OpenDialog: TOpenDialog
+    Left = 600
+    Top = 640
+  end
+  object ActionList: TActionList
+    Left = 680
+    Top = 637
+    object CNCContinueAction: TAction
+      Text = 'Continue'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingAAction: TAction
+      Text = 'A-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingAllAction: TAction
+      Text = 'All-Axes'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingBAction: TAction
+      Text = 'B-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingCAction: TAction
+      Text = 'C-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingXAction: TAction
+      Text = 'X-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingYAction: TAction
+      Text = 'Y-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCHomingZAction: TAction
+      Text = 'Z-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCMDICommandAction: TAction
+      Text = 'Execute MDI'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCPauseAction: TAction
+      Text = 'Pause'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCResumeAfterStopAction: TAction
+      Text = 'Resume after Stop'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCResumeAfterStopFromLineAction: TAction
+      Text = 'Resume after Stop from Line'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCStartAction: TAction
+      Text = 'Start'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCStartFromLineAction: TAction
+      Text = 'Start from Line'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object CNCStopAction: TAction
+      Text = 'Stop'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object LaserZeroXAxisAction: TAction
+      Text = 'Zero X-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object LaserZeroYAxisAction: TAction
+      Text = 'Zero Y-Axis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object LaserZeroZAxisAction: TAction
+      Text = 'Zero Z-Axis (with Laser Value)'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisAbortAction: TAction
+      Text = 'Abort Analysis'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisMTAction: TAction
+      Text = 'Analysis MT'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisRFAction: TAction
+      Text = 'Analysis RF'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisRTAction: TAction
+      Text = 'Analysis RT'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisRVAction: TAction
+      Text = 'Analysis RV'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramAnalysisRZAction: TAction
+      Text = 'Analysis RZ'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramGCodeAddTextAction: TAction
+      Text = 'Add Line'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramGCodeClearAction: TAction
+      Text = 'Clear All'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramGCodeSetTextAction: TAction
+      Text = 'Set'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ResetAlarmsAction: TAction
+      Text = 'Reset Alarms'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ResetAlarmsHistoryAction: TAction
+      Text = 'Reset Alarms History'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ResetWarningsAction: TAction
+      Text = 'Reset Warnings'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ResetWarningsHistoryAction: TAction
+      Text = 'Reset Warnings History'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramLoadAction: TAction
+      Text = 'Load Program'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramNewAction: TAction
+      Text = 'New Program'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramSaveAction: TAction
+      Text = 'Save Program'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ProgramSaveAsAction: TAction
+      Text = 'Save Program As'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object ServerConnectDisconnectAction: TAction
+      Text = 'Connect'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionXAction: TAction
+      Text = 'Set X'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionYAction: TAction
+      Text = 'Set Y'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionZAction: TAction
+      Text = 'Set Z'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionAAction: TAction
+      Text = 'Set A'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionBAction: TAction
+      Text = 'Set B'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SetProgramPositionCAction: TAction
+      Text = 'Set C'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+    object SelectFileAction: TAction
+      Text = '...'
+      OnExecute = ActionMainExecute
+      OnUpdate = ActionMainUpdate
+    end
+  end
+end
