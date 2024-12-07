@@ -5,3 +5,4 @@ be available in this repository.
 
 # Examples
 
+![./python/examples/api_client_fmx_demo/images/preview](./python/examples/api_client_fmx_demo/images/preview.png)
