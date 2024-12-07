@@ -90,7 +90,7 @@ def eval_cmd_work_oder_add():
     order_data.customer_code = 'LABMEC srl'
     order_data.item_code = 'bridge structure'
     order_data.material_code = 'aluminium (H95)'
-    order_data.order_notes = 'Use only aluminium tools\r\nPlease!'
+    order_data.order_notes = 'Use only aluminium tools!'
     order_data.use_deadline_datetime = True
     order_data.deadline_datetime = datetime(2024, 6, 19, 10, 20, 30)
     order_data.files[0].file_name = "W_0001.ngc"
