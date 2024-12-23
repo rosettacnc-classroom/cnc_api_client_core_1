@@ -157,8 +157,19 @@ def eval_get_cnc_info():
         print('axes_mask                        =', cnc_info.axes_mask)
         print('state_machine                    =', cnc_info.state_machine)
         print('gcode_line                       =', cnc_info.gcode_line)
+        print('planned_time                     =', cnc_info.planned_time)
         print('worked_time                      =', cnc_info.worked_time)
         print('hud_user_message                 =', cnc_info.hud_user_message)
+        print('current_alarm_datetime           =', cnc_info.current_alarm_datetime)
+        print('current_alarm_code               =', cnc_info.current_alarm_code)
+        print('current_alarm_info1              =', cnc_info.current_alarm_info1)
+        print('current_alarm_info2              =', cnc_info.current_alarm_info2)
+        print('current_alarm_text               =', cnc_info.current_alarm_text)
+        print('current_warning_datetime         =', cnc_info.current_warning_datetime)
+        print('current_warning_code             =', cnc_info.current_warning_code)
+        print('current_warning_info1            =', cnc_info.current_warning_info1)
+        print('current_warning_info2            =', cnc_info.current_warning_info2)
+        print('current_warning_text             =', cnc_info.current_warning_text)
         print('coolant_mist                     =', cnc_info.coolant_mist)
         print('coolant_flood                    =', cnc_info.coolant_flood)
         print('lube_axis_cycles_made            =', cnc_info.lube_axis_cycles_made)
@@ -786,6 +797,46 @@ if not core.is_connected:
     print("No connection with API Server")
     sys.exit()
 
+def eval_get_alarms_current_list():
+    log_command('GET: ALARMS CURRENT LIST')
+    alarm_list = core.get_alarms_current_list()
+    if alarm_list.has_data:
+        for info in alarm_list.list:
+            date = info.datetime.strftime("%d/%m/%Y %H:%M:%S")
+            print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
+
+def eval_get_alarms_history_list():
+    log_command('GET: ALARMS HISTORY LIST')
+    alarm_list = core.get_alarms_history_list()
+    if alarm_list.has_data:
+        for info in alarm_list.list:
+            date = info.datetime.strftime("%d/%m/%Y %H:%M:%S")
+            print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
+
+def eval_get_warnings_current_list():
+    log_command('GET: WARNINGS CURRENT LIST')
+    alarm_list = core.get_warnings_current_list()
+    if alarm_list.has_data:
+        for info in alarm_list.list:
+            date = info.datetime.strftime("%d/%m/%Y %H:%M:%S")
+            print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
+
+def eval_get_warnings_history_list():
+    log_command('GET: WARNINGS HISTORY LIST')
+    alarm_list = core.get_warnings_history_list()
+    if alarm_list.has_data:
+        for info in alarm_list.list:
+            date = info.datetime.strftime("%d/%m/%Y %H:%M:%S")
+            print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
+
+
+eval_get_cnc_info()
+#eval_get_alarms_current_list()
+#eval_get_alarms_history_list()
+#eval_get_warnings_current_list()
+#eval_get_warnings_history_list()
+
+"""
 eval_cmd_work_oder_add()
 time.sleep(2)
 eval_cmd_work_order_delete()
@@ -814,3 +865,4 @@ eval_set_cnc_parameters()
 eval_set_override()
 eval_set_program_position()
 eval_set_work_order_data()
+"""

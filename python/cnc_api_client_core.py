@@ -27,7 +27,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      07/12/2024
+# Created:      23/12/2024
 # Copyright:    RosettaCNC (c) 2016-2024
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -256,6 +256,22 @@ AT_ROTARY_TABLE                     = 4         # axis type: rotary axis for tab
 AT_GANTRY_1                         = 5         # axis type: slave axis for gantry 1
 AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: NOT IMPLEMENTED YET !!!
 
+class APIAlarmsWarningsList:
+    """API data structure for alarms and warnings list."""
+
+    class AlarmWarningData:
+        """Data structure for alarm & warning list data."""
+        def __init__(self):
+            self.code: int                      = 0
+            self.info_1: int                    = 0
+            self.info_2: int                    = 0
+            self.text: str                      = ''
+            self.datetime: datetime             = datetime.min
+
+    def __init__(self):
+        self.has_data: bool                     = False
+        self.list                               = []
+
 class APIAnalogInputs:
     """API data structure for analog inputs."""
     def __init__(self):
@@ -292,8 +308,19 @@ class APICncInfo:
         self.axes_mask                          = 0
         self.state_machine                      = 0
         self.gcode_line                         = 0
+        self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
+        self.current_alarm_datetime             = datetime.min
+        self.current_alarm_code                 = 0
+        self.current_alarm_info1                = 0
+        self.current_alarm_info2                = 0
+        self.current_alarm_text                 = ''
+        self.current_warning_datetime           = datetime.min
+        self.current_warning_code               = 0
+        self.current_warning_info1              = 0
+        self.current_warning_info2              = 0
+        self.current_warning_text               = ''
         self.coolant_mist                       = False
         self.coolant_flood                      = False
         self.lube_axis_cycles_made              = 0
@@ -1216,6 +1243,58 @@ class CncAPIClientCore:
     # == BEG: API Server "get" requests
     #
 
+    def get_alarms_current_list(self) -> APIAlarmsWarningsList:
+        """xxx"""
+        try:
+            data = APIAlarmsWarningsList()
+            if not self.is_connected:
+                return data
+            request = '{"get":"alarms.current.list"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                l = j['res']['list']
+                if len(l) == 0:
+                    data.list = []
+                else:
+                    data.list = [data.AlarmWarningData() for _ in range(len(l))]
+                    for i in range(len(data.list)):
+                        data.list[i].code               = l[i]['code']
+                        data.list[i].info_1             = l[i]['info.1']
+                        data.list[i].info_2             = l[i]['info.2']
+                        data.list[i].text               = l[i]['text']
+                        data.list[i].datetime           = self.__d(l[i]['datetime'])
+                data.has_data = True
+            return data
+        except:
+            return APIAlarmsWarningsList()
+
+    def get_alarms_history_list(self) -> APIAlarmsWarningsList:
+        """xxx"""
+        try:
+            data = APIAlarmsWarningsList()
+            if not self.is_connected:
+                return data
+            request = '{"get":"alarms.history.list"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                l = j['res']['list']
+                if len(l) == 0:
+                    data.list = []
+                else:
+                    data.list = [data.AlarmWarningData() for _ in range(len(l))]
+                    for i in range(len(data.list)):
+                        data.list[i].code               = l[i]['code']
+                        data.list[i].info_1             = l[i]['info.1']
+                        data.list[i].info_2             = l[i]['info.2']
+                        data.list[i].text               = l[i]['text']
+                        data.list[i].datetime           = self.__d(l[i]['datetime'])
+                data.has_data = True
+            return data
+        except:
+            return APIAlarmsWarningsList()
+
     def get_analog_inputs(self) -> APIAnalogInputs:
         """xxx"""
         try:
@@ -1288,8 +1367,19 @@ class CncAPIClientCore:
                 data.axes_mask                          = j['res']['axes.mask']
                 data.state_machine                      = j['res']['state.machine']
                 data.gcode_line                         = j['res']['gcode.line']
+                data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
+                data.current_alarm_datetime             = self.__d(j['res']['current.alarm']['datetime'])
+                data.current_alarm_code                 = j['res']['current.alarm']['code']
+                data.current_alarm_info1                = j['res']['current.alarm']['info1']
+                data.current_alarm_info2                = j['res']['current.alarm']['info2']
+                data.current_alarm_text                 = j['res']['current.alarm']['text']
+                data.current_warning_datetime           = self.__d(j['res']['current.warning']['datetime'])
+                data.current_warning_code               = j['res']['current.warning']['code']
+                data.current_warning_info1              = j['res']['current.warning']['info1']
+                data.current_warning_info2              = j['res']['current.warning']['info2']
+                data.current_warning_text               = j['res']['current.warning']['text']
                 data.coolant_mist                       = j['res']['coolant']['mist']
                 data.coolant_flood                      = j['res']['coolant']['flood']
                 data.lube_axis_cycles_made              = j['res']['lube']['axis.cycles.made']
@@ -1741,6 +1831,58 @@ class CncAPIClientCore:
         except:
             return APIToolsInfo()
 
+    def get_warnings_current_list(self) -> APIAlarmsWarningsList:
+        """xxx"""
+        try:
+            data = APIAlarmsWarningsList()
+            if not self.is_connected:
+                return data
+            request = '{"get":"warnings.current.list"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                l = j['res']['list']
+                if len(l) == 0:
+                    data.list = []
+                else:
+                    data.list = [data.AlarmWarningData() for _ in range(len(l))]
+                    for i in range(len(data.list)):
+                        data.list[i].code               = l[i]['code']
+                        data.list[i].info_1             = l[i]['info.1']
+                        data.list[i].info_2             = l[i]['info.2']
+                        data.list[i].text               = l[i]['text']
+                        data.list[i].datetime           = self.__d(l[i]['datetime'])
+                data.has_data = True
+            return data
+        except:
+            return APIAlarmsWarningsList()
+
+    def get_warnings_history_list(self) -> APIAlarmsWarningsList:
+        """xxx"""
+        try:
+            data = APIAlarmsWarningsList()
+            if not self.is_connected:
+                return data
+            request = '{"get":"warnings.history.list"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                l = j['res']['list']
+                if len(l) == 0:
+                    data.list = []
+                else:
+                    data.list = [data.AlarmWarningData() for _ in range(len(l))]
+                    for i in range(len(data.list)):
+                        data.list[i].code               = l[i]['code']
+                        data.list[i].info_1             = l[i]['info.1']
+                        data.list[i].info_2             = l[i]['info.2']
+                        data.list[i].text               = l[i]['text']
+                        data.list[i].datetime           = self.__d(l[i]['datetime'])
+                data.has_data = True
+            return data
+        except:
+            return APIAlarmsWarningsList()
+
     def get_vm_geometry_info(self, names: list): # -> ???
         """xxx"""
         try:
@@ -2124,7 +2266,7 @@ class CncAPIClientCore:
             order_data = {}
 
             if data.order_state is not None:
-                if isinstance(data.order_priority, int) and WO_ST_DRAFT <= data.order_priority <= WO_ST_ARCHIVED:
+                if isinstance(data.order_state, int) and WO_ST_DRAFT <= data.order_state <= WO_ST_ARCHIVED:
                     order_data["order.state"] = data.order_state
                 else:
                     return False
