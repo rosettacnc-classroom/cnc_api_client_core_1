@@ -4,5 +4,9 @@ Requests/Responses over TCP/IP sockets. Versions of a Client API for various pro
 be available in this repository.
 
 # Examples
-
+---
+## Python with DelphiFMX
 ![./python/examples/api_client_fmx_demo/images/preview](./python/examples/api_client_fmx_demo/images/preview.png)
+---
+## Python with PySide6
+![./python/examples/api_client_fmx_demo/images/preview](./python/examples/api_client_qt_demo/images/preview.png)
