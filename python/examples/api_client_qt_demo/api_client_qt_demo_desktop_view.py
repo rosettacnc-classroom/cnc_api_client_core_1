@@ -26,7 +26,8 @@ from statistics import median
 import cnc_api_client_core as cnc
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
 from ui_desktop_view import Ui_DesktopView
 
 from cnc_memento import CncMemento
@@ -208,6 +209,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.units_mode = None
         self.system_info_in_use = None
 
+        # create an action to manage all event executions
+        self.on_action_main_execute = QAction("", self)
+        self.on_action_main_execute.triggered.connect(self.__on_action_main_execute)
+
+        # link action to all buttons
+        for child in self.findChildren(QPushButton):
+            child.clicked.connect(self.__on_action_main_execute)
+
     # == BEG: relink of native events from inherited Qt PySide6 UI design
     #
     def showEvent(self, event):
@@ -221,6 +230,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
     # == BEG: events implementation
     #
+    def __on_action_main_execute(self):
+        sender = self.sender()
+        if sender is self.ui.new_program:
+            print(f"Bottone premuto: {sender.text()}")
+
+    def __on_action_main_update(self):
+        self.ui.new_program.setEnabled(False)
+
     def __on_form_show(self, event):
         # set default attributes values
         self.api = None
@@ -274,7 +291,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.stay_on_top_changed = True
 
     def __on_timer_update(self):
-        pass
+        self.__on_action_main_update()
     #
     # == END: events implementation
 

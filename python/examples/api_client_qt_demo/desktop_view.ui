@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
-    <height>780</height>
+    <width>941</width>
+    <height>776</height>
    </rect>
   </property>
   <property name="font">
@@ -27,10 +27,10 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>370</y>
-      <width>981</width>
-      <height>381</height>
+      <x>8</x>
+      <y>309</y>
+      <width>837</width>
+      <height>393</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -43,9 +43,9 @@
      <widget class="QPushButton" name="new_program">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>101</width>
+        <x>16</x>
+        <y>41</y>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
@@ -53,43 +53,43 @@
        <string>New Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="ProgramLoadButton">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>16</x>
         <y>90</y>
-        <width>101</width>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>PushButton</string>
+       <string>Load Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="ProgramSaveButton">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>16</x>
         <y>130</y>
-        <width>101</width>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>PushButton</string>
+       <string>Save Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="QPushButton" name="ProgramSaveAsButton">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>16</x>
         <y>170</y>
-        <width>101</width>
+        <width>120</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>PushButton</string>
+       <string>Save Program As</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit">
@@ -115,9 +115,9 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>121</width>
+        <x>16</x>
+        <y>16</y>
+        <width>137</width>
         <height>16</height>
        </rect>
       </property>
@@ -128,11 +128,14 @@
      <widget class="Line" name="line">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>40</y>
-        <width>791</width>
-        <height>16</height>
+        <x>16</x>
+        <y>33</y>
+        <width>806</width>
+        <height>2</height>
        </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
@@ -193,6 +196,422 @@
      <attribute name="title">
       <string>System Info</string>
      </attribute>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="MCSTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>13</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>MACHINE POSITIONS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="PRPTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>184</x>
+      <y>13</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>PROGRAM POSITIONS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="AVLTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>352</x>
+      <y>13</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>ACTUAL VELOCITIES</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="WOFTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>517</x>
+      <y>13</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>WORKING OFFSETS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MTPTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>149</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>MAC SET POSITIONS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="PTPTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>184</x>
+      <y>149</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>PRG SET POSITIONS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="JOPTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>352</x>
+      <y>149</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>JOINT POSITIONS</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MachineInfoLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>149</y>
+      <width>145</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>8</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>MACHINE INFO</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QFrame" name="ToolInfoPanel">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>275</y>
+      <width>837</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
+    </property>
+   </widget>
+   <widget class="QFrame" name="TBCNCContinueButton">
+    <property name="geometry">
+     <rect>
+      <x>853</x>
+      <y>8</y>
+      <width>80</width>
+      <height>723</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
+    </property>
+    <widget class="QLabel" name="CommandsLabel">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>80</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>8</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>COMMANDS</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="TBCNCStartButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>25</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="TBCNCStopButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>87</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stop</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="TBCNCPauseButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>149</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Pause</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="TBCNCContinueButton_2">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>211</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Continue</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="TBCNCResumeAfterStopButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>273</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Resume
+after Stop</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ResetAlarmsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>475</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Alarms</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ResetAlarmsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>537</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Alarms
+History</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ResetWarningsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>599</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Warnings</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ResetWarningsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>661</y>
+       <width>64</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Warnings</string>
+     </property>
     </widget>
    </widget>
   </widget>

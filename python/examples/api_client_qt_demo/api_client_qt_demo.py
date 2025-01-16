@@ -31,6 +31,7 @@ def main():
 
     # initialize application and enter in main loop
     application = QApplication(sys.argv)
+    application.setStyle('Fusion')
     window = ApiClientQtDemoDesktopView()
     window.show()
     sys.exit(application.exec())
