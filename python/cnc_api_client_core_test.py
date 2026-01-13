@@ -486,6 +486,7 @@ def eval_get_tools_info():
         if tools_info.data:
             print('  --------------------------------')
             for tool_info in tools_info.data:
+                print('  tool_index                     =', tool_info.tool_index)
                 print('  tool_id                        =', tool_info.tool_id)
                 print('  tool_slot                      =', tool_info.tool_slot)
                 print('  tool_type                      =', tool_info.tool_type)
@@ -830,7 +831,7 @@ def eval_get_warnings_history_list():
             print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
 
 
-eval_get_cnc_info()
+#eval_get_cnc_info()
 #eval_get_alarms_current_list()
 #eval_get_alarms_history_list()
 #eval_get_warnings_current_list()
@@ -840,7 +841,6 @@ eval_get_cnc_info()
 eval_cmd_work_oder_add()
 time.sleep(2)
 eval_cmd_work_order_delete()
-
 eval_get_analog_inputs()
 eval_get_analog_outputs()
 eval_get_axes_info()
@@ -855,7 +855,9 @@ eval_get_machining_info()
 eval_get_programmed_points()
 eval_get_scanning_laser_info()
 eval_get_system_info()
+"""
 eval_get_tools_info()
+"""
 eval_get_work_info()
 eval_get_work_order_code_list()
 eval_get_work_order_data()
