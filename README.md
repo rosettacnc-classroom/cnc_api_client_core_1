@@ -9,4 +9,5 @@ be available in this repository.
 ![./python/examples/api_client_fmx_demo/images/preview](./python/examples/api_client_fmx_demo/images/preview.png)
 ---
 ## Python with PySide6
+NOTE: this is an early implemenation yet!
 ![./python/examples/api_client_fmx_demo/images/preview](./python/examples/api_client_qt_demo/images/preview.png)
