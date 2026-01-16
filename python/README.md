@@ -1,6 +1,6 @@
 ﻿# API Client for Python
-This API Client is the initial implementation designed to align with the **Server API Interface Specification 1.5.1**.<br>
-It is compatible with the **API Server** running in RosettaCNC Control Software version 1.13.1.
+This API Client is the initial implementation designed to align with the **Server API Interface Specification 1.5.2**.<br>
+It is compatible with the **API Server** running in RosettaCNC Control Software version 1.14.2.
 
 The API Client was developed and rigorously tested with RosettaCNC's **NC Embedded Python** version 3.11.9.
 
@@ -26,53 +26,53 @@ eventualy existing Python versions.
 |Package                |Version
 |---------------------- |-------------
 |aiofiles               |24.1.0
-|aiosqlite              |0.20.0
-|asyncua                |1.1.5
+|aiosqlite              |0.21.0
+|asyncua                |1.1.6
 |cffi                   |1.17.1
-|contourpy              |1.3.1
-|cryptography           |43.0.3
+|contourpy              |1.3.3
+|cryptography           |45.0.6
 |customtkinter          |5.2.2
 |cycler                 |0.12.1
 |darkdetect             |0.8.0
-|delphifmx              |1.0.9
-|delphivcl              |1.0.6
-|fonttools              |4.55.0
+|delphifmx              |1.1.0
+|delphivcl              |1.0.7
+|fonttools              |4.59.0
 |keyboard               |0.13.5
-|kiwisolver             |1.4.7
-|matplotlib             |3.9.2
-|msvc_runtime           |14.42.34433
-|mysql-connector-python |9.1.0
-|numpy                  |2.1.3
-|numpy-stl              |3.1.2
-|opencv-contrib-python  |4.10.0.84
-|packaging              |24.2
-|pbr                    |6.1.0
-|pillow                 |11.0.0
-|pip                    |24.3.1
-|pybind11               |2.13.6
+|kiwisolver             |1.4.8
+|matplotlib             |3.10.5
+|msvc_runtime           |14.44.35112
+|mysql-connector-python |9.4.0
+|numpy                  |2.2.6
+|numpy-stl              |3.2.0
+|opencv-contrib-python  |4.12.0.88
+|packaging              |25.0
+|pbr                    |6.1.1
+|pillow                 |11.3.0
+|pip                    |25.1.1
+|pybind11               |3.0.0
 |pycparser              |2.22
-|pymeshlab              |2023.12.post2
-|pymodbus               |3.7.4
-|PyOpenGL               |3.1.7
-|PyOpenGL-accelerate    |3.1.7
-|pyOpenSSL              |24.2.1
-|pyparsing              |3.2.0
-|PySide6                |6.8.0.2
-|PySide6_Addons         |6.8.0.2
-|PySide6_Essentials     |6.8.0.2
-|PySimpleGUI            |4.70.1
+|pymeshlab              |2025.7
+|pymodbus               |3.11.0
+|PyOpenGL               |3.1.9
+|PyOpenGL-accelerate    |3.1.9
+|pyOpenSSL              |25.1.0
+|pyparsing              |3.2.3
+|PySide6                |6.9.1
+|PySide6_Addons         |6.9.1
+|PySide6_Essentials     |6.9.1
 |python-dateutil        |2.9.0.post0
-|python-utils           |3.9.0
-|pytz                   |2024.2
-|scipy                  |1.14.1
+|python-utils           |3.9.1
+|pytz                   |2025.2
+|scipy                  |1.16.1
 |screeninfo             |0.8.1
-|setuptools             |75.6.0
-|shiboken6              |6.8.0.2
-|six                    |1.16.0
-|skia-python            |87.6
+|setuptools             |80.9.0
+|shiboken6              |6.9.1
+|six                    |1.17.0
+|skia-python            |138.0
 |sortedcontainers       |2.4.0
 |tendo                  |0.3.0
-|typing_extensions      |4.12.2
-|vtk                    |9.3.1
-|wheel                  |0.45.0
-
+|tkinter-embed          |3.11.0
+|typing_extensions      |4.14.1
+|vtk                    |9.5.0
+|wait_for2              |0.3.2
+|wheel                  |0.45.1
