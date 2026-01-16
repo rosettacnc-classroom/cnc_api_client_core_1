@@ -4,7 +4,7 @@
 #
 # Purpose:      CNC API Client Core for RosettaCNC & derivated NC Systems
 #
-# Note          Compatible with API server version 1.5.1
+# Note          Compatible with API server version 1.5.2
 #               1 (on 1.x.y) means interface contract
 #               x (on 1.x.y) means version
 #               y (on 1.x.y) means release
@@ -25,14 +25,19 @@
 #               to avoid exception when received response do not contains the
 #               key:value. This permit to increase compatibility of API.
 #
+# TO DO         Use isinstance(data, type) or isinstance(data, (type, type)) to
+#               verify data type. For int you can use type(int) because bool is
+#               a specific subclass of int and isinstance will fail.
+#
 # Author:       support@rosettacnc.com
 #
-# Created:      23/12/2024
-# Copyright:    RosettaCNC (c) 2016-2024
+# Created:      16/01/2026
+# Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
+# pylint: disable=C0123 -> unidiomatic-typecheck
 # pylint: disable=C0200 -> consider-using-enumerate         ## TO BE IMPROVED!!!
 # pylint: disable=C0301 -> line-too-long
 # pylint: disable=C0302 -> too-many-lines
@@ -64,7 +69,7 @@ except ImportError:
     cnc_direct_access_available = False
 
 # module version
-__version__ = '1.5.1'                           # module version
+__version__ = '1.5.2'                           # module version
 
 # analysis mode
 ANALYSIS_MT                         = 'mt'      # model path with tools colors
@@ -254,7 +259,102 @@ AT_ROTARY_FREE                      = 2         # axis type: rotary axis free
 AT_ROTARY_HEAD                      = 3         # axis type: rotary axis for head
 AT_ROTARY_TABLE                     = 4         # axis type: rotary axis for table
 AT_GANTRY_1                         = 5         # axis type: slave axis for gantry 1
-AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: NOT IMPLEMENTED YET !!!
+AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: IMPLEMENTED ONLY ON ETHERCAT !!!
+AT_GANTRY_3                         = 7         # axis type: slave axis for gantry 3: NOT IMPLEMENTED YET !!!
+
+# function state name
+FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
+FS_NM_SPINDLE_CCW                   = 1         # function state name: spindle counter-clockwise
+FS_NM_SPINDLES                      = 2         # function state name: !!! DO NOT USE !!!
+FS_NM_MIST                          = 10        # function state name: cooler mist
+FS_NM_FLOOD                         = 11        # function state name: cooler flood
+FS_NM_COOLERS                       = 12        # function state name: !!! DO NOT USE !!!
+FS_NM_TORCH                         = 20        # function state name: plasma/laser/waterjet torch
+FS_NM_THC_DISABLED                  = 21        # function state name: plasma/laser/waterjet THC disabled
+FS_NM_JOG_MODE                      = 30        # function state name: jog movements mode
+FS_NM_AUX_01                        = 40        # function state name: digital output auxiliary 1
+FS_NM_AUX_02                        = 41        # function state name: digital output auxiliary 2
+FS_NM_AUX_03                        = 42        # function state name: digital output auxiliary 3
+FS_NM_AUX_04                        = 43        # function state name: digital output auxiliary 4
+FS_NM_AUX_05                        = 44        # function state name: digital output auxiliary 5
+FS_NM_AUX_06                        = 45        # function state name: digital output auxiliary 6
+FS_NM_AUX_07                        = 46        # function state name: digital output auxiliary 7
+FS_NM_AUX_08                        = 47        # function state name: digital output auxiliary 8
+FS_NM_AUX_09                        = 48        # function state name: digital output auxiliary 9
+FS_NM_AUX_10                        = 49        # function state name: digital output auxiliary 10
+FS_NM_AUX_11                        = 50        # function state name: digital output auxiliary 11
+FS_NM_AUX_12                        = 51        # function state name: digital output auxiliary 12
+FS_NM_AUX_13                        = 52        # function state name: digital output auxiliary 13
+FS_NM_AUX_14                        = 53        # function state name: digital output auxiliary 14
+FS_NM_AUX_15                        = 54        # function state name: digital output auxiliary 15
+FS_NM_AUX_16                        = 55        # function state name: digital output auxiliary 16
+FS_NM_AUX_17                        = 56        # function state name: digital output auxiliary 17
+FS_NM_AUX_18                        = 57        # function state name: digital output auxiliary 18
+FS_NM_AUX_19                        = 58        # function state name: digital output auxiliary 19
+FS_NM_AUX_20                        = 59        # function state name: digital output auxiliary 20
+FS_NM_AUX_21                        = 60        # function state name: digital output auxiliary 21
+FS_NM_AUX_22                        = 61        # function state name: digital output auxiliary 22
+FS_NM_AUX_23                        = 62        # function state name: digital output auxiliary 23
+FS_NM_AUX_24                        = 63        # function state name: digital output auxiliary 24
+FS_NM_AUX_25                        = 64        # function state name: digital output auxiliary 25
+FS_NM_AUX_26                        = 65        # function state name: digital output auxiliary 26
+FS_NM_AUX_27                        = 66        # function state name: digital output auxiliary 27
+FS_NM_AUX_28                        = 67        # function state name: digital output auxiliary 28
+FS_NM_AUX_29                        = 68        # function state name: digital output auxiliary 29
+FS_NM_AUX_30                        = 69        # function state name: digital output auxiliary 30
+FS_NM_AUX_31                        = 70        # function state name: digital output auxiliary 31
+FS_NM_AUX_32                        = 71        # function state name: digital output auxiliary 32
+
+# function state mode
+FS_MD_OFF                           = 0         # function state mode: set digital output state to OFF
+FS_MD_ON                            = 1         # function state mode: set digital output state to ON
+FS_MD_TOGGLE                        = 2         # function state mode: toogle actual digital output state
+FS_MD_JOG_MODE_DEFAULT              = 3         # function state mode: set jog mode to default
+FS_MD_JOG_MODE_ALONG_TOOL           = 4         # function state mode: set jog mode to along the tool
+FS_MD_JOG_MODE_TOGGLE               = 5         # function state mode: toggle actual jog mode
+
+# function state allowed combo
+FS_ALLOWED_COMBO = {
+    FS_NM_SPINDLE_CW:        {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_SPINDLE_CCW:       {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_MIST:              {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_FLOOD:             {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_TORCH:             {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_THC_DISABLED:      {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_JOG_MODE:          {FS_MD_JOG_MODE_DEFAULT, FS_MD_JOG_MODE_ALONG_TOOL, FS_MD_JOG_MODE_TOGGLE},
+    FS_NM_AUX_01:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_02:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_03:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_04:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_05:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_06:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_07:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_08:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_09:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_10:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_11:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_12:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_13:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_14:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_15:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_16:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_17:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_18:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_19:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_20:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_21:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_22:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_23:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_24:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_25:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_26:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_27:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_28:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_29:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_30:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_31:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_32:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+}
 
 class APIAlarmsWarningsList:
     """API data structure for alarms and warnings list."""
@@ -321,6 +421,7 @@ class APICncInfo:
         self.current_warning_info1              = 0
         self.current_warning_info2              = 0
         self.current_warning_text               = ''
+        self.aux_outputs                        = 0
         self.coolant_mist                       = False
         self.coolant_flood                      = False
         self.lube_axis_cycles_made              = 0
@@ -661,9 +762,16 @@ class APISystemInfo:
         except:
             return False
 
-class APIToolInfo:
-    """API data structure for tool info."""
+class APIToolsLibCount:
+    """API data structure for tools library count."""
     def __init__(self):
+        self.has_data                           = False
+        self.count                              = 0
+
+class APIToolsLibInfoForGet:
+    """API data structure for tools lib info for get."""
+    def __init__(self):
+        self.tool_index                         = 0
         self.tool_id                            = 0
         self.tool_slot                          = False
         self.tool_type                          = TT_GENERIC
@@ -693,12 +801,57 @@ class APIToolInfo:
         self.tool_param_60                      = 0.0
         self.tool_description                   = ''
 
-class APIToolsInfo:
-    """API data structure for tools info."""
+class APIToolsLibInfoForSet:
+    """API data structure for tools lib info for set."""
+    def __init__(self):
+        self.tool_index                         = None
+        self.tool_id                            = None
+        self.tool_slot                          = None
+        self.tool_type                          = None
+        self.tool_diameter                      = None
+        self.tool_offset_x                      = None
+        self.tool_offset_y                      = None
+        self.tool_offset_z                      = None
+        self.tool_param_1                       = None
+        self.tool_param_2                       = None
+        self.tool_param_3                       = None
+        self.tool_param_4                       = None
+        self.tool_param_5                       = None
+        self.tool_param_6                       = None
+        self.tool_param_7                       = None
+        self.tool_param_8                       = None
+        self.tool_param_9                       = None
+        self.tool_param_10                      = None
+        self.tool_param_51                      = None
+        self.tool_param_52                      = None
+        self.tool_param_53                      = None
+        self.tool_param_54                      = None
+        self.tool_param_55                      = None
+        self.tool_param_56                      = None
+        self.tool_param_57                      = None
+        self.tool_param_58                      = None
+        self.tool_param_59                      = None
+        self.tool_param_60                      = None
+        self.tool_description                   = None
+
+class APIToolsLibInfo:
+    """API data structure for tools library infos."""
+    def __init__(self):
+        self.has_data                           = False
+        self.data: APIToolsLibInfoForGet        = APIToolsLibInfoForGet()
+
+class APIToolsLibInfos:
+    """API data structure for tools library infos."""
     def __init__(self):
         self.has_data                           = False
         self.slot_enabled                       = False
-        self.data: List[APIToolInfo]            = []
+        self.data: List[APIToolsLibInfoForGet]  = []
+
+class APIToolsLibToolIndexFromId:
+    """API data structure for tools library tool index from Id."""
+    def __init__(self):
+        self.has_data                           = False
+        self.index                              = -1
 
 class APIVMGeometryInfo:
     """API data structure for virtual machine geometry info."""
@@ -1010,13 +1163,22 @@ class CncAPIClientCore:
     # == BEG: API Server "cmd" requests
     #
 
+    def cnc_change_function_state_mode(self, name: int, mode: int):
+        """Executes the change of a cnc function state mode."""
+        if type(name) is not int or type(mode) is not int:
+            return False
+        if name not in FS_ALLOWED_COMBO or mode not in FS_ALLOWED_COMBO[name]:
+            return False
+        request = {"cmd": "cnc.change.function.state.mode", "name": name, "mode": mode}
+        return self.__execute_request(json.dumps(request))
+
     def cnc_continue(self) -> bool:
         """Resumes the execution of an NC program/Macro or MDI command from the PAUSE state."""
         return self.__execute_request('{"cmd":"cnc.continue"}')
 
     def cnc_homing(self, axes_mask: int) -> bool:
         """Executes the HOMING procedure for the required axes."""
-        if not isinstance(axes_mask, int):
+        if type(axes_mask) is not int:
             return False
         if axes_mask <= 0 or axes_mask > X2C_AXIS_MASK:
             return False
@@ -1024,7 +1186,7 @@ class CncAPIClientCore:
 
     def cnc_jog_command(self, command: int) -> bool:
         """Executes a JOG motion command."""
-        if not isinstance(command, int):
+        if type(command) is not int:
             return False
         if command < JC_NONE or command > JC_C_FW:
             return False
@@ -1074,6 +1236,11 @@ class CncAPIClientCore:
     def cnc_stop(self) -> bool:
         """Stops the execution of the NC code or the ongoing procedure."""
         return self.__execute_request('{"cmd":"cnc.stop"}')
+
+    def log_add(self, text: str) -> bool:
+        """Xxx..."""
+        text = json.dumps(text)
+        return self.__execute_request('{"cmd":"log.add","text":' + text + '}')
 
     def program_analysis(self, mode: str) -> bool:
         """Starts the analysis of the NC program."""
@@ -1136,6 +1303,238 @@ class CncAPIClientCore:
     def reset_warnings_history(self) -> bool:
         """Resets the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
+
+    def tools_lib_add(self, info: APIToolsLibInfoForSet = None) -> bool:
+        """Adds a tool with optional info into the NC tools library."""
+        try:
+            if not isinstance(info, APIToolsLibInfoForSet):
+                return False
+
+            if not isinstance(info.tool_id, (type(None), int)):
+                return False
+            if not isinstance(info.tool_slot, (type(None), int)):
+                return False
+            if not isinstance(info.tool_type, (type(None), int)):
+                return False
+            if not isinstance(info.tool_diameter, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_x, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_y, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_z, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_1, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_2, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_3, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_4, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_5, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_6, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_7, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_8, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_9, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_10, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_51, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_52, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_53, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_54, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_55, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_56, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_57, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_58, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_59, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_60, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_description, (type(None), str)):
+                return False
+
+            data = {
+                "cmd": "tools.lib.add"
+            }
+
+            # Add optional fields only if they are not None
+            optional_fields = [
+                ("id", info.tool_id),
+                ("slot", info.tool_slot),
+                ("type", info.tool_type),
+                ("diameter", info.tool_diameter),
+                ("offset.x", info.tool_offset_x),
+                ("offset.y", info.tool_offset_y),
+                ("offset.z", info.tool_offset_z),
+                ("param.1", info.tool_param_1),
+                ("param.2", info.tool_param_2),
+                ("param.3", info.tool_param_3),
+                ("param.4", info.tool_param_4),
+                ("param.5", info.tool_param_5),
+                ("param.6", info.tool_param_6),
+                ("param.7", info.tool_param_7),
+                ("param.8", info.tool_param_8),
+                ("param.9", info.tool_param_9),
+                ("param.10", info.tool_param_10),
+                ("param.51", info.tool_param_51),
+                ("param.52", info.tool_param_52),
+                ("param.53", info.tool_param_53),
+                ("param.54", info.tool_param_54),
+                ("param.55", info.tool_param_55),
+                ("param.56", info.tool_param_56),
+                ("param.57", info.tool_param_57),
+                ("param.58", info.tool_param_58),
+                ("param.59", info.tool_param_59),
+                ("param.60", info.tool_param_60),
+                ("description", info.tool_description),
+            ]
+
+            for key, value in optional_fields:
+                if value is not None:
+                    data[key] = value
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except:
+            return False
+
+    def tools_lib_clear(self) -> bool:
+        """Clears the NC tools library."""
+        return self.__execute_request('{"cmd":"tools.lib.clear"}')
+
+    def tools_lib_delete(self, index: int = None) -> bool:
+        """Deletes a tool from the NC tools library."""
+        try:
+            if not isinstance(index, int):
+                return False
+            return self.__execute_request('{' + f'"cmd":"tools.lib.delete","index":{index}' + '}')
+        except:
+            return False
+
+    def tools_lib_insert(self, info: APIToolsLibInfoForSet = None) -> bool:
+        """Inserts a tool into the NC tools library."""
+        try:
+            if not isinstance(info, APIToolsLibInfoForSet):
+                return False
+
+            if not isinstance(info.tool_index, int):
+                return False
+            if not isinstance(info.tool_id, (type(None), int)):
+                return False
+            if not isinstance(info.tool_slot, (type(None), int)):
+                return False
+            if not isinstance(info.tool_type, (type(None), int)):
+                return False
+            if not isinstance(info.tool_diameter, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_x, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_y, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_z, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_1, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_2, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_3, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_4, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_5, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_6, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_7, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_8, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_9, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_10, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_51, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_52, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_53, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_54, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_55, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_56, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_57, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_58, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_59, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_60, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_description, (type(None), str)):
+                return False
+
+            data = {
+                "cmd": "tools.lib.insert",
+                "index": info.tool_index
+            }
+
+            # Add optional fields only if they are not None
+            optional_fields = [
+                ("id", info.tool_id),
+                ("slot", info.tool_slot),
+                ("type", info.tool_type),
+                ("diameter", info.tool_diameter),
+                ("offset.x", info.tool_offset_x),
+                ("offset.y", info.tool_offset_y),
+                ("offset.z", info.tool_offset_z),
+                ("param.1", info.tool_param_1),
+                ("param.2", info.tool_param_2),
+                ("param.3", info.tool_param_3),
+                ("param.4", info.tool_param_4),
+                ("param.5", info.tool_param_5),
+                ("param.6", info.tool_param_6),
+                ("param.7", info.tool_param_7),
+                ("param.8", info.tool_param_8),
+                ("param.9", info.tool_param_9),
+                ("param.10", info.tool_param_10),
+                ("param.51", info.tool_param_51),
+                ("param.52", info.tool_param_52),
+                ("param.53", info.tool_param_53),
+                ("param.54", info.tool_param_54),
+                ("param.55", info.tool_param_55),
+                ("param.56", info.tool_param_56),
+                ("param.57", info.tool_param_57),
+                ("param.58", info.tool_param_58),
+                ("param.59", info.tool_param_59),
+                ("param.60", info.tool_param_60),
+                ("description", info.tool_description),
+            ]
+
+            for key, value in optional_fields:
+                if value is not None:
+                    data[key] = value
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except:
+            return False
 
     def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
         """Adds a work order to the list of orders in the control software."""
@@ -1380,6 +1779,7 @@ class CncAPIClientCore:
                 data.current_warning_info1              = j['res']['current.warning']['info1']
                 data.current_warning_info2              = j['res']['current.warning']['info2']
                 data.current_warning_text               = j['res']['current.warning']['text']
+                data.aux_outputs                        = j['res']['aux.outputs']
                 data.coolant_mist                       = j['res']['coolant']['mist']
                 data.coolant_flood                      = j['res']['coolant']['flood']
                 data.lube_axis_cycles_made              = j['res']['lube']['axis.cycles.made']
@@ -1783,21 +2183,84 @@ class CncAPIClientCore:
         except:
             return APISystemInfo()
 
-    def get_tools_info(self) -> APIToolsInfo:
-        """xxx"""
+    def get_tools_lib_count(self) -> APIToolsLibCount:
+        """Xxx..."""
         try:
-            data = APIToolsInfo()
+            data = APIToolsLibCount()
             if not self.is_connected:
                 return data
-            request = '{"get":"tools.info"}'
+            request = '{"get":"tools.lib.count"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.count                              = j['res']['count']
+                data.has_data = True
+            return data
+        except:
+            return APIToolsLibCount()
+
+    def get_tools_lib_info(self, index: int = None) -> APIToolsLibInfo:
+        """xxx"""
+        try:
+            data = APIToolsLibInfo()
+            if not self.is_connected:
+                return data
+            if not isinstance(index, int):
+                return data
+            request = '{' + f'"get":"tools.lib.info","index":{index}' + '}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.data.tool_index                    = j['res']['index']
+                data.data.tool_id                       = j['res']['id']
+                data.data.tool_slot                     = j['res']['slot']
+                data.data.tool_type                     = j['res']['type']
+                data.data.tool_diameter                 = j['res']['diameter']
+                data.data.tool_offset_x                 = j['res']['offset.x']
+                data.data.tool_offset_y                 = j['res']['offset.y']
+                data.data.tool_offset_z                 = j['res']['offset.z']
+                data.data.tool_param_1                  = j['res']['param.1']
+                data.data.tool_param_2                  = j['res']['param.2']
+                data.data.tool_param_3                  = j['res']['param.3']
+                data.data.tool_param_4                  = j['res']['param.4']
+                data.data.tool_param_5                  = j['res']['param.5']
+                data.data.tool_param_6                  = j['res']['param.6']
+                data.data.tool_param_7                  = j['res']['param.7']
+                data.data.tool_param_8                  = j['res']['param.8']
+                data.data.tool_param_9                  = j['res']['param.9']
+                data.data.tool_param_10                 = j['res']['param.10']
+                data.data.tool_param_51                 = j['res']['param.51']
+                data.data.tool_param_52                 = j['res']['param.52']
+                data.data.tool_param_53                 = j['res']['param.53']
+                data.data.tool_param_54                 = j['res']['param.54']
+                data.data.tool_param_55                 = j['res']['param.55']
+                data.data.tool_param_56                 = j['res']['param.56']
+                data.data.tool_param_57                 = j['res']['param.57']
+                data.data.tool_param_58                 = j['res']['param.58']
+                data.data.tool_param_59                 = j['res']['param.59']
+                data.data.tool_param_60                 = j['res']['param.60']
+                data.data.tool_description              = j['res']['description']
+                data.has_data = True
+            return data
+        except:
+            return APIToolsLibInfo()
+
+    def get_tools_lib_infos(self) -> APIToolsLibInfos:
+        """xxx"""
+        try:
+            data = APIToolsLibInfos()
+            if not self.is_connected:
+                return data
+            request = '{"get":"tools.lib.infos"}'
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
                 data.slot_enabled                       = j['res']['slot.enabled']
                 tools = j['res'].get('tools', [])
                 if tools:
-                    data.data = [APIToolInfo() for _ in range(len(tools))]
+                    data.data = [APIToolsLibInfoForGet() for _ in range(len(tools))]
                     for i in range(len(data.data)):
+                        data.data[i].tool_index         = tools[i]['index']
                         data.data[i].tool_id            = tools[i]['id']
                         data.data[i].tool_slot          = tools[i]['slot']
                         data.data[i].tool_type          = tools[i]['type']
@@ -1829,7 +2292,25 @@ class CncAPIClientCore:
                 data.has_data = True
             return data
         except:
-            return APIToolsInfo()
+            return APIToolsLibInfos()
+
+    def get_tools_lib_tool_index_from_id(self, tool_id: int = None) -> APIToolsLibToolIndexFromId:
+        """Xxx..."""
+        try:
+            data = APIToolsLibToolIndexFromId()
+            if not self.is_connected:
+                return data
+            if not isinstance(tool_id, int):
+                return data
+            request = '{' + f'"get":"tools.lib.tool.index.from.id","id":{tool_id}' + '}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.index                              = j['res']['index']
+                data.has_data = True
+            return data
+        except:
+            return APIToolsLibToolIndexFromId()
 
     def get_warnings_current_list(self) -> APIAlarmsWarningsList:
         """xxx"""
@@ -2220,6 +2701,117 @@ class CncAPIClientCore:
     def set_program_position_z(self, value: float):
         """xxx"""
         return self.__execute_request('{"set":"program.position", "data":{"z":' + str(value) + '}}')
+
+    def set_tools_lib_info(self, info: APIToolsLibInfoForSet = None) -> bool:
+        """Sets info of a tool into the NC tools library."""
+        try:
+            if not isinstance(info, APIToolsLibInfoForSet):
+                return False
+
+            if not isinstance(info.tool_index, int):
+                return False
+            if not isinstance(info.tool_id, (type(None), int)):
+                return False
+            if not isinstance(info.tool_slot, (type(None), int)):
+                return False
+            if not isinstance(info.tool_type, (type(None), int)):
+                return False
+            if not isinstance(info.tool_diameter, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_x, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_y, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_offset_z, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_1, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_2, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_3, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_4, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_5, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_6, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_7, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_8, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_9, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_10, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_51, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_52, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_53, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_54, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_55, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_56, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_57, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_58, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_59, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_param_60, (type(None), int, float)):
+                return False
+            if not isinstance(info.tool_description, (type(None), str)):
+                return False
+
+            data = {
+                "set": "tools.lib.info",
+                "index": info.tool_index,
+            }
+
+            # Add optional fields only if they are not None
+            optional_fields = [
+                ("id", info.tool_id),
+                ("slot", info.tool_slot),
+                ("type", info.tool_type),
+                ("diameter", info.tool_diameter),
+                ("offset.x", info.tool_offset_x),
+                ("offset.y", info.tool_offset_y),
+                ("offset.z", info.tool_offset_z),
+                ("param.1", info.tool_param_1),
+                ("param.2", info.tool_param_2),
+                ("param.3", info.tool_param_3),
+                ("param.4", info.tool_param_4),
+                ("param.5", info.tool_param_5),
+                ("param.6", info.tool_param_6),
+                ("param.7", info.tool_param_7),
+                ("param.8", info.tool_param_8),
+                ("param.9", info.tool_param_9),
+                ("param.10", info.tool_param_10),
+                ("param.51", info.tool_param_51),
+                ("param.52", info.tool_param_52),
+                ("param.53", info.tool_param_53),
+                ("param.54", info.tool_param_54),
+                ("param.55", info.tool_param_55),
+                ("param.56", info.tool_param_56),
+                ("param.57", info.tool_param_57),
+                ("param.58", info.tool_param_58),
+                ("param.59", info.tool_param_59),
+                ("param.60", info.tool_param_60),
+                ("description", info.tool_description),
+            ]
+
+            for key, value in optional_fields:
+                if value is not None:
+                    data[key] = value
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except:
+            return False
 
     def set_vm_geometry_info(self, values: list) -> bool:
         """xxx."""

@@ -25,14 +25,19 @@
 #               to avoid exception when received response do not contains the
 #               key:value. This permit to increase compatibility of API.
 #
+# TO DO         Use isinstance(data, type) or isinstance(data, (type, type)) to
+#               verify data type. For int you can use type(int) because bool is
+#               a specific subclass of int and isinstance will fail.
+#
 # Author:       support@rosettacnc.com
 #
-# Created:      13/01/2026
+# Created:      16/01/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
+# pylint: disable=C0123 -> unidiomatic-typecheck
 # pylint: disable=C0200 -> consider-using-enumerate         ## TO BE IMPROVED!!!
 # pylint: disable=C0301 -> line-too-long
 # pylint: disable=C0302 -> too-many-lines
@@ -257,6 +262,100 @@ AT_GANTRY_1                         = 5         # axis type: slave axis for gant
 AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: IMPLEMENTED ONLY ON ETHERCAT !!!
 AT_GANTRY_3                         = 7         # axis type: slave axis for gantry 3: NOT IMPLEMENTED YET !!!
 
+# function state name
+FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
+FS_NM_SPINDLE_CCW                   = 1         # function state name: spindle counter-clockwise
+FS_NM_SPINDLES                      = 2         # function state name: !!! DO NOT USE !!!
+FS_NM_MIST                          = 10        # function state name: cooler mist
+FS_NM_FLOOD                         = 11        # function state name: cooler flood
+FS_NM_COOLERS                       = 12        # function state name: !!! DO NOT USE !!!
+FS_NM_TORCH                         = 20        # function state name: plasma/laser/waterjet torch
+FS_NM_THC_DISABLED                  = 21        # function state name: plasma/laser/waterjet THC disabled
+FS_NM_JOG_MODE                      = 30        # function state name: jog movements mode
+FS_NM_AUX_01                        = 40        # function state name: digital output auxiliary 1
+FS_NM_AUX_02                        = 41        # function state name: digital output auxiliary 2
+FS_NM_AUX_03                        = 42        # function state name: digital output auxiliary 3
+FS_NM_AUX_04                        = 43        # function state name: digital output auxiliary 4
+FS_NM_AUX_05                        = 44        # function state name: digital output auxiliary 5
+FS_NM_AUX_06                        = 45        # function state name: digital output auxiliary 6
+FS_NM_AUX_07                        = 46        # function state name: digital output auxiliary 7
+FS_NM_AUX_08                        = 47        # function state name: digital output auxiliary 8
+FS_NM_AUX_09                        = 48        # function state name: digital output auxiliary 9
+FS_NM_AUX_10                        = 49        # function state name: digital output auxiliary 10
+FS_NM_AUX_11                        = 50        # function state name: digital output auxiliary 11
+FS_NM_AUX_12                        = 51        # function state name: digital output auxiliary 12
+FS_NM_AUX_13                        = 52        # function state name: digital output auxiliary 13
+FS_NM_AUX_14                        = 53        # function state name: digital output auxiliary 14
+FS_NM_AUX_15                        = 54        # function state name: digital output auxiliary 15
+FS_NM_AUX_16                        = 55        # function state name: digital output auxiliary 16
+FS_NM_AUX_17                        = 56        # function state name: digital output auxiliary 17
+FS_NM_AUX_18                        = 57        # function state name: digital output auxiliary 18
+FS_NM_AUX_19                        = 58        # function state name: digital output auxiliary 19
+FS_NM_AUX_20                        = 59        # function state name: digital output auxiliary 20
+FS_NM_AUX_21                        = 60        # function state name: digital output auxiliary 21
+FS_NM_AUX_22                        = 61        # function state name: digital output auxiliary 22
+FS_NM_AUX_23                        = 62        # function state name: digital output auxiliary 23
+FS_NM_AUX_24                        = 63        # function state name: digital output auxiliary 24
+FS_NM_AUX_25                        = 64        # function state name: digital output auxiliary 25
+FS_NM_AUX_26                        = 65        # function state name: digital output auxiliary 26
+FS_NM_AUX_27                        = 66        # function state name: digital output auxiliary 27
+FS_NM_AUX_28                        = 67        # function state name: digital output auxiliary 28
+FS_NM_AUX_29                        = 68        # function state name: digital output auxiliary 29
+FS_NM_AUX_30                        = 69        # function state name: digital output auxiliary 30
+FS_NM_AUX_31                        = 70        # function state name: digital output auxiliary 31
+FS_NM_AUX_32                        = 71        # function state name: digital output auxiliary 32
+
+# function state mode
+FS_MD_OFF                           = 0         # function state mode: set digital output state to OFF
+FS_MD_ON                            = 1         # function state mode: set digital output state to ON
+FS_MD_TOGGLE                        = 2         # function state mode: toogle actual digital output state
+FS_MD_JOG_MODE_DEFAULT              = 3         # function state mode: set jog mode to default
+FS_MD_JOG_MODE_ALONG_TOOL           = 4         # function state mode: set jog mode to along the tool
+FS_MD_JOG_MODE_TOGGLE               = 5         # function state mode: toggle actual jog mode
+
+# function state allowed combo
+FS_ALLOWED_COMBO = {
+    FS_NM_SPINDLE_CW:        {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_SPINDLE_CCW:       {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_MIST:              {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_FLOOD:             {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_TORCH:             {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_THC_DISABLED:      {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_JOG_MODE:          {FS_MD_JOG_MODE_DEFAULT, FS_MD_JOG_MODE_ALONG_TOOL, FS_MD_JOG_MODE_TOGGLE},
+    FS_NM_AUX_01:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_02:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_03:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_04:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_05:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_06:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_07:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_08:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_09:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_10:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_11:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_12:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_13:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_14:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_15:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_16:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_17:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_18:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_19:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_20:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_21:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_22:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_23:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_24:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_25:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_26:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_27:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_28:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_29:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_30:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_31:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+    FS_NM_AUX_32:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
+}
+
 class APIAlarmsWarningsList:
     """API data structure for alarms and warnings list."""
 
@@ -322,6 +421,7 @@ class APICncInfo:
         self.current_warning_info1              = 0
         self.current_warning_info2              = 0
         self.current_warning_text               = ''
+        self.aux_outputs                        = 0
         self.coolant_mist                       = False
         self.coolant_flood                      = False
         self.lube_axis_cycles_made              = 0
@@ -1063,13 +1163,22 @@ class CncAPIClientCore:
     # == BEG: API Server "cmd" requests
     #
 
+    def cnc_change_function_state_mode(self, name: int, mode: int):
+        """Executes the change of a cnc function state mode."""
+        if type(name) is not int or type(mode) is not int:
+            return False
+        if name not in FS_ALLOWED_COMBO or mode not in FS_ALLOWED_COMBO[name]:
+            return False
+        request = {"cmd": "cnc.change.function.state.mode", "name": name, "mode": mode}
+        return self.__execute_request(json.dumps(request))
+
     def cnc_continue(self) -> bool:
         """Resumes the execution of an NC program/Macro or MDI command from the PAUSE state."""
         return self.__execute_request('{"cmd":"cnc.continue"}')
 
     def cnc_homing(self, axes_mask: int) -> bool:
         """Executes the HOMING procedure for the required axes."""
-        if not isinstance(axes_mask, int):
+        if type(axes_mask) is not int:
             return False
         if axes_mask <= 0 or axes_mask > X2C_AXIS_MASK:
             return False
@@ -1077,7 +1186,7 @@ class CncAPIClientCore:
 
     def cnc_jog_command(self, command: int) -> bool:
         """Executes a JOG motion command."""
-        if not isinstance(command, int):
+        if type(command) is not int:
             return False
         if command < JC_NONE or command > JC_C_FW:
             return False
@@ -1670,6 +1779,7 @@ class CncAPIClientCore:
                 data.current_warning_info1              = j['res']['current.warning']['info1']
                 data.current_warning_info2              = j['res']['current.warning']['info2']
                 data.current_warning_text               = j['res']['current.warning']['text']
+                data.aux_outputs                        = j['res']['aux.outputs']
                 data.coolant_mist                       = j['res']['coolant']['mist']
                 data.coolant_flood                      = j['res']['coolant']['flood']
                 data.lube_axis_cycles_made              = j['res']['lube']['axis.cycles.made']
