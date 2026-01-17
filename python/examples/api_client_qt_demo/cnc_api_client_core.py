@@ -265,10 +265,8 @@ AT_GANTRY_3                         = 7         # axis type: slave axis for gant
 # function state name
 FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
 FS_NM_SPINDLE_CCW                   = 1         # function state name: spindle counter-clockwise
-FS_NM_SPINDLES                      = 2         # function state name: !!! DO NOT USE !!!
 FS_NM_MIST                          = 10        # function state name: cooler mist
 FS_NM_FLOOD                         = 11        # function state name: cooler flood
-FS_NM_COOLERS                       = 12        # function state name: !!! DO NOT USE !!!
 FS_NM_TORCH                         = 20        # function state name: plasma/laser/waterjet torch
 FS_NM_THC_DISABLED                  = 21        # function state name: plasma/laser/waterjet THC disabled
 FS_NM_JOG_MODE                      = 30        # function state name: jog movements mode
