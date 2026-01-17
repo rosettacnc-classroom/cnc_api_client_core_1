@@ -47,6 +47,8 @@ def show_aux_outputs(text: str = None, add_new_line: bool = False):
     print(AUX_HEADER + row + "\n" + AUX_FOOTER)
 
 # initial state with all to OFF or DEFAULT
+core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CW, api.FS_MD_OFF)
+core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CCW, api.FS_MD_OFF)
 core.cnc_change_function_state_mode(api.FS_NM_TORCH, api.FS_MD_OFF)
 core.cnc_change_function_state_mode(api.FS_NM_THC_DISABLED, api.FS_MD_OFF)
 core.cnc_change_function_state_mode(api.FS_NM_MIST, api.FS_MD_OFF)
@@ -59,17 +61,17 @@ slice_time()
 
 # forever loop
 while True:
-    # SPINDLE_CW -> TOGGLE -> slice time -> TOGGLE
+    # SPINDLE_CW -> ON -> slice time -> OFF
     # to be changed requires an active tool of type different than PROBE or PLASMA
-    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CW, api.FS_MD_TOGGLE)
+    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CW, api.FS_MD_ON)
     slice_time(2.0)
-    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CW, api.FS_MD_TOGGLE)
+    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CW, api.FS_MD_OFF)
 
-    # SPINDLE_CCW -> TOGGLE -> slice time -> TOGGLE
+    # SPINDLE_CCW -> ON -> slice time -> OFF
     # to be changed requires an active tool of type different than PROBE or PLASMA
-    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CCW, api.FS_MD_TOGGLE)
+    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CCW, api.FS_MD_ON)
     slice_time(2.0)
-    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CCW, api.FS_MD_TOGGLE)
+    core.cnc_change_function_state_mode(api.FS_NM_SPINDLE_CCW, api.FS_MD_OFF)
 
     # TORCH -> ON -> slice time -> OFF
     # to be changed requires an active tool of type PLASMA
