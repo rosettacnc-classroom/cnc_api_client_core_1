@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      16/01/2026
+# Created:      19/01/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -554,6 +554,7 @@ class APIEnabledCommands:
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
         self.set_program_position               = 0
+        self.tools_lib_write                    = False
 
 class APIMachineSettings:
     """API data structure with machine settings."""
@@ -1967,6 +1968,7 @@ class CncAPIClientCore:
                 data.reset_warnings                     = j['res']['reset.warnings']
                 data.reset_warnings_history             = j['res']['reset.warnings.history']
                 data.set_program_position               = j['res']['set.program.position']
+                data.tools_lib_write                    = j['res']['tools.lib.write']
                 data.has_data                           = True
             return data
         except:
@@ -3021,7 +3023,7 @@ class CncAPIClientCore:
         return filetime
 
     @staticmethod
-    def __d(filetime: str) -> datetime:
+    def __d(filetime: int) -> datetime:
         """
         Converts a string FILETIME timestamps (100 ns intervals from 1 January 1601) to UTC datetime.
 

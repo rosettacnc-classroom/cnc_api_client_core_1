@@ -313,6 +313,7 @@ def eval_get_enabled_commands():
         print('reset_warnings                   =', enabled_commands.reset_warnings)
         print('reset_warnings_history           =', enabled_commands.reset_warnings_history)
         print('set_program_position             =', enabled_commands.set_program_position)
+        print('tools_lib_write                  =', enabled_commands.tools_lib_write)
 
 def eval_get_machine_settings():
     log_command('GET: MACHINE SETTINGS')
@@ -832,7 +833,7 @@ def eval_get_warnings_history_list():
             print(f'{date} | {info.code:4d} | {info.info_1:8x} | {info.info_2:8x} | {info.text}')
 
 
-eval_get_cnc_info()
+eval_get_enabled_commands()
 
 #eval_get_alarms_current_list()
 #eval_get_alarms_history_list()
