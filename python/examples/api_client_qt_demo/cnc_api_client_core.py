@@ -4,7 +4,7 @@
 #
 # Purpose:      CNC API Client Core for RosettaCNC & derivated NC Systems
 #
-# Note          Compatible with API server version 1.5.2
+# Note          Compatible with API server version 1.5.3
 #               1 (on 1.x.y) means interface contract
 #               x (on 1.x.y) means version
 #               y (on 1.x.y) means release
@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      19/01/2026
+# Created:      29/01/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -69,7 +69,7 @@ except ImportError:
     cnc_direct_access_available = False
 
 # module version
-__version__ = '1.5.2'                           # module version
+__version__ = '1.5.3'                           # module version
 
 # analysis mode
 ANALYSIS_MT                         = 'mt'      # model path with tools colors
@@ -354,6 +354,20 @@ FS_ALLOWED_COMBO = {
     FS_NM_AUX_32:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
 }
 
+# show ui dialogs name
+UID_ABOUT                           = 'about'
+UID_ATC_MANAGEMENT                  = 'atc.management'
+UID_BOARD_ETHERCAT_MONITOR          = 'board.ethercat.monitor'
+UID_BOARD_FIRMWARE_MANAGER          = 'board.firmware.manager'
+UID_BOARD_MONITOR                   = 'board.monitor'
+UID_BOARD_SETTINGS                  = 'board.settings'
+UID_CHANGE_BOARD_IP                 = 'change.board.ip'
+UID_MACROS_MANAGEMENT               = 'macros.management'
+UID_PARAMETERS_LIBRARY              = 'parameters.library'
+UID_PROGRAM_SETTINGS                = 'program.settings'
+UID_TOOLS_LIBRARY                   = 'tools.library'
+UID_WORK_COORDINATES                = 'work.coordinates'
+
 class APIAlarmsWarningsList:
     """API data structure for alarms and warnings list."""
 
@@ -404,7 +418,7 @@ class APICncInfo:
         self.has_data                           = False
         self.units_mode                         = UM_METRIC
         self.axes_mask                          = 0
-        self.state_machine                      = 0
+        self.state_machine                      = SM_DISCONNECTED
         self.gcode_line                         = 0
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
@@ -527,6 +541,8 @@ class APIEnabledCommands:
     """API data structure for enabled commands."""
     def __init__(self):
         self.has_data                           = False
+        self.cnc_connection_close               = False
+        self.cnc_connection_open                = False
         self.cnc_continue                       = False
         self.cnc_homing                         = 0
         self.cnc_jog_command                    = 0
@@ -1162,13 +1178,53 @@ class CncAPIClientCore:
     # == BEG: API Server "cmd" requests
     #
 
-    def cnc_change_function_state_mode(self, name: int, mode: int):
+    def cnc_change_function_state_mode(self, name: int, mode: int) -> bool:
         """Executes the change of a cnc function state mode."""
         if type(name) is not int or type(mode) is not int:
             return False
         if name not in FS_ALLOWED_COMBO or mode not in FS_ALLOWED_COMBO[name]:
             return False
         request = {"cmd": "cnc.change.function.state.mode", "name": name, "mode": mode}
+        return self.__execute_request(json.dumps(request))
+
+    def cnc_connection_close(self) -> bool:
+        """Closes connection between Control Software and CNC."""
+        request = '{"cmd":"cnc.connection.close"}'
+        return self.__execute_request(request)
+
+    def cnc_connection_open(
+        self,
+        use_ui: bool = False,
+        use_fast_mode: bool = False,
+        skip_firmware_check: bool = False,
+        overwrite_cnc_settings: bool = False
+    ) -> bool:
+        """
+        Opens connection between Control Software and CNC.
+
+        This function is asynchronous so the API Server receive the command
+        and return immediately the accepted state, but connection phase is
+        made lately in asynchronous mode.
+
+        Args:
+            use_ui: Enable UI mode
+            use_fast_mode: Enable fast mode
+            skip_firmware_check: Skip firmware verification
+            overwrite_cnc_settings: Overwrite existing CNC settings
+
+        Returns:
+            True if connection command was accepted, False otherwise
+        """
+        params = [use_ui, use_fast_mode, skip_firmware_check, overwrite_cnc_settings]
+        if not all(isinstance(param, bool) for param in params):
+            return False
+        request = {
+            "cmd": "cnc.connection.open",
+            "use.ui": use_ui,
+            "use.fast.mode": use_fast_mode,
+            "skip.firmware.check": skip_firmware_check,
+            "overwrite.cnc.settings": overwrite_cnc_settings,
+        }
         return self.__execute_request(json.dumps(request))
 
     def cnc_continue(self) -> bool:
@@ -1302,6 +1358,13 @@ class CncAPIClientCore:
     def reset_warnings_history(self) -> bool:
         """Resets the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
+
+    def show_ui_dialog(self, name: str = '') -> bool:
+        """Shows UI Dialog by name."""
+        if not isinstance(name, str):
+            return False
+        request = {"cmd": "show.ui.dialog", "name": name}
+        return self.__execute_request(json.dumps(request))
 
     def tools_lib_add(self, info: APIToolsLibInfoForSet = None) -> bool:
         """Adds a tool with optional info into the NC tools library."""
@@ -1941,6 +2004,8 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
+                data.cnc_connection_close               = j['res']['cnc.connection.close']
+                data.cnc_connection_open                = j['res']['cnc.connection.open']
                 data.cnc_continue                       = j['res']['cnc.continue']
                 data.cnc_homing                         = j['res']['cnc.homing']
                 data.cnc_jog_command                    = j['res']['cnc.jog.command']
