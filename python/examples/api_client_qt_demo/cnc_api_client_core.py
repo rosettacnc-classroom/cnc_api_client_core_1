@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      29/01/2026
+# Created:      02/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -3147,6 +3147,11 @@ class CncAPIInfoContext:
             self.compile_info = self.__api.get_compile_info()
             self.enabled_commands = self.__api.get_enabled_commands()
             return True
+        else:
+            self.axes_info = APIAxesInfo()
+            self.cnc_info = APICncInfo()
+            self.compile_info = APICompileInfo()
+            self.enabled_commands = APIEnabledCommands()
         return False
 
     #

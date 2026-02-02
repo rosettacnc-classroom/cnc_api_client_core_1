@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
-    <height>776</height>
+    <width>1038</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="font">
@@ -29,14 +29,14 @@
      <rect>
       <x>8</x>
       <y>309</y>
-      <width>837</width>
+      <width>921</width>
       <height>393</height>
      </rect>
     </property>
     <property name="currentIndex">
      <number>0</number>
     </property>
-    <widget class="QWidget" name="tab_program">
+    <widget class="QWidget" name="tabProgram">
      <attribute name="title">
       <string>Program</string>
      </attribute>
@@ -142,63 +142,496 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_gcode">
+    <widget class="QWidget" name="tabGCode">
      <attribute name="title">
       <string>G-Code</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_3">
+    <widget class="QWidget" name="tabCNC">
      <attribute name="title">
       <string>CNC</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_4">
+    <widget class="QWidget" name="tabJOG">
      <attribute name="title">
       <string>JOG</string>
      </attribute>
+     <widget class="QPushButton" name="cncJogCommandXMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>14</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandYMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>46</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandZMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>78</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandAMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>110</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandBMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>142</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>B -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandCMButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>174</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>C -</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandYPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>46</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandAPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>110</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandBPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>142</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>B +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandXPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>14</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandCPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>174</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>C +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncJogCommandZPButton">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>78</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z +</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_13">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>46</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Y</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_14">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>174</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set C</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_15">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>14</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set X</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_16">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>142</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set B</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_17">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>110</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set A</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_18">
+      <property name="geometry">
+       <rect>
+        <x>825</x>
+        <y>78</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Z</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_3">
+      <property name="geometry">
+       <rect>
+        <x>714</x>
+        <y>14</y>
+        <width>100</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="tab_5">
+    <widget class="QWidget" name="tabOverrides">
      <attribute name="title">
       <string>Overrides</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_6">
+    <widget class="QWidget" name="tabHoming">
      <attribute name="title">
       <string>Homing</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_7">
+    <widget class="QWidget" name="tabMDI">
      <attribute name="title">
       <string>MDI</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_8">
+    <widget class="QWidget" name="tabDIO">
      <attribute name="title">
       <string>D I/O</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_9">
+    <widget class="QWidget" name="tabAIO">
      <attribute name="title">
       <string>A I/O</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_10">
+    <widget class="QWidget" name="tabScanningLaser">
      <attribute name="title">
       <string>Scanning Laser</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_11">
+    <widget class="QWidget" name="tabMachiningInfo">
      <attribute name="title">
       <string>Machining Info</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_12">
+    <widget class="QWidget" name="tabUIDialogs">
+     <attribute name="title">
+      <string>UI Dialogs</string>
+     </attribute>
+     <widget class="QPushButton" name="uidAboutButton">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>280</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>About...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidATCManagementButton">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>60</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>ATC Management</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidBoardEtherCATMonitorButton">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>110</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Board EtherCAT Monitor...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidBoardFirmwareManagerButton">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>60</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Board Firmware Manager...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidBoardMonitorButton">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>10</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Board Monitor...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidBoardSettingsButton">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>60</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Board Settings...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidToolsLibraryButton">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>110</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Tools Library...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidChangeBoardIPButton">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>10</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Change Board IP...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidWorkCoordinatesButton">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>10</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Work Coordinates...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidProgramSettingsButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Program Settings...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidParametersLibraryButton">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>60</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Parameters Library...</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="uidMacrosManagementButton">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>10</y>
+        <width>161</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Macros Management</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabSystemInfo">
      <attribute name="title">
       <string>System Info</string>
      </attribute>
+     <widget class="QTextEdit" name="systemInfoEdit">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>921</width>
+        <height>393</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::NoFrame</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
-   <widget class="QLabel" name="MCSTitleLabel">
+   <widget class="QLabel" name="mcsTitleLabel">
     <property name="geometry">
      <rect>
       <x>16</x>
@@ -215,10 +648,16 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
     </property>
     <property name="text">
      <string>MACHINE POSITIONS</string>
@@ -227,7 +666,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="PRPTitleLabel">
+   <widget class="QLabel" name="prpTitleLabel">
     <property name="geometry">
      <rect>
       <x>184</x>
@@ -244,8 +683,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -256,7 +695,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="AVLTitleLabel">
+   <widget class="QLabel" name="avlTitleLabel">
     <property name="geometry">
      <rect>
       <x>352</x>
@@ -273,8 +712,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -285,7 +724,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="WOFTitleLabel">
+   <widget class="QLabel" name="wofTitleLabel">
     <property name="geometry">
      <rect>
       <x>517</x>
@@ -302,8 +741,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -314,7 +753,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="MTPTitleLabel">
+   <widget class="QLabel" name="mtpTitleLabel">
     <property name="geometry">
      <rect>
       <x>16</x>
@@ -331,8 +770,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -343,7 +782,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="PTPTitleLabel">
+   <widget class="QLabel" name="ptpTitleLabel">
     <property name="geometry">
      <rect>
       <x>184</x>
@@ -360,8 +799,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -372,7 +811,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="JOPTitleLabel">
+   <widget class="QLabel" name="jopTitleLabel">
     <property name="geometry">
      <rect>
       <x>352</x>
@@ -389,8 +828,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -401,7 +840,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="MachineInfoLabel">
+   <widget class="QLabel" name="machineInfoLabel">
     <property name="geometry">
      <rect>
       <x>520</x>
@@ -418,8 +857,8 @@
     </property>
     <property name="font">
      <font>
-      <family>Tahoma</family>
-      <pointsize>8</pointsize>
+      <family>Roboto</family>
+      <pointsize>10</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -430,12 +869,12 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QFrame" name="ToolInfoPanel">
+   <widget class="QFrame" name="toolInfoPanel">
     <property name="geometry">
      <rect>
       <x>8</x>
       <y>275</y>
-      <width>837</width>
+      <width>921</width>
       <height>25</height>
      </rect>
     </property>
@@ -445,13 +884,35 @@
     <property name="frameShadow">
      <enum>QFrame::Shadow::Plain</enum>
     </property>
+    <widget class="QLabel" name="toolInfoLabel">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>0</y>
+       <width>901</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::TextFormat::PlainText</enum>
+     </property>
+    </widget>
    </widget>
-   <widget class="QFrame" name="TBCNCContinueButton">
+   <widget class="QFrame" name="CommandsFrame">
     <property name="geometry">
      <rect>
-      <x>853</x>
+      <x>936</x>
       <y>8</y>
-      <width>80</width>
+      <width>96</width>
       <height>723</height>
      </rect>
     </property>
@@ -464,8 +925,8 @@
     <widget class="QLabel" name="CommandsLabel">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
+       <x>8</x>
+       <y>2</y>
        <width>80</width>
        <height>17</height>
       </rect>
@@ -490,132 +951,2092 @@
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="TBCNCStartButton">
+    <widget class="QPushButton" name="CNCConnectionOpenButton">
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>25</y>
-       <width>64</width>
+       <y>22</y>
+       <width>80</width>
        <height>54</height>
       </rect>
      </property>
      <property name="text">
-      <string>Start</string>
+      <string>OPEN
+Connection</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="TBCNCStopButton">
+    <widget class="QPushButton" name="CNCConnectionCloseButton">
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>87</y>
-       <width>64</width>
+       <y>78</y>
+       <width>80</width>
        <height>54</height>
       </rect>
      </property>
      <property name="text">
-      <string>Stop</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="TBCNCPauseButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>149</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Pause</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="TBCNCContinueButton_2">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>211</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Continue</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="TBCNCResumeAfterStopButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>273</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Resume
-after Stop</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ResetAlarmsButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>475</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Alarms</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ResetAlarmsHistoryButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>537</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Alarms
-History</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ResetWarningsButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>599</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Warnings</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="ResetWarningsHistoryButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>661</y>
-       <width>64</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Warnings</string>
+      <string>CLOSE
+Connection</string>
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="ServerConnectDisconnectButton">
+    <property name="geometry">
+     <rect>
+      <x>767</x>
+      <y>709</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsXLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>38</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsYLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>54</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsZLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>70</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsALabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>86</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsBLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>102</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsXValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>38</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsYValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>54</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsZValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsAValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>86</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsBValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>102</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsCLabel">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>118</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mcsCValue">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>118</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsCLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>118</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsBLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>102</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsXLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>38</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsBValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>102</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsYLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>54</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsALabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>86</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsXValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>38</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsYValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>54</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsZValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>70</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsCValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>118</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsAValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>86</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wcsZLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>70</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlYValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>54</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mn/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlZValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>70</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mn/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlZLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>70</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlXLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>38</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlALabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>86</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlBLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>102</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlCLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>118</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlCValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>118</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlYLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>54</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlBValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>102</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlXValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>38</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mn/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avlAValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>86</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg/min</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofYValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>54</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofZValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>70</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofZLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>70</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofXLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>38</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofALabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>86</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofBLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>102</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofCLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>118</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofCValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>118</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofYLabel">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>54</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofBValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>102</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofXValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>38</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="wofAValue">
+    <property name="geometry">
+     <rect>
+      <x>544</x>
+      <y>86</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpCValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>254</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpZLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>206</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpAValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>222</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpBLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>238</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpCLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>254</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpXValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>174</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpALabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>222</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpBValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>238</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpZValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>206</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpXLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>174</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpYLabel">
+    <property name="geometry">
+     <rect>
+      <x>19</x>
+      <y>190</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="mtpYValue">
+    <property name="geometry">
+     <rect>
+      <x>43</x>
+      <y>190</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpCLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>254</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpALabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>222</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpBLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>238</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpXValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>174</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpAValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>222</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpYValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>190</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpXLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>174</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpZLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>206</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpCValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>254</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpBValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>238</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpYLabel">
+    <property name="geometry">
+     <rect>
+      <x>187</x>
+      <y>190</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ptpZValue">
+    <property name="geometry">
+     <rect>
+      <x>211</x>
+      <y>206</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopAValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>222</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopYLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>190</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Y</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopCValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>254</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopALabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>222</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopYValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>190</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopBValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>238</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 dg</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopCLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>254</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>C</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopZLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>206</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Z</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopXLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>174</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>X</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopBLabel">
+    <property name="geometry">
+     <rect>
+      <x>355</x>
+      <y>238</y>
+      <width>10</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopZValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>206</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopXValue">
+    <property name="geometry">
+     <rect>
+      <x>379</x>
+      <y>174</y>
+      <width>120</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0.0 mm</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="spindleStatusValue">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>174</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="spindleStatusLabel">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>174</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Spindle</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="plannedTimeLabel">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>254</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Planned Time</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gcodeLineValue">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>222</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopZValue_2">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>206</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>OFF</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="workedTimeLabel">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>238</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Worked Time</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="workedTimeValue">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>238</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>00:00:00</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="coolantMistLabel">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>190</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Mist</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gcodeLineLabel">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>222</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>GCode Line</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="plannedTimeValue">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>254</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>00:00:00</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="jopZLabel_2">
+    <property name="geometry">
+     <rect>
+      <x>525</x>
+      <y>206</y>
+      <width>78</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Roboto</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Flood</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="coolantMistValue">
+    <property name="geometry">
+     <rect>
+      <x>608</x>
+      <y>190</y>
+      <width>61</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>OFF</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="apiServerHostPortLabel">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>709</y>
+      <width>129</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="font">
+     <font>
+      <family>Tahoma</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>API Server Host &amp; Port</string>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="apiServerHostEdit">
+    <property name="geometry">
+     <rect>
+      <x>144</x>
+      <y>709</y>
+      <width>100</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="apiServerPortEdit">
+    <property name="geometry">
+     <rect>
+      <x>248</x>
+      <y>709</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="useTLSCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>336</x>
+      <y>709</y>
+      <width>97</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Use TLS 1.2</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="stayOnTopCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>709</y>
+      <width>89</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stay on Top</string>
+    </property>
+   </widget>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="StatusBar"/>
  </widget>
  <resources/>
  <connections/>

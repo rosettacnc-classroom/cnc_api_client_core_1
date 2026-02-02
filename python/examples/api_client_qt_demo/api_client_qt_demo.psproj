@@ -1,5 +1,5 @@
 ﻿[PyScripter]
-Version=5.1.2.0
+Version=5.3.1.0
 
 [Project]
 ClassName=TProjectRootNode
@@ -27,10 +27,14 @@ FileName=$[Project-Path]cnc_memento.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node4]
 ClassName=TProjectFileNode
+FileName=$[Project-Path]desktop_view.ui
+
+[Project\ChildNodes\Node0\ChildNodes\Node5]
+ClassName=TProjectFileNode
 FileName=$[Project-Path]ui_desktop_view.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=5
+Count=6
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

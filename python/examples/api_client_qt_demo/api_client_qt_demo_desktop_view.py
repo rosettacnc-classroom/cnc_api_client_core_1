@@ -2,9 +2,9 @@
 #-------------------------------------------------------------------------------
 # Name:         api_client_qt_demo_desktop_view
 #
-# Purpose:      API Client Demo Desktop View
+# Purpose:      API Client Qt Demo Desktop View
 #
-# Note          Compatible with API server version 1.5.1
+# Note          Compatible with API server version 1.5.3
 #               1 (on 1.x.y) means interface contract
 #               x (on 1.x.y) means version
 #               y (on 1.x.y) means release
@@ -13,21 +13,24 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      08/12/2024
-# Copyright:    RosettaCNC (c) 2016-2024
+# Created:      30/01/2026
+# Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
-#               With cnc_vision_vcl/fmx objects is used Delphi coding style
+#-------------------------------------------------------------------------------
+# pylint: disable=C0301 -> line-too-long
 #-------------------------------------------------------------------------------
 import os
 import time
+from enum import IntEnum
 from statistics import median
+from collections import namedtuple
 
 import cnc_api_client_core as cnc
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+from PySide6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton
 from ui_desktop_view import Ui_DesktopView
 
 from cnc_memento import CncMemento
@@ -35,18 +38,17 @@ from cnc_memento import CncMemento
 # define here the version number to show in view caption
 VERSION = '1.0.1'
 
+# == application info
+APP_TITLE                   = f'API Client Demo with Qt PySide6 UI - {VERSION}'
+
 # == default constants
 DEF_API_SERVER_HOST         = '127.0.0.1'
 DEF_API_SERVER_PORT         = 8000
 DEF_API_SERVER_USE_TLS      = False
 DEF_STAY_ON_TOP             = False
 
-# settings file name
+# == settings file name
 SETTINGS_FILE_NAME          = 'settings.xml'
-
-DEF_CLA_HOMING_DONE         = 0xFFFFFFFF    # claWhite
-DEF_CLA_HOMING_TODO         = 0xFFFFFF00    # claYellow
-DEF_CLA_HOMING_OFF          = 0xFF808080    #
 
 DEF_LOAD_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions.ngc'
 DEF_SAVE_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions_new.ngc'
@@ -106,52 +108,73 @@ SS_TEXTS = ['OFF', 'CW', 'CCW']
 # keyboard constants
 VK_RETURN                   = 0x0D
 
-# == decimals trim mode
-DTMD_NONE                   = 0
-DTMD_FIT                    = 1
-DTMD_DOT                    = 2
-DTMD_FULL                   = 3
+class DecimalsTrimMode(IntEnum):
+    NONE = 0  # no trimming, so it will keeps all specified decimal places
+    FIT = 1   # removes trailing zeros, but retains at least 1 decimal place
+    DOT = 2   # removes trailing zeros and retains the decimal point if necessary
+    FULL = 3  # removes trailing zeros and the decimal point if they are not needed
 
-def format_float(value, decimals, trim_mode):
+def format_float(value: float, decimals: int, trim_mode: DecimalsTrimMode) -> str:
+    """
+    Formats a float number with advanced decimal handling.
+
+    Args:
+        value: The value to format
+        decimals: Number of decimals to display
+        trim_mode: Trailing zero trim mode (DecimalsTrimMode.*)
+
+    Returns:
+        Formatted string
+
+    Examples:
+      Value = 1.234, Decimals = 5 -> internally starting from converted float to value 1.23400:
+        dtmdNone -> "1.23400"
+        dtmdFit  -> "1.234"
+        dtmdDot  -> "1.234"
+        dtmdFull -> "1.234"
+
+      Value = 1.0, Decimals = 5 -> internally starting from converted float to str value 1.00000:
+        dtmdNone -> "1.00000"
+        dtmdFit  -> "1.0"
+        dtmdDot  -> "1."
+        dtmdFull -> "1"
+
+      Value = 1.1, Decimals = 5 -> internally starting from converted float to str value 1.10000:
+        dtmdNone -> "1.10000"
+        dtmdFit  -> "1.1"
+        dtmdDot  -> "1.1"
+        dtmdFull -> "1.1"
+
+      Value = 0.0, Decimals = 5 -> internally starting from converted float to str value 0.00000:
+        dtmdNone -> "0.00000"
+        dtmdFit  -> "0.0"
+        dtmdDot  -> "0."
+        dtmdFull -> "0"
+    """
     try:
-        fmt = '{:.' + str(decimals) + 'f}'
-        ret = fmt.format(value)
-        return ret
-        """
-          try
-            S := '%.' + IntToStr(Decimals) + 'f';
-            Result := Format(S, [Value]);
-            if TrimMode = dtmdNone then Exit;
-            for I := Length(Result) downto 2 do
-            begin
-              if Result[I] <> '0' then
-              begin
-                if Result[I] = '.' then
-                begin
-                  case TrimMode of
-                    dtmdFit:
-                      Result := Copy(Result, 1, I + 1);
-                    dtmdDot:
-                      Result := Copy(Result, 1, I);
-                    dtmdFull:
-                      Result := Copy(Result, 1, I - 1);
-                  end;
-                  Exit;
-                end
-                else
-                  Result := Copy(Result, 1, I);
-                Exit;
-              end;
-            end;
-          except
-            Result := '';
-          end;
-        """
-    except:
+        result = f"{value:.{decimals}f}"
+        if trim_mode == DecimalsTrimMode.NONE:
+            return result
+        dot_pos = result.find('.')
+        if dot_pos == -1:
+            return result
+        for i in range(len(result) - 1, dot_pos, -1):
+            if result[i] != '0':
+                return result[:i + 1]
+        if trim_mode == DecimalsTrimMode.FIT:
+            return result[:dot_pos + 2]
+        elif trim_mode == DecimalsTrimMode.DOT:
+            return result[:dot_pos + 1]
+        elif trim_mode == DecimalsTrimMode.FULL:
+            return result[:dot_pos]
+        return result
+    except Exception:
         return ''
 
+AxisControls = namedtuple('AxisControls', ['label', 'value'])
+
 class ApiClientQtDemoDesktopView(QMainWindow):
-    "Xxx..."
+    """Xxx..."""
 
     def __init__(self):
         # call qt inherited view constructor
@@ -162,11 +185,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.ui.setupUi(self)
 
         # set caption
-        self.setWindowTitle("API Client Demo with Qt PySide6 UI " + VERSION)
-
-        # set main form events handlers
-        #self.OnClose = self.__on_form_close
-        #self.OnShow = self.__on_form_show
+        self.setWindowTitle(APP_TITLE)
 
         # set current persistable save version
         self.__persistable_save_version = 1
@@ -176,6 +195,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.tmrUpdate.setInterval(1)
         self.tmrUpdate.timeout.connect(self.__on_timer_update)
         self.tmrUpdate.setSingleShot(False)
+
+        # create labels for status bar
+        self.StateMachineLabel = QLabel("")
+        self.StateMachineLabel.setMinimumWidth(629)
+        self.StateMachineLabel.setMaximumWidth(629)
+        self.APIServerConnectionStateLabel = QLabel("")
+        self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
+        self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
 
         # declare class public attributes (for pylint check)
         self.api = None
@@ -214,16 +241,67 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.on_action_main_execute.triggered.connect(self.__on_action_main_execute)
 
         # link action to all buttons
-        for child in self.findChildren(QPushButton):
-            child.clicked.connect(self.__on_action_main_execute)
+        for btn in self.findChildren(QPushButton):
+            name = btn.objectName()
+            if name.startswith('cncJogCommand'):
+                btn.pressed.connect(self.__on_cnc_jog_command_mouse_down)
+                btn.released.connect(self.__on_cnc_jog_command_mouse_up)
+            else:
+                btn.clicked.connect(self.__on_action_main_execute)
+
+        # create array of axis related objects [ helper attributes ]
+        self.axes = ['X', 'Y', 'Z', 'A', 'B', 'C']
+        self.axis_masks = [
+            cnc.X_AXIS_MASK,
+            cnc.Y_AXIS_MASK,
+            cnc.Z_AXIS_MASK,
+            cnc.A_AXIS_MASK,
+            cnc.B_AXIS_MASK,
+            cnc.C_AXIS_MASK,
+        ]
+        def create_axis_controls(prefix):
+            return [
+                AxisControls(
+                    label=getattr(self.ui, f'{prefix}{axis}Label'),
+                    value=getattr(self.ui, f'{prefix}{axis}Value')
+                )
+                for axis in self.axes
+            ]
+        self.axis_mcs = create_axis_controls('mcs')
+        self.axis_wcs = create_axis_controls('wcs')
+        self.axis_avl = create_axis_controls('avl')
+        self.axis_wof = create_axis_controls('wof')
+        self.axis_mtp = create_axis_controls('mtp')
+        self.axis_ptp = create_axis_controls('ptp')
+        self.axis_jop = create_axis_controls('jop')
+        self.all_axis_controls = [
+            self.axis_mcs,
+            self.axis_wcs,
+            self.axis_avl,
+            self.axis_wof,
+            self.axis_mtp,
+            self.axis_ptp,
+            self.axis_jop,
+        ]
+        self.axis_data_mapping = [
+            (self.axis_mcs, 'machine_position', False),
+            (self.axis_wcs, 'program_position', False),
+            (self.axis_avl, 'actual_velocity', True),
+            (self.axis_wof, 'working_offset', False),
+            (self.axis_mtp, 'machine_target_position', False),
+            (self.axis_ptp, 'program_target_position', False),
+            (self.axis_jop, 'joint_position', False),
+        ]
+
 
     # == BEG: relink of native events from inherited Qt PySide6 UI design
     #
+    def closeEvent(self, event):
+        self.__on_form_close()
+        super().closeEvent(event)
     def showEvent(self, event):
         super().showEvent(event)
-        self.__on_form_show(event)
-    def closeEvent(self, event):
-        super().closeEvent(event)
+        self.__on_form_show()
     #
     # == BEG: relink of native events from inherited Qt PySide6 UI design
 
@@ -232,13 +310,151 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     #
     def __on_action_main_execute(self):
         sender = self.sender()
-        if sender is self.ui.new_program:
-            print(f"Bottone premuto: {sender.text()}")
+
+        # events for ui dialogs
+        if sender == self.ui.uidAboutButton:
+            self.api.show_ui_dialog(cnc.UID_ABOUT)
+        if sender == self.ui.uidATCManagementButton:
+            self.api.show_ui_dialog(cnc.UID_ATC_MANAGEMENT)
+        if sender == self.ui.uidBoardEtherCATMonitorButton:
+            self.api.show_ui_dialog(cnc.UID_BOARD_ETHERCAT_MONITOR)
+        if sender == self.ui.uidBoardFirmwareManagerButton:
+            self.api.show_ui_dialog(cnc.UID_BOARD_FIRMWARE_MANAGER)
+        if sender == self.ui.uidBoardMonitorButton:
+            self.api.show_ui_dialog(cnc.UID_BOARD_MONITOR)
+        if sender == self.ui.uidBoardSettingsButton:
+            self.api.show_ui_dialog(cnc.UID_BOARD_SETTINGS)
+        if sender == self.ui.uidChangeBoardIPButton:
+            self.api.show_ui_dialog(cnc.UID_CHANGE_BOARD_IP)
+        if sender == self.ui.uidMacrosManagementButton:
+            self.api.show_ui_dialog(cnc.UID_MACROS_MANAGEMENT)
+        if sender == self.ui.uidParametersLibraryButton:
+            self.api.show_ui_dialog(cnc.UID_PARAMETERS_LIBRARY)
+        if sender == self.ui.uidProgramSettingsButton:
+            self.api.show_ui_dialog(cnc.UID_PROGRAM_SETTINGS)
+        if sender == self.ui.uidToolsLibraryButton:
+            self.api.show_ui_dialog(cnc.UID_TOOLS_LIBRARY)
+        if sender == self.ui.uidWorkCoordinatesButton:
+            self.api.show_ui_dialog(cnc.UID_WORK_COORDINATES)
+
+        # events for connection with CNC
+        if sender == self.ui.CNCConnectionOpenButton:
+            self.api.cnc_connection_open(use_ui=True)
+        if sender == self.ui.CNCConnectionCloseButton:
+            self.api.cnc_connection_close()
+
+        # events for connection with API Server
+        if sender == self.ui.ServerConnectDisconnectButton:
+            if self.api_server_connection_state == ASCS_DISCONNECTED:
+                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
+                    self.api_server_connection_state = ASCS_CONNECTED
+                else:
+                    self.api.close()
+                    self.api_server_connection_state = ASCS_ERROR
+            elif self.api_server_connection_state == ASCS_CONNECTED:
+                if self.api.is_connected:
+                    if not self.api.close():
+                        self.api_server_connection_state = ASCS_ERROR
+                        return
+                self.api_server_connection_state = ASCS_DISCONNECTED
+            elif self.api_server_connection_state == ASCS_ERROR:
+                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
+                    self.api_server_connection_state = ASCS_CONNECTED
+                else:
+                    self.api.close()
+                    self.api_server_connection_state = ASCS_ERROR
+            else:
+                pass # !!! SHOULD NEVER HAPPEN !!!
 
     def __on_action_main_update(self):
-        self.ui.new_program.setEnabled(False)
+        if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
+            self.ui.CNCConnectionCloseButton.setEnabled(False)
+            self.ui.CNCConnectionOpenButton.setEnabled(False)
+            self.ui.uidAboutButton.setEnabled(False)
+            self.ui.uidATCManagementButton.setEnabled(False)
+            self.ui.uidBoardEtherCATMonitorButton.setEnabled(False)
+            self.ui.uidBoardFirmwareManagerButton.setEnabled(False)
+            self.ui.uidBoardMonitorButton.setEnabled(False)
+            self.ui.uidBoardSettingsButton.setEnabled(False)
+            self.ui.uidChangeBoardIPButton.setEnabled(False)
+            self.ui.uidMacrosManagementButton.setEnabled(False)
+            self.ui.uidParametersLibraryButton.setEnabled(False)
+            self.ui.uidProgramSettingsButton.setEnabled(False)
+            self.ui.uidToolsLibraryButton.setEnabled(False)
+            self.ui.uidWorkCoordinatesButton.setEnabled(False)
 
-    def __on_form_show(self, event):
+        else:
+            connected = self.ctx.cnc_info.state_machine != cnc.SM_DISCONNECTED
+            self.ui.CNCConnectionCloseButton.setEnabled(connected)
+            self.ui.CNCConnectionOpenButton.setEnabled(not connected)
+
+            uid_available = self.ctx.enabled_commands.has_data
+            self.ui.uidAboutButton.setEnabled(uid_available)
+            self.ui.uidATCManagementButton.setEnabled(uid_available)
+            self.ui.uidBoardEtherCATMonitorButton.setEnabled(uid_available)
+            self.ui.uidBoardFirmwareManagerButton.setEnabled(uid_available)
+            self.ui.uidBoardMonitorButton.setEnabled(uid_available)
+            self.ui.uidBoardSettingsButton.setEnabled(uid_available)
+            self.ui.uidChangeBoardIPButton.setEnabled(uid_available)
+            self.ui.uidMacrosManagementButton.setEnabled(uid_available)
+            self.ui.uidParametersLibraryButton.setEnabled(uid_available)
+            self.ui.uidProgramSettingsButton.setEnabled(uid_available)
+            self.ui.uidToolsLibraryButton.setEnabled(uid_available)
+            self.ui.uidWorkCoordinatesButton.setEnabled(uid_available)
+
+        # update server connect/disconnect button
+        self.ui.ServerConnectDisconnectButton.setEnabled(True)
+        if self.api_server_connection_state == ASCS_CONNECTED:
+            self.ui.ServerConnectDisconnectButton.setText('Disconnect')
+        else:
+            self.ui.ServerConnectDisconnectButton.setText('Connect')
+
+    def __on_cnc_jog_command_mouse_down(self):
+        sender = self.sender()
+
+        self.api.cnc_jog_command(cnc.JC_NONE)
+
+        if sender == self.ui.cncJogCommandXMButton:
+            self.api.cnc_jog_command(cnc.JC_X_BW)
+        if sender == self.ui.cncJogCommandXPButton:
+            self.api.cnc_jog_command(cnc.JC_X_FW)
+
+        if sender == self.ui.cncJogCommandYMButton:
+            self.api.cnc_jog_command(cnc.JC_Y_BW)
+        if sender == self.ui.cncJogCommandYPButton:
+            self.api.cnc_jog_command(cnc.JC_Y_FW)
+
+        if sender == self.ui.cncJogCommandZMButton:
+            self.api.cnc_jog_command(cnc.JC_Z_BW)
+        if sender == self.ui.cncJogCommandZPButton:
+            self.api.cnc_jog_command(cnc.JC_Z_FW)
+
+        if sender == self.ui.cncJogCommandAMButton:
+            self.api.cnc_jog_command(cnc.JC_A_BW)
+        if sender == self.ui.cncJogCommandAPButton:
+            self.api.cnc_jog_command(cnc.JC_A_FW)
+
+        if sender == self.ui.cncJogCommandBMButton:
+            self.api.cnc_jog_command(cnc.JC_B_BW)
+        if sender == self.ui.cncJogCommandBPButton:
+            self.api.cnc_jog_command(cnc.JC_B_FW)
+
+        if sender == self.ui.cncJogCommandCMButton:
+            self.api.cnc_jog_command(cnc.JC_C_BW)
+        if sender == self.ui.cncJogCommandCPButton:
+            self.api.cnc_jog_command(cnc.JC_C_FW)
+
+    def __on_cnc_jog_command_mouse_up(self):
+        self.api.cnc_jog_command(cnc.JC_NONE)
+
+    def __on_form_close(self):
+        # save settings on memento
+        self.__memento_save()
+
+        # disable and unlink update timer
+        self.tmrUpdate.stop()
+
+    def __on_form_show(self):
         # set default attributes values
         self.api = None
         self.ctx = None
@@ -284,13 +500,17 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.tmrUpdate.start()
         self.__on_timer_update()
 
-        # update fields
-        self.__update_fields()
+        # update editable fields
+        self.__update_editable_fields()
 
         # enable first stay on top update
         self.stay_on_top_changed = True
 
     def __on_timer_update(self):
+        # update non editable objects with related data
+        self.__updated_objects()
+
+        # update action main linked objects enablings
         self.__on_action_main_update()
     #
     # == END: events implementation
@@ -349,7 +569,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     # == END: memento section
 
 
-    # == BEG: generic methods
+    # == BEG: laser methods
     #
     def __laser_zero_x_axis(self) -> bool:
         """X-axis zeroing via MCS position returned by scanning laser info."""
@@ -422,7 +642,258 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         except:
             return False
     #
-    # == END: generic methods
+    # == END: laser methods
 
-    def __update_fields(self):
-        pass
+
+    # == BEG: update methods
+    #
+    def __update_editable_fields(self):
+        """Updates editable fields with related data."""
+
+    def __updated_objects(self):
+        """Updates non editable objects with related data."""
+
+        # DEBUG: track update ticks at second
+        check_time = 5.0
+        if not hasattr(self, "tick_time"):
+            self.tick_time = time.perf_counter()
+            self.tick_count = 0
+        else:
+            self.tick_count += 1
+            t = time.perf_counter() - self.tick_time
+            if t > check_time:
+                v = self.tick_count / t
+                self.setWindowTitle(f'{APP_TITLE} - [ {v:8.3f} Ticks at second ]')
+                self.tick_count = 0
+                self.tick_time = time.perf_counter()
+
+        def is_in_str_list_range(texts, index):
+            """Check if index in range of a list of strings"""
+            return index >= 0 and index <= len(texts)
+
+        # evaluate when connection move from connected to error (disconnection of server or wrong server)
+        if (self.api_server_connection_state == ASCS_CONNECTED) and not self.api.is_connected:
+            self.api_server_connection_state = ASCS_ERROR
+
+        # update api info context
+        self.ctx.update()
+
+        # create shortcuts
+        cnc_info = self.ctx.cnc_info
+        axes_info = self.ctx.axes_info
+        enabled_commands = self.ctx.enabled_commands
+        work_info = self.api.get_work_info()
+
+        # check if units mode changed
+        if self.units_mode != cnc_info.units_mode:
+            self.units_mode = cnc_info.units_mode
+            self.__update_editable_fields()
+
+        # evaluate units mode for formating fields
+        um_spc_lf = '{:12.3f} mm' if self.units_mode == cnc.UM_METRIC else '{:12.4f} in'
+        um_spc_rf = '{:12.3f} dg' if self.units_mode == cnc.UM_METRIC else '{:12.4f} dg'
+        um_vel_lf = '{:7.0f} mm/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} in/min'
+        um_vel_rf = '{:7.0f} dg/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} dg/min'
+        um_decimals = 3 if self.units_mode == cnc.UM_METRIC else 4
+
+        # update axes info
+        for axis_group, attr_name, is_velocity in self.axis_data_mapping:
+            data = getattr(axes_info, attr_name)
+            for i, axis in enumerate(axis_group):
+                fmt = (um_vel_lf if i < 3 else um_vel_rf) if is_velocity else (um_spc_lf if i < 3 else um_spc_rf)
+                axis.value.setText(fmt.format(data[i]))
+        self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
+
+        # update tool info
+        text = ''
+        if cnc_info.tool_slot == 0:
+            text = 'T{:d} -'.format(cnc_info.tool_id)
+        else:
+            text = 'T{:d} Slot:{:d} -'.format(cnc_info.tool_id, cnc_info.tool_slot)
+        text = text + ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
+        text = text + ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
+        text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
+        self.ui.toolInfoLabel.setText(text)
+
+        # update tab program values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabProgram:
+            pass
+
+        # update tab g-code values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabGCode:
+            pass
+
+        # update tab cnc values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:
+            pass
+
+        # update tab jog values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabJOG:
+            pass
+
+        # update tab overrides values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabOverrides:
+            pass
+
+        # update tab homing values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:
+            pass
+
+        # update tab mdi values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabMDI:
+            pass
+
+        # update tab d(igital) i/o values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabDIO:
+            pass
+
+        # update tab a(nalog) i/o values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabAIO:
+            pass
+
+        # update tab scanning laser values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabScanningLaser:
+            pass
+
+        # update tab machining info values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabMachiningInfo:
+            pass
+
+        # update tab ui dialogs
+        if self.ui.tabWidget.currentWidget() == self.ui.tabUIDialogs:
+            pass
+
+        # update tab system info values
+        if self.ui.tabWidget.currentWidget() == self.ui.tabSystemInfo:
+            system_info = self.api.get_system_info()
+            if not cnc.APISystemInfo.are_equal(self.system_info_in_use, system_info):
+                self.system_info_in_use = system_info
+                self.ui.systemInfoEdit.clear()
+                self.ui.systemInfoEdit.append('')
+                self.ui.systemInfoEdit.append('  Machine Name               : ' + system_info.machine_name)
+                self.ui.systemInfoEdit.append('  Control Software Version   : ' + system_info.control_software_version)
+                self.ui.systemInfoEdit.append('  Core Version               : ' + system_info.core_version)
+                self.ui.systemInfoEdit.append('  API Server Version         : ' + system_info.api_server_version)
+                self.ui.systemInfoEdit.append('  Firmware Version           : ' + system_info.firmware_version)
+                self.ui.systemInfoEdit.append('  Firmware Version Tag       : ' + system_info.firmware_version_tag)
+                self.ui.systemInfoEdit.append('  Firmware Interface Level   : ' + system_info.firmware_interface_level)
+                self.ui.systemInfoEdit.append('  Order Code                 : ' + system_info.order_code)
+                self.ui.systemInfoEdit.append('  Customer Id                : ' + system_info.customer_id)
+                self.ui.systemInfoEdit.append('  Serial Number              : ' + system_info.serial_number)
+                self.ui.systemInfoEdit.append('  Part Number                : ' + system_info.part_number)
+                self.ui.systemInfoEdit.append('  Customization Number       : ' + system_info.customization_number)
+                self.ui.systemInfoEdit.append('  Hardware Version           : ' + system_info.hardware_version)
+                self.ui.systemInfoEdit.append('  Operative System           : ' + system_info.operative_system)
+                self.ui.systemInfoEdit.append('  Operative System CRC       : ' + system_info.operative_system_crc)
+                self.ui.systemInfoEdit.append('  PLD Version                : ' + system_info.pld_version)
+
+        # update status bar
+        text = 'UNKNOWN'
+        if is_in_str_list_range(SM_TEXTS, cnc_info.state_machine):
+            text = SM_TEXTS[cnc_info.state_machine]
+        self.StateMachineLabel.setText('Machine State : ' + text)
+        text = 'UNKNOWN'
+        if is_in_str_list_range(ASCS_TEXTS, self.api_server_connection_state):
+            text = ASCS_TEXTS[self.api_server_connection_state]
+        if not self.api_server_use_tls:
+            self.APIServerConnectionStateLabel.setText('Connection with Server : ' + text)
+        else:
+            self.APIServerConnectionStateLabel.setText('Connection with Server [TLS] : ' + text)
+
+        # update axis enablings
+        if self.axes_mask_enablings_in_use != cnc_info.axes_mask:
+            self.axes_mask_enablings_in_use = cnc_info.axes_mask
+
+            for axis_group in self.all_axis_controls:
+                for axis, mask in zip(axis_group, self.axis_masks):
+                    enabled = (self.axes_mask_enablings_in_use & mask) != 0
+                    axis.label.setEnabled(enabled)
+                    axis.value.setEnabled(enabled)
+
+        """
+        # update general objects enabling
+        if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
+            self.SpindleStatusLabel.Enabled = False
+            self.SpindleStatusValue.Enabled = False
+            self.CoolantMistLabel.Enabled = False
+            self.CoolantMistValue.Enabled = False
+            self.CoolantFloodLabel.Enabled = False
+            self.CoolantFloodValue.Enabled = False
+            self.GCodeLineLabel.Enabled = False
+            self.GCodeLineValue.Enabled = False
+            self.WorkedTimeLabel.Enabled = False
+            self.WorkedTimeValue.Enabled = False
+            self.PlannedTimeLabel.Enabled = False
+            self.PlannedTimeValue.Enabled = False
+            self.ProgramLoadFileNameEdit.Enabled = False
+            self.ProgramSaveFileNameEdit.Enabled = False
+            self.ProgramGCodeSetTextMemo.Enabled = False
+            self.ProgramGCodeAddTextEdit.Enabled = False
+            self.CNCStartFromLineEdit.Enabled = False
+            self.CNCResumeAfterStopFromLineEdit.Enabled = False
+            self.CNCJogCommandXMButton.Enabled = False
+            self.CNCJogCommandXPButton.Enabled = False
+            self.CNCJogCommandYMButton.Enabled = False
+            self.CNCJogCommandYPButton.Enabled = False
+            self.CNCJogCommandZMButton.Enabled = False
+            self.CNCJogCommandZPButton.Enabled = False
+            self.CNCJogCommandAMButton.Enabled = False
+            self.CNCJogCommandAPButton.Enabled = False
+            self.CNCJogCommandBMButton.Enabled = False
+            self.CNCJogCommandBPButton.Enabled = False
+            self.CNCJogCommandCMButton.Enabled = False
+            self.CNCJogCommandCPButton.Enabled = False
+            self.CNCMDICommandMemo.Enabled = False
+            self.SetProgramPositionXEdit.Enabled = False
+            self.SetProgramPositionYEdit.Enabled = False
+            self.SetProgramPositionZEdit.Enabled = False
+            self.SetProgramPositionAEdit.Enabled = False
+            self.SetProgramPositionBEdit.Enabled = False
+            self.SetProgramPositionCEdit.Enabled = False
+            self.APIServerHostEdit.Enabled = True
+            self.APIServerPortEdit.Enabled = True
+            self.UseTLSCheckBox.Enabled = True
+        else:
+            self.SpindleStatusLabel.Enabled = True
+            self.SpindleStatusValue.Enabled = True
+            self.CoolantMistLabel.Enabled = True
+            self.CoolantMistValue.Enabled = True
+            self.CoolantFloodLabel.Enabled = True
+            self.CoolantFloodValue.Enabled = True
+            self.GCodeLineLabel.Enabled = True
+            self.GCodeLineValue.Enabled = True
+            self.WorkedTimeLabel.Enabled = True
+            self.WorkedTimeValue.Enabled = True
+            self.PlannedTimeLabel.Enabled = True
+            self.PlannedTimeValue.Enabled = True
+            self.ProgramLoadFileNameEdit.Enabled = self.ctx.enabled_commands.program_load
+            self.ProgramSaveFileNameEdit.Enabled = self.ctx.enabled_commands.program_save
+            self.ProgramGCodeSetTextMemo.Enabled = self.ctx.enabled_commands.program_gcode_set_text
+            self.ProgramGCodeAddTextEdit.Enabled = self.ctx.enabled_commands.program_gcode_add_text
+            self.CNCStartFromLineEdit.Enabled = self.ctx.enabled_commands.cnc_start_from_line
+            self.CNCResumeAfterStopFromLineEdit.Enabled = self.ctx.enabled_commands.cnc_resume
+            self.CNCJogCommandXMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.X_AXIS_MASK) > 0
+            self.CNCJogCommandXPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.X_AXIS_MASK) > 0
+            self.CNCJogCommandYMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.Y_AXIS_MASK) > 0
+            self.CNCJogCommandYPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.Y_AXIS_MASK) > 0
+            self.CNCJogCommandZMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.Z_AXIS_MASK) > 0
+            self.CNCJogCommandZPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.Z_AXIS_MASK) > 0
+            self.CNCJogCommandAMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.A_AXIS_MASK) > 0
+            self.CNCJogCommandAPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.A_AXIS_MASK) > 0
+            self.CNCJogCommandBMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.B_AXIS_MASK) > 0
+            self.CNCJogCommandBPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.B_AXIS_MASK) > 0
+            self.CNCJogCommandCMButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.C_AXIS_MASK) > 0
+            self.CNCJogCommandCPButton.Enabled = (self.ctx.enabled_commands.cnc_jog_command & cnc.C_AXIS_MASK) > 0
+            self.CNCMDICommandMemo.Enabled = self.ctx.enabled_commands.cnc_mdi_command
+            self.SetProgramPositionXEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.X_AXIS_MASK) > 0
+            self.SetProgramPositionYEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.Y_AXIS_MASK) > 0
+            self.SetProgramPositionZEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.Z_AXIS_MASK) > 0
+            self.SetProgramPositionAEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.A_AXIS_MASK) > 0
+            self.SetProgramPositionBEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.B_AXIS_MASK) > 0
+            self.SetProgramPositionCEdit.Enabled = (self.ctx.enabled_commands.set_program_position & cnc.C_AXIS_MASK) > 0
+            self.APIServerHostEdit.Enabled = False
+            self.APIServerPortEdit.Enabled = False
+            self.UseTLSCheckBox.Enabled = False
+        """
+    #
+    # == END: update methods

@@ -23,6 +23,7 @@
 import sys
 
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QGuiApplication, Qt
 
 from api_client_qt_demo_desktop_view import ApiClientQtDemoDesktopView
 
@@ -32,6 +33,7 @@ def main():
     # initialize application and enter in main loop
     application = QApplication(sys.argv)
     application.setStyle('Fusion')
+    QGuiApplication.styleHints().setColorScheme(Qt.ColorScheme.Light)
     window = ApiClientQtDemoDesktopView()
     window.show()
     sys.exit(application.exec())
