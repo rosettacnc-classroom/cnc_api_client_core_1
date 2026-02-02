@@ -40,7 +40,7 @@
      <attribute name="title">
       <string>Program</string>
      </attribute>
-     <widget class="QPushButton" name="new_program">
+     <widget class="QPushButton" name="programNewButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -53,11 +53,11 @@
        <string>New Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="ProgramLoadButton">
+     <widget class="QPushButton" name="programLoadButton">
       <property name="geometry">
        <rect>
         <x>16</x>
-        <y>90</y>
+        <y>140</y>
         <width>120</width>
         <height>24</height>
        </rect>
@@ -66,11 +66,11 @@
        <string>Load Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="ProgramSaveButton">
+     <widget class="QPushButton" name="programSaveButton">
       <property name="geometry">
        <rect>
         <x>16</x>
-        <y>130</y>
+        <y>201</y>
         <width>120</width>
         <height>24</height>
        </rect>
@@ -79,11 +79,11 @@
        <string>Save Program</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="ProgramSaveAsButton">
+     <widget class="QPushButton" name="programSaveAsButton">
       <property name="geometry">
        <rect>
         <x>16</x>
-        <y>170</y>
+        <y>300</y>
         <width>120</width>
         <height>24</height>
        </rect>
@@ -92,27 +92,7 @@
        <string>Save Program As</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>130</y>
-        <width>113</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>160</y>
-        <width>113</width>
-        <height>22</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="programNewLabel">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -121,16 +101,23 @@
         <height>16</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
       <property name="text">
        <string>NEW PROGRAM</string>
       </property>
      </widget>
-     <widget class="Line" name="line">
+     <widget class="Line" name="programNewLine">
       <property name="geometry">
        <rect>
         <x>16</x>
         <y>33</y>
-        <width>806</width>
+        <width>889</width>
         <height>2</height>
        </rect>
       </property>
@@ -139,6 +126,147 @@
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="programLoadLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>97</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="programLoadLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>80</y>
+        <width>137</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>LOAD PROGRAM</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="programLoadFileNameEdit">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>110</y>
+        <width>861</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="programLoadSelectFileButton">
+      <property name="geometry">
+       <rect>
+        <x>883</x>
+        <y>110</y>
+        <width>22</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>...</string>
+      </property>
+     </widget>
+     <widget class="Line" name="programSaveLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>193</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="programSaveLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>176</y>
+        <width>137</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>SAVE PROGRAM</string>
+      </property>
+     </widget>
+     <widget class="Line" name="programSaveAsLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>257</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="programSaveAsLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>240</y>
+        <width>137</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>SAVE PROGRAM AS</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="programSaveFileAsFileNameEdit">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>270</y>
+        <width>889</width>
+        <height>22</height>
+       </rect>
       </property>
      </widget>
     </widget>
@@ -312,7 +440,7 @@
        <string>Z +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_13">
+     <widget class="QPushButton" name="setProgramPositionYButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -325,7 +453,7 @@
        <string>Set Y</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_14">
+     <widget class="QPushButton" name="setProgramPositionCButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -338,7 +466,7 @@
        <string>Set C</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_15">
+     <widget class="QPushButton" name="setProgramPositionXButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -351,7 +479,7 @@
        <string>Set X</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_16">
+     <widget class="QPushButton" name="setProgramPositionBButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -364,7 +492,7 @@
        <string>Set B</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_17">
+     <widget class="QPushButton" name="setProgramPositionAButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -377,7 +505,7 @@
        <string>Set A</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_18">
+     <widget class="QPushButton" name="setProgramPositionZButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -390,14 +518,155 @@
        <string>Set Z</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_3">
+     <widget class="QLineEdit" name="setProgramPositionXEdit">
       <property name="geometry">
        <rect>
-        <x>714</x>
+        <x>713</x>
         <y>14</y>
         <width>100</width>
-        <height>22</height>
+        <height>24</height>
        </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="setProgramPositionYEdit">
+      <property name="geometry">
+       <rect>
+        <x>713</x>
+        <y>46</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="setProgramPositionZEdit">
+      <property name="geometry">
+       <rect>
+        <x>713</x>
+        <y>78</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="setProgramPositionAEdit">
+      <property name="geometry">
+       <rect>
+        <x>713</x>
+        <y>110</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="setProgramPositionBEdit">
+      <property name="geometry">
+       <rect>
+        <x>713</x>
+        <y>142</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="setProgramPositionCEdit">
+      <property name="geometry">
+       <rect>
+        <x>713</x>
+        <y>174</y>
+        <width>100</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>0.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="Line" name="jogSetSeparatorLine">
+      <property name="geometry">
+       <rect>
+        <x>216</x>
+        <y>14</y>
+        <width>2</width>
+        <height>182</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="textAxisPositionText">
+      <property name="geometry">
+       <rect>
+        <x>224</x>
+        <y>14</y>
+        <width>481</width>
+        <height>182</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>20</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Set Axis Position</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="jogSTOPButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>208</y>
+        <width>889</width>
+        <height>147</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>46</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Stop</string>
       </property>
      </widget>
     </widget>
@@ -977,6 +1246,130 @@ Connection</string>
      <property name="text">
       <string>CLOSE
 Connection</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cncStartButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>172</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Start</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cncStopButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>228</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Stop</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cncPauseButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>284</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Pause</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cncContinueButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>340</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Continue</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="cncResumeAfterStopButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>396</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Resume
+after STOP</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetAlarmsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>495</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Alarms</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetAlarmsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>551</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Alarms
+History</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetWarningsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>607</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Warnings</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="resetWarningsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>663</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Reset
+Warnings
+History</string>
      </property>
     </widget>
    </widget>
@@ -3038,6 +3431,70 @@ Connection</string>
   </widget>
   <widget class="QStatusBar" name="StatusBar"/>
  </widget>
+ <tabstops>
+  <tabstop>cncJogCommandAPButton</tabstop>
+  <tabstop>cncJogCommandBPButton</tabstop>
+  <tabstop>cncJogCommandCPButton</tabstop>
+  <tabstop>setProgramPositionXEdit</tabstop>
+  <tabstop>setProgramPositionYEdit</tabstop>
+  <tabstop>setProgramPositionZEdit</tabstop>
+  <tabstop>setProgramPositionAEdit</tabstop>
+  <tabstop>setProgramPositionBEdit</tabstop>
+  <tabstop>setProgramPositionCEdit</tabstop>
+  <tabstop>setProgramPositionXButton</tabstop>
+  <tabstop>setProgramPositionYButton</tabstop>
+  <tabstop>setProgramPositionZButton</tabstop>
+  <tabstop>setProgramPositionAButton</tabstop>
+  <tabstop>setProgramPositionBButton</tabstop>
+  <tabstop>setProgramPositionCButton</tabstop>
+  <tabstop>jogSTOPButton</tabstop>
+  <tabstop>uidChangeBoardIPButton</tabstop>
+  <tabstop>uidParametersLibraryButton</tabstop>
+  <tabstop>uidMacrosManagementButton</tabstop>
+  <tabstop>systemInfoEdit</tabstop>
+  <tabstop>cncPauseButton</tabstop>
+  <tabstop>uidAboutButton</tabstop>
+  <tabstop>cncResumeAfterStopButton</tabstop>
+  <tabstop>CNCConnectionOpenButton</tabstop>
+  <tabstop>resetWarningsButton</tabstop>
+  <tabstop>cncContinueButton</tabstop>
+  <tabstop>uidWorkCoordinatesButton</tabstop>
+  <tabstop>uidProgramSettingsButton</tabstop>
+  <tabstop>uidBoardFirmwareManagerButton</tabstop>
+  <tabstop>uidBoardMonitorButton</tabstop>
+  <tabstop>uidBoardSettingsButton</tabstop>
+  <tabstop>uidToolsLibraryButton</tabstop>
+  <tabstop>uidATCManagementButton</tabstop>
+  <tabstop>uidBoardEtherCATMonitorButton</tabstop>
+  <tabstop>apiServerHostEdit</tabstop>
+  <tabstop>apiServerPortEdit</tabstop>
+  <tabstop>useTLSCheckBox</tabstop>
+  <tabstop>stayOnTopCheckBox</tabstop>
+  <tabstop>ServerConnectDisconnectButton</tabstop>
+  <tabstop>cncStartButton</tabstop>
+  <tabstop>resetAlarmsButton</tabstop>
+  <tabstop>resetAlarmsHistoryButton</tabstop>
+  <tabstop>resetWarningsHistoryButton</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>CNCConnectionCloseButton</tabstop>
+  <tabstop>cncStopButton</tabstop>
+  <tabstop>programNewButton</tabstop>
+  <tabstop>programLoadFileNameEdit</tabstop>
+  <tabstop>programLoadSelectFileButton</tabstop>
+  <tabstop>programLoadButton</tabstop>
+  <tabstop>programSaveButton</tabstop>
+  <tabstop>programSaveFileAsFileNameEdit</tabstop>
+  <tabstop>programSaveAsButton</tabstop>
+  <tabstop>cncJogCommandXMButton</tabstop>
+  <tabstop>cncJogCommandYMButton</tabstop>
+  <tabstop>cncJogCommandZMButton</tabstop>
+  <tabstop>cncJogCommandAMButton</tabstop>
+  <tabstop>cncJogCommandBMButton</tabstop>
+  <tabstop>cncJogCommandCMButton</tabstop>
+  <tabstop>cncJogCommandXPButton</tabstop>
+  <tabstop>cncJogCommandYPButton</tabstop>
+  <tabstop>cncJogCommandZPButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
  <designerdata>
