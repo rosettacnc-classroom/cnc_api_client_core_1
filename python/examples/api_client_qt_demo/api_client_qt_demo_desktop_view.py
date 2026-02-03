@@ -54,7 +54,7 @@ DEF_LOAD_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions.
 DEF_SAVE_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions_new.ngc'
 
 # == debug settings
-DBG_UPD_TICK_TIME           = True
+DBG_UPD_TICK_TIME           = False
 
 # == program constants
 OVERRIDE_SEATTLE_TIME       = 500
