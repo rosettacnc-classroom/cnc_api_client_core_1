@@ -18,19 +18,31 @@
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
+# pylint: disable=C0103 -> invalid-name
 # pylint: disable=C0301 -> line-too-long
+# pylint: disable=C0302 -> too-many-lines
+# pylint: disable=R0902 -> too-many-instance-attributes
+# pylint: disable=R0912 -> too-many-branches
+# pylint: disable=R0914 -> too-many-locals
+# pylint: disable=R0915 -> too-many-statements
+# pylint: disable=W0105 -> pointless-string-statement
+# pylint: disable=W0201 -> attribute-defined-outside-init   ## take care when you use that ##
+# pylint: disable=W0238 -> unused-private-member
+# pylint: disable=W0612 -> unused-variable
+# pylint: disable=W0718 -> broad-exception-caught           ## take care when you use that ##
 #-------------------------------------------------------------------------------
 import os
 import time
-from enum import IntEnum
 from statistics import median
 from collections import namedtuple
 
 import cnc_api_client_core as cnc
+from utils import DecimalsTrimMode, format_float, is_in_str_list_range
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QFileDialog, QLabel, QLineEdit, QMainWindow, QPushButton
+
 from ui_desktop_view import Ui_DesktopView
 
 from cnc_memento import CncMemento
@@ -110,69 +122,6 @@ SS_TEXTS = ['OFF', 'CW', 'CCW']
 
 # keyboard constants
 VK_RETURN                   = 0x0D
-
-class DecimalsTrimMode(IntEnum):
-    NONE = 0  # no trimming, so it will keeps all specified decimal places
-    FIT = 1   # removes trailing zeros, but retains at least 1 decimal place
-    DOT = 2   # removes trailing zeros and retains the decimal point if necessary
-    FULL = 3  # removes trailing zeros and the decimal point if they are not needed
-
-def format_float(value: float, decimals: int, trim_mode: DecimalsTrimMode) -> str:
-    """
-    Formats a float number with advanced decimal handling.
-
-    Args:
-        value: The value to format
-        decimals: Number of decimals to display
-        trim_mode: Trailing zero trim mode (DecimalsTrimMode.*)
-
-    Returns:
-        Formatted string
-
-    Examples:
-      Value = 1.234, Decimals = 5 -> internally starting from converted float to value 1.23400:
-        dtmdNone -> "1.23400"
-        dtmdFit  -> "1.234"
-        dtmdDot  -> "1.234"
-        dtmdFull -> "1.234"
-
-      Value = 1.0, Decimals = 5 -> internally starting from converted float to str value 1.00000:
-        dtmdNone -> "1.00000"
-        dtmdFit  -> "1.0"
-        dtmdDot  -> "1."
-        dtmdFull -> "1"
-
-      Value = 1.1, Decimals = 5 -> internally starting from converted float to str value 1.10000:
-        dtmdNone -> "1.10000"
-        dtmdFit  -> "1.1"
-        dtmdDot  -> "1.1"
-        dtmdFull -> "1.1"
-
-      Value = 0.0, Decimals = 5 -> internally starting from converted float to str value 0.00000:
-        dtmdNone -> "0.00000"
-        dtmdFit  -> "0.0"
-        dtmdDot  -> "0."
-        dtmdFull -> "0"
-    """
-    try:
-        result = f"{value:.{decimals}f}"
-        if trim_mode == DecimalsTrimMode.NONE:
-            return result
-        dot_pos = result.find('.')
-        if dot_pos == -1:
-            return result
-        for i in range(len(result) - 1, dot_pos, -1):
-            if result[i] != '0':
-                return result[:i + 1]
-        if trim_mode == DecimalsTrimMode.FIT:
-            return result[:dot_pos + 2]
-        elif trim_mode == DecimalsTrimMode.DOT:
-            return result[:dot_pos + 1]
-        elif trim_mode == DecimalsTrimMode.FULL:
-            return result[:dot_pos]
-        return result
-    except Exception:
-        return ''
 
 AxisControls = namedtuple('AxisControls', ['label', 'value'])
 
@@ -334,7 +283,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cncContinueButton:
             self.api.cnc_continue()
         if sender == self.ui.cncResumeAfterStopButton:
-            self.api.cnc_resume()
+            self.api.cnc_resume(0)
 
         if sender == self.ui.resetAlarmsButton:
             self.api.reset_alarms()
@@ -538,7 +487,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
             # update tab ui dialogs
-            uid_available = self.ctx.enabled_commands.has_data
+            uid_available = self.ctx.enabled_commands.show_ui_dialog
             self.ui.uidAboutButton.setEnabled(uid_available)
             self.ui.uidATCManagementButton.setEnabled(uid_available)
             self.ui.uidBoardEtherCATMonitorButton.setEnabled(uid_available)
@@ -871,10 +820,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     self.tick_count = 0
                     self.tick_time = time.perf_counter()
 
-        def is_in_str_list_range(texts, index):
-            """Check if index in range of a list of strings"""
-            return index >= 0 and index <= len(texts)
-
         # debug update tick time
         if DBG_UPD_TICK_TIME:
             debug_update_tick_time()
@@ -920,9 +865,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # update tool info
         text = ''
         if cnc_info.tool_slot == 0:
-            text = 'T{:d} -'.format(cnc_info.tool_id)
+            text = f'T{cnc_info.tool_id:d} -'
         else:
-            text = 'T{:d} Slot:{:d} -'.format(cnc_info.tool_id, cnc_info.tool_slot)
+            text = f'T{cnc_info.tool_id:d} Slot:{cnc_info.tool_slot:d} -'
         text = text + ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
         text = text + ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
         text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)

@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      02/02/2026
+# Created:      04/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -354,12 +354,12 @@ FS_ALLOWED_COMBO = {
     FS_NM_AUX_32:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
 }
 
-# show ui dialogs name
+# show ui dialogs name [ with Control Software in run as API Server ]
 UID_ABOUT                           = 'about'
-UID_ATC_MANAGEMENT                  = 'atc.management'
-UID_BOARD_ETHERCAT_MONITOR          = 'board.ethercat.monitor'
+UID_ATC_MANAGEMENT                  = 'atc.management'              # requires connection with CNC in connected state
+UID_BOARD_ETHERCAT_MONITOR          = 'board.ethercat.monitor'      # requires connection with CNC in connected state
 UID_BOARD_FIRMWARE_MANAGER          = 'board.firmware.manager'
-UID_BOARD_MONITOR                   = 'board.monitor'
+UID_BOARD_MONITOR                   = 'board.monitor'               # requires connection with CNC in connected state
 UID_BOARD_SETTINGS                  = 'board.settings'
 UID_CHANGE_BOARD_IP                 = 'change.board.ip'
 UID_MACROS_MANAGEMENT               = 'macros.management'
@@ -367,6 +367,23 @@ UID_PARAMETERS_LIBRARY              = 'parameters.library'
 UID_PROGRAM_SETTINGS                = 'program.settings'
 UID_TOOLS_LIBRARY                   = 'tools.library'
 UID_WORK_COORDINATES                = 'work.coordinates'
+
+# service popup menu enabling mask [ with Control Software in run as API Server ]
+SPMEM_ABOUT                         =  1 << 0
+SPMEM_ATC_MANAGEMENT                =  1 << 1
+SPMEM_BOARD_ETHERCAT_MONITOR        =  1 << 2
+SPMEM_BOARD_FIRMWARE_MANAGER        =  1 << 3
+SPMEM_BOARD_MONITOR                 =  1 << 4
+SPMEM_BOARD_SETTINGS                =  1 << 5
+SPMEM_CHANGE_BOARD_IP               =  1 << 6
+SPMEM_CONNECTION_OPEN               =  1 << 7
+SPMEM_CONNECTION_CLOSE              =  1 << 8
+SPMEM_EXIT                          =  1 << 9
+SPMEM_MACROS_MANAGEMENT             =  1 << 10
+SPMEM_PARAMETERS_LIBRARY            =  1 << 11
+SPMEM_PROGRAM_SETTINGS              =  1 << 12
+SPMEM_TOOLS_LIBRARY                 =  1 << 13
+SPMEM_WORK_COORDINATES              =  1 << 14
 
 class APIAlarmsWarningsList:
     """API data structure for alarms and warnings list."""
@@ -570,7 +587,28 @@ class APIEnabledCommands:
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
         self.set_program_position               = 0
+        self.show_ui_dialog                     = False
         self.tools_lib_write                    = False
+
+class APILocalizationInfo:
+    """API data structure with machine settings."""
+
+    class LocalizationData:
+        """Data structure for alarm & warning list data."""
+        def __init__(self):
+            self.locale                         = None
+            self.description                    = None
+            self.owner                          = None
+            self.revisor                        = None
+            self.version                        = None
+            self.date                           = None
+            self.program                        = None
+
+    def __init__(self):
+        self.has_data                           = False
+        self.locale                             = None
+        self.description                        = None
+        self.list                               = []
 
 class APIMachineSettings:
     """API data structure with machine settings."""
@@ -2033,11 +2071,42 @@ class CncAPIClientCore:
                 data.reset_warnings                     = j['res']['reset.warnings']
                 data.reset_warnings_history             = j['res']['reset.warnings.history']
                 data.set_program_position               = j['res']['set.program.position']
+                data.show_ui_dialog                     = j['res']['show.ui.dialog']
                 data.tools_lib_write                    = j['res']['tools.lib.write']
                 data.has_data                           = True
             return data
         except:
             return APIEnabledCommands()
+
+    def get_localization_info(self) -> APILocalizationInfo:
+        """xxx"""
+        try:
+            data = APILocalizationInfo()
+            if not self.is_connected:
+                return data
+            request = '{"get":"localization.info"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.locale                             = j['res']['locale']
+                data.description                        = j['res']['description']
+                l = j['res']['list']
+                if len(l) == 0:
+                    data.list = []
+                else:
+                    data.list = [data.LocalizationData() for _ in range(len(l))]
+                    for i in range(len(data.list)):
+                        data.list[i].locale             = l[i]['locale']
+                        data.list[i].description        = l[i]['description']
+                        data.list[i].owner              = l[i]['owner']
+                        data.list[i].revisor            = l[i]['revisor']
+                        data.list[i].version            = l[i]['version']
+                        data.list[i].date               = l[i]['date']
+                        data.list[i].program            = l[i]['program']
+                data.has_data = True
+            return data
+        except:
+            return APILocalizationInfo()
 
     def get_machine_settings(self) -> APIMachineSettings:
         """xxx"""

@@ -24,7 +24,6 @@ import sys
 
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QGuiApplication, Qt
-#from qt_material import apply_stylesheet
 
 from api_client_qt_demo_desktop_view import ApiClientQtDemoDesktopView
 
@@ -36,7 +35,6 @@ def main():
     application.setStyle('Fusion')
     QGuiApplication.styleHints().setColorScheme(Qt.ColorScheme.Light)
     window = ApiClientQtDemoDesktopView()
-#   apply_stylesheet(application, theme='dark_teal.xml')
     window.show()
     sys.exit(application.exec())
 

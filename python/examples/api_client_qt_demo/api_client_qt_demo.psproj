@@ -37,8 +37,12 @@ FileName=$[Project-Path]settings.xml
 ClassName=TProjectFileNode
 FileName=$[Project-Path]ui_desktop_view.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node7]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]utils.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=7
+Count=8
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode
