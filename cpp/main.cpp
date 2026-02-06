@@ -684,6 +684,42 @@ int main() {
         std::cout << "Test SET methods skipped." << std::endl;
     }
     
+    // Ask user if they want to test CMD methods
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "Vuoi testare i metodi CMD? (si/no): ";
+    std::string test_cmd;
+    std::getline(std::cin, test_cmd);
+    
+    if (test_cmd == "si" || test_cmd == "SI" || test_cmd == "Si") {
+        std::cout << "\n========== Testing CMD Methods ==========\n" << std::endl;
+        
+        std::cout << "Test: cnc_start() - Starting CNC program execution... ";
+        if (client.cnc_start()) {
+            std::cout << "OK" << std::endl;
+            std::cout << "Program started. Waiting 5 seconds..." << std::endl;
+            
+            // Wait 5 seconds
+            for (int i = 1; i <= 5; i++) {
+                std::cout << "  " << i << " seconds..." << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+            
+            std::cout << "\nTest: cnc_stop() - Stopping CNC program execution... ";
+            if (client.cnc_stop()) {
+                std::cout << "OK" << std::endl;
+            } else {
+                std::cout << "FAILED" << std::endl;
+            }
+        } else {
+            std::cout << "FAILED" << std::endl;
+            std::cout << "Note: cnc_start may fail if no program is loaded or machine is not ready." << std::endl;
+        }
+        
+        std::cout << "\nCMD method tests completed!" << std::endl;
+    } else {
+        std::cout << "Test CMD methods skipped." << std::endl;
+    }
+    
     // Close connection
     std::cout << "\nClosing connection..." << std::endl;
     client.close();

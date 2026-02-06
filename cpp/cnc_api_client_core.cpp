@@ -1245,10 +1245,9 @@ bool CncAPIClientCore::reset_alarms() {
 }
 
 bool CncAPIClientCore::cnc_start() {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "cnc_start";
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    std::string request = "{\"cmd\":\"cnc.start\"}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
 }
 
 bool CncAPIClientCore::cnc_pause() {
@@ -1269,10 +1268,9 @@ bool CncAPIClientCore::cnc_resume(int line) {
 }
 
 bool CncAPIClientCore::cnc_stop() {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "cnc_stop";
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    std::string request = "{\"cmd\":\"cnc.stop\"}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
 }
 
 bool CncAPIClientCore::cnc_jog_command(int command) {
