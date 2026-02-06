@@ -624,6 +624,60 @@ int main() {
         } else {
             std::cout << "FAILED" << std::endl;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 11: set_program_position_x
+        std::cout << "Test 11: set_program_position_x() - setting to 100.5... ";
+        if (client.set_program_position_x(100.5)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 12: set_program_position_y
+        std::cout << "Test 12: set_program_position_y() - setting to 200.75... ";
+        if (client.set_program_position_y(200.75)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 13: set_program_position_z
+        std::cout << "Test 13: set_program_position_z() - setting to 50.25... ";
+        if (client.set_program_position_z(50.25)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 14: set_program_position_a
+        std::cout << "Test 14: set_program_position_a() - setting to 45.0... ";
+        if (client.set_program_position_a(45.0)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 15: set_program_position_b
+        std::cout << "Test 15: set_program_position_b() - setting to 90.0... ";
+        if (client.set_program_position_b(90.0)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 16: set_program_position_c
+        std::cout << "Test 16: set_program_position_c() - setting to 180.0... ";
+        if (client.set_program_position_c(180.0)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
         
         std::cout << "\nAll SET method tests completed!" << std::endl;
     } else {

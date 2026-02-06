@@ -2663,6 +2663,42 @@ bool CncAPIClientCore::set_cnc_parameters(int address, const std::vector<double>
     return evaluate_response(response);
 }
 
+bool CncAPIClientCore::set_program_position_a(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"a\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_program_position_b(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"b\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_program_position_c(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"c\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_program_position_x(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"x\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_program_position_y(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"y\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_program_position_z(double value) {
+    std::string request = "{\"set\":\"program.position\",\"data\":{\"z\":" + std::to_string(value) + "}}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
 // ========== CncAPIInfoContext Implementation ==========
 
 CncAPIInfoContext::CncAPIInfoContext(CncAPIClientCore* api) : m_api(api) {
