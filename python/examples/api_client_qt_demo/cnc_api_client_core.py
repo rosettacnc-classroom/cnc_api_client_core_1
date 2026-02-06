@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      04/02/2026
+# Created:      06/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -48,7 +48,7 @@
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0915 -> too-many-statements
 # pylint: disable=R1702 -> too-many-nested-blocks
-# pylint: disable=W0702 -> bare-except
+# pylint: disable=W0718 -> broad-exception-caught           ## take care when you use that ##
 # pylint: disable=W0719 -> broad-exception-raised           ## take care when you use that ##
 #-------------------------------------------------------------------------------
 from __future__ import annotations
@@ -70,6 +70,10 @@ except ImportError:
 
 # module version
 __version__ = '1.5.3'                           # module version
+
+# units mode
+UM_METRIC                           = 0         # units mode: metric system
+UM_IMPERIAL                         = 1         # units mode: imperial system
 
 # analysis mode
 ANALYSIS_MT                         = 'mt'      # model path with tools colors
@@ -368,7 +372,7 @@ UID_PROGRAM_SETTINGS                = 'program.settings'
 UID_TOOLS_LIBRARY                   = 'tools.library'
 UID_WORK_COORDINATES                = 'work.coordinates'
 
-# service popup menu enabling mask [ with Control Software in run as API Server ]
+# service popup menu enabling mask [ with Control Software in run as API Server ] !!! UNUSED YET !!!
 SPMEM_ABOUT                         =  1 << 0
 SPMEM_ATC_MANAGEMENT                =  1 << 1
 SPMEM_BOARD_ETHERCAT_MONITOR        =  1 << 2
@@ -542,6 +546,22 @@ class APICompileInfo:
         self.message                            = ''
         self.state                              = CS_INIT
 
+class APICoordinateSystemsInfo:
+    """API coordinate systems info."""
+    def __init__(self):
+        self.has_data                           = False
+        self.working_wcs                        = 0
+        self.working_offset                     = [0.0] * 6
+        self.wcs_1                              = [0.0] * 6
+        self.wcs_2                              = [0.0] * 6
+        self.wcs_3                              = [0.0] * 6
+        self.wcs_4                              = [0.0] * 6
+        self.wcs_5                              = [0.0] * 6
+        self.wcs_6                              = [0.0] * 6
+        self.wcs_7                              = [0.0] * 6
+        self.wcs_8                              = [0.0] * 6
+        self.wcs_9                              = [0.0] * 6
+
 class APIDigitalInputs:
     """API data structure for digital inputs."""
     def __init__(self):
@@ -596,7 +616,7 @@ class APILocalizationInfo:
     class LocalizationData:
         """Data structure for alarm & warning list data."""
         def __init__(self):
-            self.locale                         = None
+            self.locale_name                     = None
             self.description                    = None
             self.owner                          = None
             self.revisor                        = None
@@ -606,7 +626,8 @@ class APILocalizationInfo:
 
     def __init__(self):
         self.has_data                           = False
-        self.locale                             = None
+        self.units_mode                         = UM_METRIC
+        self.locale_name                        = None
         self.description                        = None
         self.list                               = []
 
@@ -785,7 +806,7 @@ class APISystemInfo:
                 self.operative_system_crc       == data.operative_system_crc        and
                 self.pld_version                == data.pld_version
             )
-        except:
+        except Exception:
             return False
 
     @staticmethod
@@ -812,7 +833,7 @@ class APISystemInfo:
                 data_a.operative_system_crc     == data_b.operative_system_crc        and
                 data_a.pld_version              == data_b.pld_version
             )
-        except:
+        except Exception:
             return False
 
 class APIToolsLibCount:
@@ -1164,7 +1185,7 @@ class CncAPIClientCore:
                 self.ipc = self.socket
 
             self.is_connected = True
-        except:
+        except Exception:
             self.is_connected = False
             self.ipc = None
             self.socket = None
@@ -1200,7 +1221,7 @@ class CncAPIClientCore:
                 self.socket_ssl = None
                 self.i = 0
                 return True
-            except:
+            except Exception:
                 self.use_cnc_direct_access = False
                 self.is_connected = False
                 self.ipc = None
@@ -1378,7 +1399,7 @@ class CncAPIClientCore:
                 return False
             file_name = json.dumps(file_name)
             return self.__execute_request('{"cmd":"program.save.as","file.name":' + file_name + '}')
-        except:
+        except Exception:
             return False
 
     def reset_alarms(self) -> bool:
@@ -1471,7 +1492,7 @@ class CncAPIClientCore:
                 "cmd": "tools.lib.add"
             }
 
-            # Add optional fields only if they are not None
+            # add optional fields only if they are not None
             optional_fields = [
                 ("id", info.tool_id),
                 ("slot", info.tool_slot),
@@ -1509,7 +1530,7 @@ class CncAPIClientCore:
 
             request = self.create_compact_json_request(data)
             return self.__execute_request(request)
-        except:
+        except Exception:
             return False
 
     def tools_lib_clear(self) -> bool:
@@ -1522,7 +1543,7 @@ class CncAPIClientCore:
             if not isinstance(index, int):
                 return False
             return self.__execute_request('{' + f'"cmd":"tools.lib.delete","index":{index}' + '}')
-        except:
+        except Exception:
             return False
 
     def tools_lib_insert(self, info: APIToolsLibInfoForSet = None) -> bool:
@@ -1595,7 +1616,7 @@ class CncAPIClientCore:
                 "index": info.tool_index
             }
 
-            # Add optional fields only if they are not None
+            # add optional fields only if they are not None
             optional_fields = [
                 ("id", info.tool_id),
                 ("slot", info.tool_slot),
@@ -1633,7 +1654,7 @@ class CncAPIClientCore:
 
             request = self.create_compact_json_request(data)
             return self.__execute_request(request)
-        except:
+        except Exception:
             return False
 
     def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
@@ -1723,7 +1744,7 @@ class CncAPIClientCore:
 
             request_json = json.dumps(request_data)
             return self.__execute_request(request_json)
-        except:
+        except Exception:
             return False
 
     def work_order_delete(self, order_code: str) -> bool:
@@ -1733,7 +1754,7 @@ class CncAPIClientCore:
                 return False
             order_code_json = json.dumps(order_code)
             return self.__execute_request(f'{{"cmd":"work.order.delete","order.code":{order_code_json}}}')
-        except:
+        except Exception:
             return False
 
     #
@@ -1765,7 +1786,7 @@ class CncAPIClientCore:
                         data.list[i].datetime           = self.__d(l[i]['datetime'])
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIAlarmsWarningsList()
 
     def get_alarms_history_list(self) -> APIAlarmsWarningsList:
@@ -1791,7 +1812,7 @@ class CncAPIClientCore:
                         data.list[i].datetime           = self.__d(l[i]['datetime'])
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIAlarmsWarningsList()
 
     def get_analog_inputs(self) -> APIAnalogInputs:
@@ -1807,7 +1828,7 @@ class CncAPIClientCore:
                 data.value                              = j['res']['value']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIAnalogInputs()
 
     def get_analog_outputs(self) -> APIAnalogOutputs:
@@ -1823,7 +1844,7 @@ class CncAPIClientCore:
                 data.value                              = j['res']['value']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIAnalogOutputs()
 
     def get_axes_info(self) -> APIAxesInfo:
@@ -1849,7 +1870,7 @@ class CncAPIClientCore:
                 data.homing_done_mask                   = j['res']['homing.done.mask']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIAxesInfo()
 
     def get_cnc_info(self) -> APICncInfo:
@@ -1953,7 +1974,7 @@ class CncAPIClientCore:
                 data.tool_description                   = j['res']['tool']['description']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APICncInfo()
 
     def get_cnc_parameters(self, address: int, elements: int) -> APICncParameters:
@@ -1976,7 +1997,7 @@ class CncAPIClientCore:
                 data.descriptions                       = j['res']['descriptions']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APICncParameters()
 
     def get_compile_info(self) -> APICompileInfo:
@@ -1997,8 +2018,34 @@ class CncAPIClientCore:
                 data.state                              = j['res']['state']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APICompileInfo()
+
+    def get_coordinate_systems_info(self) -> APICoordinateSystemsInfo:
+        """xxx"""
+        try:
+            data = APICoordinateSystemsInfo()
+            if not self.is_connected:
+                return data
+            request = '{"get":"coordinate.systems.info"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.working_wcs                        = j['res']['working.wcs']
+                data.working_offset                     = j['res']['working.offset']
+                data.wcs_1                              = j['res']['wcs.1']
+                data.wcs_2                              = j['res']['wcs.2']
+                data.wcs_3                              = j['res']['wcs.3']
+                data.wcs_4                              = j['res']['wcs.4']
+                data.wcs_5                              = j['res']['wcs.5']
+                data.wcs_6                              = j['res']['wcs.6']
+                data.wcs_7                              = j['res']['wcs.7']
+                data.wcs_8                              = j['res']['wcs.8']
+                data.wcs_9                              = j['res']['wcs.9']
+                data.has_data                           = True
+            return data
+        except Exception:
+            return APICoordinateSystemsInfo()
 
     def get_digital_inputs(self) -> APIDigitalInputs:
         """xxx"""
@@ -2013,7 +2060,7 @@ class CncAPIClientCore:
                 data.value                              = j['res']['value']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIDigitalInputs()
 
     def get_digital_outputs(self) -> APIDigitalOutputs:
@@ -2029,7 +2076,7 @@ class CncAPIClientCore:
                 data.value                              = j['res']['value']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIDigitalOutputs()
 
     def get_enabled_commands(self) -> APIEnabledCommands:
@@ -2075,7 +2122,7 @@ class CncAPIClientCore:
                 data.tools_lib_write                    = j['res']['tools.lib.write']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIEnabledCommands()
 
     def get_localization_info(self) -> APILocalizationInfo:
@@ -2088,7 +2135,8 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
-                data.locale                             = j['res']['locale']
+                data.units_mode                         = j['res']['units.mode']
+                data.locale_name                        = j['res']['locale.name']
                 data.description                        = j['res']['description']
                 l = j['res']['list']
                 if len(l) == 0:
@@ -2096,7 +2144,7 @@ class CncAPIClientCore:
                 else:
                     data.list = [data.LocalizationData() for _ in range(len(l))]
                     for i in range(len(data.list)):
-                        data.list[i].locale             = l[i]['locale']
+                        data.list[i].locale_name        = l[i]['locale.name']
                         data.list[i].description        = l[i]['description']
                         data.list[i].owner              = l[i]['owner']
                         data.list[i].revisor            = l[i]['revisor']
@@ -2105,7 +2153,7 @@ class CncAPIClientCore:
                         data.list[i].program            = l[i]['program']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APILocalizationInfo()
 
     def get_machine_settings(self) -> APIMachineSettings:
@@ -2158,7 +2206,7 @@ class CncAPIClientCore:
                 data.kinematics_j_z                     = j['res']['axis']['kinematics.j.z']
                 data.has_data                           = True
             return data
-        except:
+        except Exception:
             return APIMachineSettings()
 
     def get_machining_info(self) -> APIMachiningInfo:
@@ -2246,7 +2294,7 @@ class CncAPIClientCore:
                 data.joints_in_feed_length_c            = j['res']['joints.in.feed']['length.c']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIMachiningInfo()
 
     def get_programmed_points(self) -> APIProgrammedPoints:
@@ -2262,7 +2310,7 @@ class CncAPIClientCore:
                 data.points                             = j['res']['points']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIProgrammedPoints()
 
     def get_scanning_laser_info(self) -> APIScanningLaserInfo:
@@ -2283,7 +2331,7 @@ class CncAPIClientCore:
                 data.laser_mcs_z_position               = j['res']['laser.mcs.z.position']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIScanningLaserInfo()
 
     def get_system_info(self) -> APISystemInfo:
@@ -2314,7 +2362,7 @@ class CncAPIClientCore:
                 data.pld_version                        = j['res']['pld.version']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APISystemInfo()
 
     def get_tools_lib_count(self) -> APIToolsLibCount:
@@ -2330,7 +2378,7 @@ class CncAPIClientCore:
                 data.count                              = j['res']['count']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIToolsLibCount()
 
     def get_tools_lib_info(self, index: int = None) -> APIToolsLibInfo:
@@ -2376,7 +2424,7 @@ class CncAPIClientCore:
                 data.data.tool_description              = j['res']['description']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIToolsLibInfo()
 
     def get_tools_lib_infos(self) -> APIToolsLibInfos:
@@ -2425,7 +2473,7 @@ class CncAPIClientCore:
                         data.data[i].tool_description   = tools[i]['description']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIToolsLibInfos()
 
     def get_tools_lib_tool_index_from_id(self, tool_id: int = None) -> APIToolsLibToolIndexFromId:
@@ -2443,7 +2491,7 @@ class CncAPIClientCore:
                 data.index                              = j['res']['index']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIToolsLibToolIndexFromId()
 
     def get_warnings_current_list(self) -> APIAlarmsWarningsList:
@@ -2469,7 +2517,7 @@ class CncAPIClientCore:
                         data.list[i].datetime           = self.__d(l[i]['datetime'])
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIAlarmsWarningsList()
 
     def get_warnings_history_list(self) -> APIAlarmsWarningsList:
@@ -2495,7 +2543,7 @@ class CncAPIClientCore:
                         data.list[i].datetime           = self.__d(l[i]['datetime'])
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIAlarmsWarningsList()
 
     def get_vm_geometry_info(self, names: list): # -> ???
@@ -2529,13 +2577,13 @@ class CncAPIClientCore:
                     data[i].edges_visible               = j['res'][i]['edges.visible']
                     data[i].has_data = data[i].name != ''
             return data
-        except:
+        except Exception:
             return None
 
     def get_work_info(self) -> APIWorkInfo:
         """xxx"""
         try:
-            if self.is_connected is False:
+            if not self.is_connected:
                 raise Exception()
             data = APIWorkInfo()
             request = '{"get":"work.info"}'
@@ -2550,7 +2598,7 @@ class CncAPIClientCore:
                 data.worked_time                        = j['res']['worked.time']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIWorkInfo()
 
     def get_work_order_code_list(self) -> APIWorkOrderCodeList:
@@ -2573,7 +2621,7 @@ class CncAPIClientCore:
                         data.data[i].revision_number    = j['res'][i][2]
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIWorkOrderCodeList()
 
     def get_work_order_data(self, order_code: str, mode: int = 0) -> APIWorkOrderDataForGet:
@@ -2632,7 +2680,7 @@ class CncAPIClientCore:
                         data.log_items[i].log_info_2    = j['res']['log.items'][i]['log.info.2']
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIWorkOrderDataForGet()
 
     def get_work_order_file_list(self, path: str ='', file_filter: str ='') -> APIWorkOrderFileList:
@@ -2662,7 +2710,7 @@ class CncAPIClientCore:
                         data.files[i].last_write_datetime   = self.__d(j['res'][i]['last.write.datetime'])
                 data.has_data = True
             return data
-        except:
+        except Exception:
             return APIWorkOrderFileList()
 
     #
@@ -2689,6 +2737,9 @@ class CncAPIClientCore:
             - If both `values` and `descriptions` are provided, they must have the same number of elements.
         """
         try:
+            if not self.is_connected:
+                return False
+
             if values is None and descriptions is None:
                 return False
 
@@ -2737,108 +2788,169 @@ class CncAPIClientCore:
                 request += ']'
             request += '}'
             return self.__execute_request(request)
-        except:
+        except Exception:
             return False
 
-    def set_override_fast(self, value: int):
+    def set_localization(self, units_mode: int | None = None, locale_name: str | None = None) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
+
+            has_data = False
+            data = {"set": "localization"}
+
+            if units_mode is not None:
+                if type(units_mode) is not int:
+                    return False
+                if units_mode not in [UM_METRIC, UM_IMPERIAL]:
+                    return False
+                data['units_mode'] = units_mode
+                has_data = True
+
+            if locale_name is not None:
+                if not isinstance(locale_name, str) or not locale_name.strip():
+                    return False
+                data['locale.name'] = locale_name.strip()
+                has_data = True
+
+            if not has_data:
+                return False
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_override_fast(self, value: int) -> bool:
+        """xxx"""
+        try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"fast", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_feed(self, value: int):
+    def set_override_feed(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"feed", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_feed_custom_1(self, value: int):
+    def set_override_feed_custom_1(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"feed.custom.1", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_feed_custom_2(self, value: int):
+    def set_override_feed_custom_2(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"feed.custom.2", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_jog(self, value: int):
+    def set_override_jog(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"jog", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_plasma_power(self, value: int):
+    def set_override_plasma_power(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"plasma.power", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_plasma_voltage(self, value: int):
+    def set_override_plasma_voltage(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"plasma.voltage", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_override_spindle(self, value: int):
+    def set_override_spindle(self, value: int) -> bool:
         """xxx"""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(value, int):
                 return False
             return self.__execute_request(f'{{"set":"override", "name":"spindle", "value":{value}}}')
-        except:
+        except Exception:
             return False
 
-    def set_program_position_a(self, value: float):
+    def set_program_position_a(self, value: float) -> bool:
         """xxx"""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"a":' + str(value) + '}}')
 
-    def set_program_position_b(self, value: float):
+    def set_program_position_b(self, value: float) -> bool:
         """xxx"""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"b":' + str(value) + '}}')
 
-    def set_program_position_c(self, value: float):
+    def set_program_position_c(self, value: float) -> bool:
         """xxx"""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"c":' + str(value) + '}}')
 
-    def set_program_position_x(self, value: float):
+    def set_program_position_x(self, value: float) -> bool:
         """xxx"""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"x":' + str(value) + '}}')
 
-    def set_program_position_y(self, value: float):
+    def set_program_position_y(self, value: float) -> bool:
         """Xxx..."""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"y":' + str(value) + '}}')
 
-    def set_program_position_z(self, value: float):
+    def set_program_position_z(self, value: float) -> bool:
         """xxx"""
+        if not self.is_connected:
+            return False
         return self.__execute_request('{"set":"program.position", "data":{"z":' + str(value) + '}}')
 
     def set_tools_lib_info(self, info: APIToolsLibInfoForSet = None) -> bool:
         """Sets info of a tool into the NC tools library."""
         try:
+            if not self.is_connected:
+                return False
             if not isinstance(info, APIToolsLibInfoForSet):
                 return False
 
@@ -2906,7 +3018,7 @@ class CncAPIClientCore:
                 "index": info.tool_index,
             }
 
-            # Add optional fields only if they are not None
+            # add optional fields only if they are not None
             optional_fields = [
                 ("id", info.tool_id),
                 ("slot", info.tool_slot),
@@ -2944,12 +3056,14 @@ class CncAPIClientCore:
 
             request = self.create_compact_json_request(data)
             return self.__execute_request(request)
-        except:
+        except Exception:
             return False
 
     def set_vm_geometry_info(self, values: list) -> bool:
         """xxx."""
         try:
+            if not self.is_connected:
+                return False
             if len(values) == 0:
                 return False
             request = '{"set":"vm.geometry.info", "data":['
@@ -2972,7 +3086,7 @@ class CncAPIClientCore:
                     request = request + '}'
             request = request + ']}'
             return self.__execute_request(request)
-        except:
+        except Exception:
             return False
 
     def set_work_order_data(self, order_code: str, data: APIWorkOrderDataForSet) -> bool:
@@ -3075,7 +3189,7 @@ class CncAPIClientCore:
     #
 
     @staticmethod
-    def __evaluate_response(response: str):
+    def __evaluate_response(response: str) -> bool:
         try:
             if len(response) == 0:
                 return False
@@ -3083,25 +3197,25 @@ class CncAPIClientCore:
             if str(j['res']).lower() == 'true':
                 return True
             return False
-        except:
+        except Exception:
             return False
 
-    def __execute_request(self, request: str):
+    def __execute_request(self, request: str) -> bool:
         try:
             if self.is_connected is False:
                 return False
             response = self.__send_command(request)
             return self.__evaluate_response(response)
-        except:
+        except Exception:
             return False
 
-    def __send_command(self, request: str):
+    def __send_command(self, request: str) -> str:
 
         def __flush_receiving_buffer():
             try:
                 self.ipc.settimeout(0.0)
                 self.ipc.recv(1024)
-            except:
+            except Exception:
                 pass
 
         if self.is_connected is False:
@@ -3114,7 +3228,7 @@ class CncAPIClientCore:
         if self.use_cnc_direct_access:
             try:
                 return cda.api_server_request(request)
-            except:
+            except Exception:
                 self.close()
                 return ''
         else:
@@ -3172,7 +3286,7 @@ class CncAPIClientCore:
 
             # create a datetime object adding microseconds from epoch_start
             return epoch_start + timedelta(microseconds=microseconds)
-        except:
+        except Exception:
             return datetime.min
 
     @staticmethod
@@ -3210,17 +3324,16 @@ class CncAPIInfoContext:
         :return                 False when the is no connection with the API server
         :rtype                  (bool)
         """
-        if self.__api.is_connected is True:
+        if self.__api.is_connected:
             self.axes_info = self.__api.get_axes_info()
             self.cnc_info = self.__api.get_cnc_info()
             self.compile_info = self.__api.get_compile_info()
             self.enabled_commands = self.__api.get_enabled_commands()
             return True
-        else:
-            self.axes_info = APIAxesInfo()
-            self.cnc_info = APICncInfo()
-            self.compile_info = APICompileInfo()
-            self.enabled_commands = APIEnabledCommands()
+        self.axes_info = APIAxesInfo()
+        self.cnc_info = APICncInfo()
+        self.compile_info = APICompileInfo()
+        self.enabled_commands = APIEnabledCommands()
         return False
 
     #

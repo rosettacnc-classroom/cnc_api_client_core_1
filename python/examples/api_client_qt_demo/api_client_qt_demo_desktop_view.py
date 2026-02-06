@@ -356,6 +356,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             if self.api_server_connection_state == ASCS_DISCONNECTED:
                 if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
                     self.api_server_connection_state = ASCS_CONNECTED
+                    a = self.api.get_coordinate_systems_info()
                 else:
                     self.api.close()
                     self.api_server_connection_state = ASCS_ERROR
