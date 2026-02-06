@@ -520,33 +520,112 @@ int main() {
     
     if (test_set == "si" || test_set == "SI" || test_set == "Si") {
         std::cout << "\n========== Testing SET Methods ==========\n" << std::endl;
-        std::cout << "Testing set_override_jog() - sending values 0 to 100 over 10 seconds..." << std::endl;
+        
+        // Test 1: set_override_jog
+        std::cout << "Test 1: set_override_jog() - sending values 0 to 100 over 10 seconds..." << std::endl;
         std::cout << "(20 updates, one every 500ms)\n" << std::endl;
         
-        // Loop: 0 to 100 in 10 seconds (20 steps, 500ms each)
         int step_count = 20;
         int sleep_ms = 500;
         
         for (int i = 0; i <= step_count; i++) {
             int jog_value = (i * 100) / step_count;
-            std::cout << "Step " << (i + 1) << "/" << (step_count + 1) 
+            std::cout << "  Step " << (i + 1) << "/" << (step_count + 1) 
                      << " - Setting override jog to " << jog_value << "%... ";
             
             bool success = client.set_override_jog(jog_value);
+            std::cout << (success ? "OK" : "FAILED") << std::endl;
             
-            if (success) {
-                std::cout << "OK" << std::endl;
-            } else {
-                std::cout << "FAILED" << std::endl;
-            }
-            
-            // Sleep 500ms (except on last iteration)
             if (i < step_count) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
             }
         }
+        std::cout << std::endl;
         
-        std::cout << "\nSET method testing completed!" << std::endl;
+        // Test 2: set_override_fast
+        std::cout << "Test 2: set_override_fast() - setting to 75%... ";
+        if (client.set_override_fast(75)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 3: set_override_feed
+        std::cout << "Test 3: set_override_feed() - setting to 80%... ";
+        if (client.set_override_feed(80)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 4: set_override_feed_custom_1
+        std::cout << "Test 4: set_override_feed_custom_1() - setting to 90%... ";
+        if (client.set_override_feed_custom_1(90)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 5: set_override_feed_custom_2
+        std::cout << "Test 5: set_override_feed_custom_2() - setting to 95%... ";
+        if (client.set_override_feed_custom_2(95)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 6: set_override_plasma_power
+        std::cout << "Test 6: set_override_plasma_power() - setting to 85%... ";
+        if (client.set_override_plasma_power(85)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 7: set_override_plasma_voltage
+        std::cout << "Test 7: set_override_plasma_voltage() - setting to 70%... ";
+        if (client.set_override_plasma_voltage(70)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 8: set_override_spindle
+        std::cout << "Test 8: set_override_spindle() - setting to 100%... ";
+        if (client.set_override_spindle(100)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 9: set_cnc_parameters with values
+        std::cout << "Test 9: set_cnc_parameters() - setting address 4000 with 3 values... ";
+        std::vector<double> param_values = {10.5, 20.3, 30.7};
+        if (client.set_cnc_parameters(4000, &param_values, nullptr)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 10: set_cnc_parameters with values and descriptions
+        std::cout << "Test 10: set_cnc_parameters() - setting address 4010 with values and descriptions... ";
+        std::vector<double> param_values2 = {100.0, 200.0};
+        std::vector<std::string> param_descs = {"First param", "Second param"};
+        if (client.set_cnc_parameters(4010, &param_values2, &param_descs)) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        
+        std::cout << "\nAll SET method tests completed!" << std::endl;
     } else {
         std::cout << "Test SET methods skipped." << std::endl;
     }

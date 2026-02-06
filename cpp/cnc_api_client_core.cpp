@@ -2549,6 +2549,120 @@ bool CncAPIClientCore::set_override_jog(int value) {
     return evaluate_response(response);
 }
 
+bool CncAPIClientCore::set_override_fast(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "fast";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_feed(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "feed";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_feed_custom_1(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "feed.custom.1";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_feed_custom_2(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "feed.custom.2";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_plasma_power(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "plasma.power";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_plasma_voltage(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "plasma.voltage";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_override_spindle(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "spindle";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_cnc_parameters(int address, const std::vector<double>* values,
+                                          const std::vector<std::string>* descriptions) {
+    if (values == nullptr && descriptions == nullptr) {
+        return false;
+    }
+    
+    size_t v_count = (values != nullptr) ? values->size() : 0;
+    size_t d_count = (descriptions != nullptr) ? descriptions->size() : 0;
+    
+    if (v_count == 0 && d_count == 0) {
+        return false;
+    }
+    
+    if (v_count > 0 && d_count > 0 && v_count != d_count) {
+        return false;
+    }
+    
+    // Build JSON manually for complex structure
+    std::string request = "{\"set\":\"cnc.parameters\",\"address\":" + std::to_string(address);
+    
+    if (v_count > 0) {
+        request += ",\"values\":[";
+        for (size_t i = 0; i < v_count; i++) {
+            request += std::to_string((*values)[i]);
+            if (i < v_count - 1) request += ",";
+        }
+        request += "]";
+    }
+    
+    if (d_count > 0) {
+        request += ",\"descriptions\":[";
+        for (size_t i = 0; i < d_count; i++) {
+            request += "\"" + (*descriptions)[i] + "\"";
+            if (i < d_count - 1) request += ",";
+        }
+        request += "]";
+    }
+    
+    request += "}";
+    
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
 // ========== CncAPIInfoContext Implementation ==========
 
 CncAPIInfoContext::CncAPIInfoContext(CncAPIClientCore* api) : m_api(api) {
