@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_vieweDMhER.ui'
+## Form generated from reading UI file 'desktop_viewWPfJhR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -15,9 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QLabel,
-    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
-    QStatusBar, QTabWidget, QTextEdit, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
+    QFrame, QHeaderView, QLabel, QLineEdit,
+    QMainWindow, QPushButton, QSizePolicy, QStatusBar,
+    QTabWidget, QTableWidget, QTableWidgetItem, QTextEdit,
+    QWidget)
 
 class Ui_DesktopView(object):
     def setupUi(self, DesktopView):
@@ -34,6 +36,7 @@ class Ui_DesktopView(object):
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabWidget.setGeometry(QRect(8, 309, 921, 393))
+        self.tabWidget.setDocumentMode(False)
         self.tabProgram = QWidget()
         self.tabProgram.setObjectName(u"tabProgram")
         self.programNewButton = QPushButton(self.tabProgram)
@@ -101,6 +104,74 @@ class Ui_DesktopView(object):
         self.tabGCode = QWidget()
         self.tabGCode.setObjectName(u"tabGCode")
         self.tabWidget.addTab(self.tabGCode, "")
+        self.tabWCS = QWidget()
+        self.tabWCS.setObjectName(u"tabWCS")
+        self.csOffsetsTable = QTableWidget(self.tabWCS)
+        if (self.csOffsetsTable.columnCount() < 6):
+            self.csOffsetsTable.setColumnCount(6)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.csOffsetsTable.setHorizontalHeaderItem(5, __qtablewidgetitem5)
+        if (self.csOffsetsTable.rowCount() < 9):
+            self.csOffsetsTable.setRowCount(9)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(1, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(2, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(3, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(4, __qtablewidgetitem10)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(5, __qtablewidgetitem11)
+        __qtablewidgetitem12 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(6, __qtablewidgetitem12)
+        __qtablewidgetitem13 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(7, __qtablewidgetitem13)
+        __qtablewidgetitem14 = QTableWidgetItem()
+        self.csOffsetsTable.setVerticalHeaderItem(8, __qtablewidgetitem14)
+        self.csOffsetsTable.setObjectName(u"csOffsetsTable")
+        self.csOffsetsTable.setGeometry(QRect(16, 33, 703, 292))
+        self.csOffsetsTable.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.csOffsetsTable.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.csOffsetsTable.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustIgnored)
+        self.csOffsetsTable.setAutoScroll(True)
+        self.csOffsetsTable.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.csOffsetsTable.setTabKeyNavigation(False)
+        self.csOffsetsTable.setProperty(u"showDropIndicator", False)
+        self.csOffsetsTable.setDragDropOverwriteMode(False)
+        self.csOffsetsTable.setAlternatingRowColors(True)
+        self.csOffsetsTable.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.csOffsetsTable.setShowGrid(True)
+        self.csOffsetsTable.setWordWrap(False)
+        self.csOffsetsTable.setCornerButtonEnabled(False)
+        self.csOffsetsTable.setRowCount(9)
+        self.csOffsetsTable.setColumnCount(6)
+        self.csOffsetsTable.horizontalHeader().setVisible(True)
+        self.csOffsetsTable.horizontalHeader().setCascadingSectionResizes(True)
+        self.csOffsetsTable.horizontalHeader().setHighlightSections(True)
+        self.csOffsetsTable.horizontalHeader().setProperty(u"showSortIndicator", False)
+        self.csOffsetsTable.horizontalHeader().setStretchLastSection(True)
+        self.csOffsetsTable.verticalHeader().setVisible(True)
+        self.csOffsetsTable.verticalHeader().setCascadingSectionResizes(False)
+        self.csOffsetsTable.verticalHeader().setHighlightSections(True)
+        self.csOffsetsTable.verticalHeader().setProperty(u"showSortIndicator", False)
+        self.csOffsetsTable.verticalHeader().setStretchLastSection(True)
+        self.csWorkingWCS = QLabel(self.tabWCS)
+        self.csWorkingWCS.setObjectName(u"csWorkingWCS")
+        self.csWorkingWCS.setGeometry(QRect(16, 10, 201, 16))
+        self.tabWidget.addTab(self.tabWCS, "")
         self.tabCNC = QWidget()
         self.tabCNC.setObjectName(u"tabCNC")
         self.tabWidget.addTab(self.tabCNC, "")
@@ -932,7 +1003,7 @@ class Ui_DesktopView(object):
 
         self.retranslateUi(DesktopView)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(DesktopView)
@@ -951,6 +1022,38 @@ class Ui_DesktopView(object):
         self.programSaveAsLabel.setText(QCoreApplication.translate("DesktopView", u"SAVE PROGRAM AS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabProgram), QCoreApplication.translate("DesktopView", u"Program", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabGCode), QCoreApplication.translate("DesktopView", u"G-Code", None))
+        ___qtablewidgetitem = self.csOffsetsTable.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("DesktopView", u"X", None));
+        ___qtablewidgetitem1 = self.csOffsetsTable.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("DesktopView", u"Y", None));
+        ___qtablewidgetitem2 = self.csOffsetsTable.horizontalHeaderItem(2)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("DesktopView", u"Z", None));
+        ___qtablewidgetitem3 = self.csOffsetsTable.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("DesktopView", u"A", None));
+        ___qtablewidgetitem4 = self.csOffsetsTable.horizontalHeaderItem(4)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("DesktopView", u"B", None));
+        ___qtablewidgetitem5 = self.csOffsetsTable.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("DesktopView", u"C", None));
+        ___qtablewidgetitem6 = self.csOffsetsTable.verticalHeaderItem(0)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("DesktopView", u" Working Offset", None));
+        ___qtablewidgetitem7 = self.csOffsetsTable.verticalHeaderItem(1)
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("DesktopView", u" WCS.1 - [ G54 ]", None));
+        ___qtablewidgetitem8 = self.csOffsetsTable.verticalHeaderItem(2)
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("DesktopView", u" WCS.2 - [ G55 ]", None));
+        ___qtablewidgetitem9 = self.csOffsetsTable.verticalHeaderItem(3)
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("DesktopView", u" WCS.3 - [ G56 ]", None));
+        ___qtablewidgetitem10 = self.csOffsetsTable.verticalHeaderItem(4)
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("DesktopView", u" WCS.4 - [ G57 ]", None));
+        ___qtablewidgetitem11 = self.csOffsetsTable.verticalHeaderItem(5)
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("DesktopView", u" WCS.5 - [ G58 ]", None));
+        ___qtablewidgetitem12 = self.csOffsetsTable.verticalHeaderItem(6)
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("DesktopView", u" WCS.6 - [ G59 ]", None));
+        ___qtablewidgetitem13 = self.csOffsetsTable.verticalHeaderItem(7)
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("DesktopView", u" WCS.7 - [ G59.1 ]", None));
+        ___qtablewidgetitem14 = self.csOffsetsTable.verticalHeaderItem(8)
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("DesktopView", u" WCS.9 - [ G59.3 ]", None));
+        self.csWorkingWCS.setText(QCoreApplication.translate("DesktopView", u"Selected WCS : None", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabWCS), QCoreApplication.translate("DesktopView", u"WCS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCNC), QCoreApplication.translate("DesktopView", u"CNC", None))
         self.cncJogCommandXMButton.setText(QCoreApplication.translate("DesktopView", u"X -", None))
         self.cncJogCommandYMButton.setText(QCoreApplication.translate("DesktopView", u"Y -", None))
