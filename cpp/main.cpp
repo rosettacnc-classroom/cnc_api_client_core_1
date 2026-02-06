@@ -365,6 +365,192 @@ int main() {
     // Note: order destructor will clean up allocated memory
     */
     
+    // Test additional GET methods
+    std::cout << "\n========== Testing Additional GET Methods ==========\n" << std::endl;
+    
+    // Test alarms history list
+    std::cout << "Testing get_alarms_history_list()..." << std::endl;
+    APIAlarmsWarningsList alarms_history = client.get_alarms_history_list();
+    if (alarms_history.has_data) {
+        std::cout << "Alarms History Count: " << alarms_history.list.size() << std::endl;
+        if (!alarms_history.list.empty()) {
+            for (size_t i = 0; i < std::min(alarms_history.list.size(), size_t(5)); i++) {
+                std::cout << "  [" << i << "] Code: " << alarms_history.list[i].code
+                         << " Text: " << alarms_history.list[i].text << std::endl;
+            }
+        } else {
+            std::cout << "  No alarms in history" << std::endl;
+        }
+    } else {
+        std::cout << "  No history data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test warnings current list
+    std::cout << "Testing get_warnings_current_list()..." << std::endl;
+    APIAlarmsWarningsList warnings_current = client.get_warnings_current_list();
+    if (warnings_current.has_data) {
+        std::cout << "Current Warnings Count: " << warnings_current.list.size() << std::endl;
+        if (!warnings_current.list.empty()) {
+            for (size_t i = 0; i < warnings_current.list.size(); i++) {
+                std::cout << "  [" << i << "] Code: " << warnings_current.list[i].code
+                         << " Text: " << warnings_current.list[i].text << std::endl;
+            }
+        } else {
+            std::cout << "  No current warnings" << std::endl;
+        }
+    } else {
+        std::cout << "  No warnings data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test warnings history list
+    std::cout << "Testing get_warnings_history_list()..." << std::endl;
+    APIAlarmsWarningsList warnings_history = client.get_warnings_history_list();
+    if (warnings_history.has_data) {
+        std::cout << "Warnings History Count: " << warnings_history.list.size() << std::endl;
+        if (!warnings_history.list.empty()) {
+            for (size_t i = 0; i < std::min(warnings_history.list.size(), size_t(5)); i++) {
+                std::cout << "  [" << i << "] Code: " << warnings_history.list[i].code
+                         << " Text: " << warnings_history.list[i].text << std::endl;
+            }
+        } else {
+            std::cout << "  No warnings in history" << std::endl;
+        }
+    } else {
+        std::cout << "  No history data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test machine settings
+    std::cout << "Testing get_machine_settings()..." << std::endl;
+    APIMachineSettings machine_settings = client.get_machine_settings();
+    if (machine_settings.has_data) {
+        std::cout << "Machine Type: " << machine_settings.machine_type << std::endl;
+    } else {
+        std::cout << "  No machine settings data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test localization info
+    std::cout << "Testing get_localization_info()..." << std::endl;
+    APILocalizationInfo localization_info = client.get_localization_info();
+    if (localization_info.has_data) {
+        std::cout << "Language: " << localization_info.language << std::endl;
+        std::cout << "Language List: " << localization_info.language_list << std::endl;
+    } else {
+        std::cout << "  No localization data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test scanning laser info
+    std::cout << "Testing get_scanning_laser_info()..." << std::endl;
+    APIScanningLaserInfo laser_info = client.get_scanning_laser_info();
+    if (laser_info.has_data) {
+        std::cout << "Laser Out Bit: " << laser_info.laser_out_bit << std::endl;
+        std::cout << "Laser H Measure: " << laser_info.laser_h_measure << std::endl;
+    } else {
+        std::cout << "  No scanning laser data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test tools lib count
+    std::cout << "Testing get_tools_lib_count()..." << std::endl;
+    APIToolsLibCount tools_count = client.get_tools_lib_count();
+    if (tools_count.has_data) {
+        std::cout << "Tools Library Count: " << tools_count.count << std::endl;
+    } else {
+        std::cout << "  No tools count data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test tool index from id
+    std::cout << "Testing get_tools_lib_tool_index_from_id(2)..." << std::endl;
+    APIToolsLibToolIndexFromId tool_index = client.get_tools_lib_tool_index_from_id(2);
+    if (tool_index.has_data) {
+        std::cout << "Tool ID 2 is at Index: " << tool_index.index << std::endl;
+    } else {
+        std::cout << "  Tool ID 2 not found" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test work order code list
+    std::cout << "Testing get_work_order_code_list()..." << std::endl;
+    APIWorkOrderCodeList order_list = client.get_work_order_code_list();
+    if (order_list.has_data) {
+        std::cout << "Work Order Code List retrieved (simplified parsing)" << std::endl;
+    } else {
+        std::cout << "  No work order data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test programmed points
+    std::cout << "Testing get_programmed_points()..." << std::endl;
+    APIProgrammedPoints prog_points = client.get_programmed_points();
+    if (prog_points.has_data) {
+        std::cout << "Programmed Points retrieved (simplified parsing)" << std::endl;
+    } else {
+        std::cout << "  No programmed points data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Test CNC parameters
+    std::cout << "Testing get_cnc_parameters(1000, 5)..." << std::endl;
+    APICncParameters cnc_params = client.get_cnc_parameters(1000, 5);
+    if (cnc_params.has_data) {
+        std::cout << "CNC Parameters Address: " << cnc_params.address << std::endl;
+        std::cout << "Values Count: " << cnc_params.values.size() << std::endl;
+        if (!cnc_params.values.empty()) {
+            std::cout << "First values: ";
+            for (size_t i = 0; i < std::min(cnc_params.values.size(), size_t(5)); i++) {
+                std::cout << cnc_params.values[i] << " ";
+            }
+            std::cout << std::endl;
+        }
+    } else {
+        std::cout << "  No CNC parameters data available" << std::endl;
+    }
+    std::cout << std::endl;
+    
+    // Ask user if they want to test SET methods
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "Vuoi testare i metodi SET? (si/no): ";
+    std::string test_set;
+    std::getline(std::cin, test_set);
+    
+    if (test_set == "si" || test_set == "SI" || test_set == "Si") {
+        std::cout << "\n========== Testing SET Methods ==========\n" << std::endl;
+        std::cout << "Testing set_override_jog() - sending values 0 to 100 over 10 seconds..." << std::endl;
+        std::cout << "(20 updates, one every 500ms)\n" << std::endl;
+        
+        // Loop: 0 to 100 in 10 seconds (20 steps, 500ms each)
+        int step_count = 20;
+        int sleep_ms = 500;
+        
+        for (int i = 0; i <= step_count; i++) {
+            int jog_value = (i * 100) / step_count;
+            std::cout << "Step " << (i + 1) << "/" << (step_count + 1) 
+                     << " - Setting override jog to " << jog_value << "%... ";
+            
+            bool success = client.set_override_jog(jog_value);
+            
+            if (success) {
+                std::cout << "OK" << std::endl;
+            } else {
+                std::cout << "FAILED" << std::endl;
+            }
+            
+            // Sleep 500ms (except on last iteration)
+            if (i < step_count) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(sleep_ms));
+            }
+        }
+        
+        std::cout << "\nSET method testing completed!" << std::endl;
+    } else {
+        std::cout << "Test SET methods skipped." << std::endl;
+    }
+    
     // Close connection
     std::cout << "\nClosing connection..." << std::endl;
     client.close();

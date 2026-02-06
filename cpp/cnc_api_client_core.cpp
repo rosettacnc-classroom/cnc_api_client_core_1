@@ -2121,6 +2121,434 @@ APIToolsLibInfos CncAPIClientCore::get_tools_lib_infos() {
     return result;
 }
 
+APIAlarmsWarningsList CncAPIClientCore::get_alarms_history_list() {
+    APIAlarmsWarningsList result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "alarms.history.list";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse list array - same logic as get_alarms_current_list
+    std::string list_str = SimpleJSON::Parser::get_nested_value(response, "res", "list");
+    if (!list_str.empty() && list_str != "[]") {
+        size_t pos = 0;
+        while ((pos = list_str.find("{", pos)) != std::string::npos) {
+            size_t end_pos = list_str.find("}", pos);
+            if (end_pos == std::string::npos) break;
+            
+            std::string obj_str = list_str.substr(pos, end_pos - pos + 1);
+            APIAlarmsWarningsList::AlarmWarningData alarm;
+            
+            std::string code_pattern = "\"code\":";
+            size_t code_pos = obj_str.find(code_pattern);
+            if (code_pos != std::string::npos) {
+                code_pos += code_pattern.length();
+                size_t code_end = obj_str.find_first_of(",}", code_pos);
+                std::string code_str = obj_str.substr(code_pos, code_end - code_pos);
+                try { alarm.code = std::stoi(SimpleJSON::Parser::trim(code_str)); } catch (...) {}
+            }
+            
+            std::string text_pattern = "\"text\":\"";
+            size_t text_pos = obj_str.find(text_pattern);
+            if (text_pos != std::string::npos) {
+                text_pos += text_pattern.length();
+                size_t text_end = obj_str.find("\"", text_pos);
+                if (text_end != std::string::npos) {
+                    alarm.text = obj_str.substr(text_pos, text_end - text_pos);
+                }
+            }
+            
+            result.list.push_back(alarm);
+            pos = end_pos + 1;
+        }
+    }
+    
+    return result;
+}
+
+APIAlarmsWarningsList CncAPIClientCore::get_warnings_current_list() {
+    APIAlarmsWarningsList result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "warnings.current.list";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse list array - same logic as alarms
+    std::string list_str = SimpleJSON::Parser::get_nested_value(response, "res", "list");
+    if (!list_str.empty() && list_str != "[]") {
+        size_t pos = 0;
+        while ((pos = list_str.find("{", pos)) != std::string::npos) {
+            size_t end_pos = list_str.find("}", pos);
+            if (end_pos == std::string::npos) break;
+            
+            std::string obj_str = list_str.substr(pos, end_pos - pos + 1);
+            APIAlarmsWarningsList::AlarmWarningData warning;
+            
+            std::string code_pattern = "\"code\":";
+            size_t code_pos = obj_str.find(code_pattern);
+            if (code_pos != std::string::npos) {
+                code_pos += code_pattern.length();
+                size_t code_end = obj_str.find_first_of(",}", code_pos);
+                std::string code_str = obj_str.substr(code_pos, code_end - code_pos);
+                try { warning.code = std::stoi(SimpleJSON::Parser::trim(code_str)); } catch (...) {}
+            }
+            
+            std::string text_pattern = "\"text\":\"";
+            size_t text_pos = obj_str.find(text_pattern);
+            if (text_pos != std::string::npos) {
+                text_pos += text_pattern.length();
+                size_t text_end = obj_str.find("\"", text_pos);
+                if (text_end != std::string::npos) {
+                    warning.text = obj_str.substr(text_pos, text_end - text_pos);
+                }
+            }
+            
+            result.list.push_back(warning);
+            pos = end_pos + 1;
+        }
+    }
+    
+    return result;
+}
+
+APIAlarmsWarningsList CncAPIClientCore::get_warnings_history_list() {
+    APIAlarmsWarningsList result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "warnings.history.list";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse list array - same logic as alarms
+    std::string list_str = SimpleJSON::Parser::get_nested_value(response, "res", "list");
+    if (!list_str.empty() && list_str != "[]") {
+        size_t pos = 0;
+        while ((pos = list_str.find("{", pos)) != std::string::npos) {
+            size_t end_pos = list_str.find("}", pos);
+            if (end_pos == std::string::npos) break;
+            
+            std::string obj_str = list_str.substr(pos, end_pos - pos + 1);
+            APIAlarmsWarningsList::AlarmWarningData warning;
+            
+            std::string code_pattern = "\"code\":";
+            size_t code_pos = obj_str.find(code_pattern);
+            if (code_pos != std::string::npos) {
+                code_pos += code_pattern.length();
+                size_t code_end = obj_str.find_first_of(",}", code_pos);
+                std::string code_str = obj_str.substr(code_pos, code_end - code_pos);
+                try { warning.code = std::stoi(SimpleJSON::Parser::trim(code_str)); } catch (...) {}
+            }
+            
+            std::string text_pattern = "\"text\":\"";
+            size_t text_pos = obj_str.find(text_pattern);
+            if (text_pos != std::string::npos) {
+                text_pos += text_pattern.length();
+                size_t text_end = obj_str.find("\"", text_pos);
+                if (text_end != std::string::npos) {
+                    warning.text = obj_str.substr(text_pos, text_end - text_pos);
+                }
+            }
+            
+            result.list.push_back(warning);
+            pos = end_pos + 1;
+        }
+    }
+    
+    return result;
+}
+
+APIMachineSettings CncAPIClientCore::get_machine_settings() {
+    APIMachineSettings result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "machine.settings";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse basic machine settings (simplified - full parsing would be very large)
+    std::string machine_type = SimpleJSON::Parser::get_nested_value(response, "res", "machine.type");
+    if (!machine_type.empty()) {
+        try { result.machine_type = std::stoi(machine_type); } catch (...) {}
+    }
+    
+    return result;
+}
+
+APILocalizationInfo CncAPIClientCore::get_localization_info() {
+    APILocalizationInfo result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "localization.info";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse localization fields
+    std::string language = SimpleJSON::Parser::get_nested_value(response, "res", "language");
+    if (!language.empty()) {
+        result.language = language;
+    }
+    
+    std::string language_list = SimpleJSON::Parser::get_nested_value(response, "res", "language.list");
+    if (!language_list.empty()) {
+        result.language_list = language_list;
+    }
+    
+    return result;
+}
+
+APIScanningLaserInfo CncAPIClientCore::get_scanning_laser_info() {
+    APIScanningLaserInfo result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "scanning.laser.info";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse laser info fields
+    std::string laser_out_bit = SimpleJSON::Parser::get_nested_value(response, "res", "laser.out.bit");
+    if (!laser_out_bit.empty()) {
+        try { result.laser_out_bit = std::stoi(laser_out_bit); } catch (...) {}
+    }
+    
+    std::string laser_h_measure = SimpleJSON::Parser::get_nested_value(response, "res", "laser.h.measure");
+    if (!laser_h_measure.empty()) {
+        try { result.laser_h_measure = std::stod(laser_h_measure); } catch (...) {}
+    }
+    
+    return result;
+}
+
+APIToolsLibCount CncAPIClientCore::get_tools_lib_count() {
+    APIToolsLibCount result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "tools.lib.count";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse count
+    std::string count_str = SimpleJSON::Parser::get_nested_value(response, "res", "count");
+    if (!count_str.empty()) {
+        try { result.count = std::stoi(count_str); } catch (...) {}
+    }
+    
+    return result;
+}
+
+APIToolsLibToolIndexFromId CncAPIClientCore::get_tools_lib_tool_index_from_id(int tool_id) {
+    APIToolsLibToolIndexFromId result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "tools.lib.tool.index.from.id";
+    data["id"] = std::to_string(tool_id);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse index
+    std::string index_str = SimpleJSON::Parser::get_nested_value(response, "res", "index");
+    if (!index_str.empty()) {
+        try { result.index = std::stoi(index_str); } catch (...) {}
+    }
+    
+    return result;
+}
+
+APIWorkOrderCodeList CncAPIClientCore::get_work_order_code_list() {
+    APIWorkOrderCodeList result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "work.order.code.list";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Note: Full array parsing would require more sophisticated parser
+    // Returning basic structure for now
+    
+    return result;
+}
+
+APIWorkOrderDataForGet CncAPIClientCore::get_work_order_data(const std::string& order_code, int mode) {
+    APIWorkOrderDataForGet result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "work.order.data";
+    data["order.code"] = order_code;
+    if (mode == 1) {
+        data["mode"] = "1";
+    }
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse basic work order fields
+    std::string job_order_code = SimpleJSON::Parser::get_nested_value(response, "res", "job.order.code");
+    if (!job_order_code.empty()) {
+        result.job_order_code = job_order_code;
+    }
+    
+    return result;
+}
+
+APIWorkOrderFileList CncAPIClientCore::get_work_order_file_list(const std::string& path, const std::string& file_filter) {
+    APIWorkOrderFileList result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "work.order.file.list";
+    if (!path.empty()) {
+        data["path"] = path;
+    }
+    if (!file_filter.empty()) {
+        data["file.filter"] = file_filter;
+    }
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Note: File list array parsing would require more sophisticated parser
+    
+    return result;
+}
+
+APIProgrammedPoints CncAPIClientCore::get_programmed_points() {
+    APIProgrammedPoints result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "programmed.points";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Note: Points array parsing would require 2D array parser
+    
+    return result;
+}
+
+APICncParameters CncAPIClientCore::get_cnc_parameters(int address, int elements) {
+    APICncParameters result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "cnc.parameters";
+    data["address"] = std::to_string(address);
+    data["elements"] = std::to_string(elements);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty() || response.find("\"res\":") == std::string::npos || response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse address
+    std::string address_str = SimpleJSON::Parser::get_nested_value(response, "res", "address");
+    if (!address_str.empty()) {
+        try { result.address = std::stoi(address_str); } catch (...) {}
+    }
+    
+    // Parse values array
+    std::string values_str = SimpleJSON::Parser::get_nested_value(response, "res", "values");
+    if (!values_str.empty()) {
+        auto values = SimpleJSON::Parser::parse_double_array(values_str);
+        result.values = values;
+    }
+    
+    return result;
+}
+
+bool CncAPIClientCore::set_override_jog(int value) {
+    std::map<std::string, std::string> data;
+    data["set"] = "override";
+    data["name"] = "jog";
+    data["value"] = std::to_string(value);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
 // ========== CncAPIInfoContext Implementation ==========
 
 CncAPIInfoContext::CncAPIInfoContext(CncAPIClientCore* api) : m_api(api) {

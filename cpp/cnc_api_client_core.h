@@ -591,6 +591,8 @@ public:
     bool has_data;
     std::string locale;
     std::string description;
+    std::string language;
+    std::string language_list;
     std::vector<LocalizationData> list;
     
     APILocalizationInfo() : has_data(false) {}
@@ -599,6 +601,7 @@ public:
 class APIMachineSettings {
 public:
     bool has_data;
+    int machine_type;
     int axis_machine_type;
     int axis_kinematics_model;
     int axis_x_type;
