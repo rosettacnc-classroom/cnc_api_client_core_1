@@ -1831,6 +1831,296 @@ APISystemInfo CncAPIClientCore::get_system_info() {
     return result;
 }
 
+APIAnalogInputs CncAPIClientCore::get_analog_inputs() {
+    APIAnalogInputs result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "analog.inputs";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse value array from res
+    std::string value_str = SimpleJSON::Parser::get_nested_value(response, "res", "value");
+    if (!value_str.empty()) {
+        auto values = SimpleJSON::Parser::parse_double_array(value_str);
+        for (size_t i = 0; i < values.size() && i < result.value.size(); ++i) {
+            result.value[i] = values[i];
+        }
+    }
+    
+    return result;
+}
+
+APIAnalogOutputs CncAPIClientCore::get_analog_outputs() {
+    APIAnalogOutputs result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "analog.outputs";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse value array from res
+    std::string value_str = SimpleJSON::Parser::get_nested_value(response, "res", "value");
+    if (!value_str.empty()) {
+        auto values = SimpleJSON::Parser::parse_double_array(value_str);
+        for (size_t i = 0; i < values.size() && i < result.value.size(); ++i) {
+            result.value[i] = values[i];
+        }
+    }
+    
+    return result;
+}
+
+APIMachiningInfo CncAPIClientCore::get_machining_info() {
+    APIMachiningInfo result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "machining.info";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse tool.path fields
+    std::string tool_path_in_fast = SimpleJSON::Parser::get_nested_value(response, "res", "tool.path", "in.fast");
+    if (!tool_path_in_fast.empty()) {
+        try { result.tool_path_in_fast = std::stod(tool_path_in_fast); } catch (...) {}
+    }
+    
+    std::string tool_path_in_feed = SimpleJSON::Parser::get_nested_value(response, "res", "tool.path", "in.feed");
+    if (!tool_path_in_feed.empty()) {
+        try { result.tool_path_in_feed = std::stod(tool_path_in_feed); } catch (...) {}
+    }
+    
+    std::string total_path = SimpleJSON::Parser::get_nested_value(response, "res", "tool.path", "total.path");
+    if (!total_path.empty()) {
+        try { result.total_path = std::stod(total_path); } catch (...) {}
+    }
+    
+    std::string planned_time = SimpleJSON::Parser::get_nested_value(response, "res", "tool.path", "planned.time");
+    if (!planned_time.empty()) {
+        result.planned_time = planned_time;
+    }
+    
+    // Note: Skipping used.tool array parsing for simplicity - would require array-of-objects parsing
+    
+    return result;
+}
+
+APIWorkInfo CncAPIClientCore::get_work_info() {
+    APIWorkInfo result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "work.info";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse work info fields
+    std::string work_mode = SimpleJSON::Parser::get_nested_value(response, "res", "work.mode");
+    if (!work_mode.empty()) {
+        try { result.work_mode = std::stoi(work_mode); } catch (...) {}
+    }
+    
+    std::string active_order_code = SimpleJSON::Parser::get_nested_value(response, "res", "active.work.order.code");
+    if (!active_order_code.empty()) {
+        result.active_work_order_code = active_order_code;
+    }
+    
+    std::string active_file_index = SimpleJSON::Parser::get_nested_value(response, "res", "active.work.order.file.index");
+    if (!active_file_index.empty()) {
+        try { result.active_work_order_file_index = std::stoi(active_file_index); } catch (...) {}
+    }
+    
+    std::string file_name = SimpleJSON::Parser::get_nested_value(response, "res", "file.name");
+    if (!file_name.empty()) {
+        result.file_name = file_name;
+    }
+    
+    std::string planned_time = SimpleJSON::Parser::get_nested_value(response, "res", "planned.time");
+    if (!planned_time.empty()) {
+        result.planned_time = planned_time;
+    }
+    
+    std::string worked_time = SimpleJSON::Parser::get_nested_value(response, "res", "worked.time");
+    if (!worked_time.empty()) {
+        result.worked_time = worked_time;
+    }
+    
+    return result;
+}
+
+APIToolsLibInfo CncAPIClientCore::get_tools_lib_info(int index) {
+    APIToolsLibInfo result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "tools.lib.info";
+    data["index"] = std::to_string(index);
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse tool info fields from res
+    std::string tool_index_str = SimpleJSON::Parser::get_nested_value(response, "res", "index");
+    if (!tool_index_str.empty()) {
+        try { result.data.tool_index = std::stoi(tool_index_str); } catch (...) {}
+    }
+    
+    std::string tool_id_str = SimpleJSON::Parser::get_nested_value(response, "res", "id");
+    if (!tool_id_str.empty()) {
+        try { result.data.tool_id = std::stoi(tool_id_str); } catch (...) {}
+    }
+    
+    std::string tool_slot_str = SimpleJSON::Parser::get_nested_value(response, "res", "slot");
+    if (!tool_slot_str.empty()) {
+        result.data.tool_slot = (tool_slot_str == "true" || tool_slot_str == "1");
+    }
+    
+    std::string tool_type_str = SimpleJSON::Parser::get_nested_value(response, "res", "type");
+    if (!tool_type_str.empty()) {
+        try { result.data.tool_type = std::stoi(tool_type_str); } catch (...) {}
+    }
+    
+    std::string diameter_str = SimpleJSON::Parser::get_nested_value(response, "res", "diameter");
+    if (!diameter_str.empty()) {
+        try { result.data.tool_diameter = std::stod(diameter_str); } catch (...) {}
+    }
+    
+    std::string offset_x_str = SimpleJSON::Parser::get_nested_value(response, "res", "offset.x");
+    if (!offset_x_str.empty()) {
+        try { result.data.tool_offset_x = std::stod(offset_x_str); } catch (...) {}
+    }
+    
+    std::string offset_y_str = SimpleJSON::Parser::get_nested_value(response, "res", "offset.y");
+    if (!offset_y_str.empty()) {
+        try { result.data.tool_offset_y = std::stod(offset_y_str); } catch (...) {}
+    }
+    
+    std::string offset_z_str = SimpleJSON::Parser::get_nested_value(response, "res", "offset.z");
+    if (!offset_z_str.empty()) {
+        try { result.data.tool_offset_z = std::stod(offset_z_str); } catch (...) {}
+    }
+    
+    std::string description_str = SimpleJSON::Parser::get_nested_value(response, "res", "description");
+    if (!description_str.empty()) {
+        result.data.tool_description = description_str;
+    }
+    
+    // Parse parameters (simplified - not parsing all 60+ params)
+    std::string param1_str = SimpleJSON::Parser::get_nested_value(response, "res", "param.1");
+    if (!param1_str.empty()) {
+        try { result.data.tool_param_1 = std::stod(param1_str); } catch (...) {}
+    }
+    
+    return result;
+}
+
+APIToolsLibInfos CncAPIClientCore::get_tools_lib_infos() {
+    APIToolsLibInfos result;
+    result.has_data = false;
+    
+    std::map<std::string, std::string> data;
+    data["get"] = "tools.lib.infos";
+    std::string request = create_compact_json_request(data);
+    std::string response = send_command(request);
+    
+    if (response.empty()) {
+        return result;
+    }
+    
+    if (response.find("\"res\":") == std::string::npos) {
+        return result;
+    }
+    
+    if (response.find("\"res\":null") != std::string::npos) {
+        return result;
+    }
+    
+    result.has_data = true;
+    
+    // Parse slot.enabled
+    std::string slot_enabled_str = SimpleJSON::Parser::get_nested_value(response, "res", "slot.enabled");
+    if (!slot_enabled_str.empty()) {
+        result.slot_enabled = (slot_enabled_str == "true" || slot_enabled_str == "1");
+    }
+    
+    // Note: tools array parsing would require sophisticated array-of-objects parser
+    // For now, returning basic structure with slot_enabled flag
+    
+    return result;
+}
+
 // ========== CncAPIInfoContext Implementation ==========
 
 CncAPIInfoContext::CncAPIInfoContext(CncAPIClientCore* api) : m_api(api) {

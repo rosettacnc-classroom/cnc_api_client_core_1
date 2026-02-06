@@ -141,6 +141,85 @@ int main() {
         std::cout << "Failed to get alarms list!" << std::endl;
     }
     
+    // Test 5: Get Analog Inputs
+    std::cout << "\n--- Analog Inputs (first 8) ---" << std::endl;
+    APIAnalogInputs analog_in = client.get_analog_inputs();
+    if (analog_in.has_data) {
+        std::cout << "Analog Inputs: ";
+        for (int i = 0; i < 8 && i < static_cast<int>(analog_in.value.size()); ++i) {
+            std::cout << analog_in.value[i];
+            if (i < 7) std::cout << ", ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Failed to get analog inputs!" << std::endl;
+    }
+    
+    // Test 6: Get Analog Outputs
+    std::cout << "\n--- Analog Outputs (first 8) ---" << std::endl;
+    APIAnalogOutputs analog_out = client.get_analog_outputs();
+    if (analog_out.has_data) {
+        std::cout << "Analog Outputs: ";
+        for (int i = 0; i < 8 && i < static_cast<int>(analog_out.value.size()); ++i) {
+            std::cout << analog_out.value[i];
+            if (i < 7) std::cout << ", ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << "Failed to get analog outputs!" << std::endl;
+    }
+    
+    // Test 7: Get Work Info
+    std::cout << "\n--- Work Info ---" << std::endl;
+    APIWorkInfo work_info = client.get_work_info();
+    if (work_info.has_data) {
+        std::cout << "Work Mode: " << work_info.work_mode << std::endl;
+        std::cout << "File Name: " << work_info.file_name << std::endl;
+        std::cout << "Planned Time: " << work_info.planned_time << std::endl;
+        std::cout << "Worked Time: " << work_info.worked_time << std::endl;
+        if (!work_info.active_work_order_code.empty()) {
+            std::cout << "Active Order: " << work_info.active_work_order_code << std::endl;
+        }
+    } else {
+        std::cout << "Failed to get work info!" << std::endl;
+    }
+    
+    // Test 8: Get Machining Info
+    std::cout << "\n--- Machining Info ---" << std::endl;
+    APIMachiningInfo machining_info = client.get_machining_info();
+    if (machining_info.has_data) {
+        std::cout << "Tool Path in Fast: " << machining_info.tool_path_in_fast << " mm" << std::endl;
+        std::cout << "Tool Path in Feed: " << machining_info.tool_path_in_feed << " mm" << std::endl;
+        std::cout << "Total Path: " << machining_info.total_path << " mm" << std::endl;
+        std::cout << "Planned Time: " << machining_info.planned_time << std::endl;
+    } else {
+        std::cout << "Failed to get machining info!" << std::endl;
+    }
+    
+    // Test 9: Get Tool Library Info (tool at index 1)
+    std::cout << "\n--- Tool Library Info (Index 1) ---" << std::endl;
+    APIToolsLibInfo tool_info = client.get_tools_lib_info(1);
+    if (tool_info.has_data) {
+        std::cout << "Tool Index: " << tool_info.data.tool_index << std::endl;
+        std::cout << "Tool ID: " << tool_info.data.tool_id << std::endl;
+        std::cout << "Tool Type: " << tool_info.data.tool_type << std::endl;
+        std::cout << "Diameter: " << tool_info.data.tool_diameter << " mm" << std::endl;
+        std::cout << "Offset Z: " << tool_info.data.tool_offset_z << " mm" << std::endl;
+        std::cout << "Description: " << tool_info.data.tool_description << std::endl;
+    } else {
+        std::cout << "Failed to get tool info!" << std::endl;
+    }
+    
+    // Test 10: Get Tool Library Infos (all tools)
+    std::cout << "\n--- Tool Library Infos (All) ---" << std::endl;
+    APIToolsLibInfos tools_infos = client.get_tools_lib_infos();
+    if (tools_infos.has_data) {
+        std::cout << "Slot Enabled: " << (tools_infos.slot_enabled ? "YES" : "NO") << std::endl;
+        std::cout << "Tools Count: " << tools_infos.data.size() << std::endl;
+    } else {
+        std::cout << "Failed to get tools library infos!" << std::endl;
+    }
+    
     std::cout << "\n========================================" << std::endl;
     std::cout << "Real-Time CNC Monitoring (10 updates)" << std::endl;
     std::cout << "========================================" << std::endl;
