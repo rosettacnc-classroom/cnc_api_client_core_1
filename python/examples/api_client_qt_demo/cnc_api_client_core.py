@@ -57,7 +57,7 @@ import ssl
 import json
 import socket
 
-from typing import List
+from typing import Any, List
 from datetime import datetime, timedelta
 
 # evaluate if cnc direct access is available
@@ -389,6 +389,60 @@ SPMEM_PROGRAM_SETTINGS              =  1 << 12
 SPMEM_TOOLS_LIBRARY                 =  1 << 13
 SPMEM_WORK_COORDINATES              =  1 << 14
 
+class APIComparableMixin:
+    """
+    This class adds automatic recursive comparison to APIxx classes.
+    It handles: nested classes, lists of objects, datetime, enum, etc.
+
+    NOTE
+    ====
+    Mixing is a class that provides additional functionality to other classes through multiple inheritance,
+    but is not intended to be instantiated on its own.
+    """
+
+    def is_equal(self, other: Any) -> bool:
+        """Compare the instance with another of the same type."""
+        if not isinstance(other, self.__class__):
+            return False
+        return _deep_compare(self.__dict__, other.__dict__)
+
+    @staticmethod
+    def are_equal(a: Any, b: Any) -> bool:
+        """Compare two instances (they can be None)."""
+        if a is None and b is None:
+            return True
+        if a is None or b is None:
+            return False
+        if a.__class__ is not b.__class__:
+            return False
+        return _deep_compare(a.__dict__, b.__dict__)
+
+def _deep_compare(a: Any, b: Any) -> bool:
+    """
+    Deep recursive comparison.
+    Handles: dict, list, objects with __dict__, primitive types.    """
+    if type(a) != type(b):
+        return False
+
+    # lists (manages lists of objects or lists of primitives)
+    if isinstance(a, list):
+        if len(a) != len(b):
+            return False
+        return all(_deep_compare(x, y) for x, y in zip(a, b))
+
+    # dictionaries (e.g., __dict__)
+    if isinstance(a, dict):
+        if a.keys() != b.keys():
+            return False
+        return all(_deep_compare(a[k], b[k]) for k in a)
+
+    # objects with __dict__ (other classes)
+    if hasattr(a, '__dict__'):
+        return _deep_compare(a.__dict__, b.__dict__)
+
+    # primitive types (int, str, float, bool, datetime, enum, etc.)
+    return a == b
+
 class APIAlarmsWarningsList:
     """API data structure for alarms and warnings list."""
 
@@ -546,7 +600,7 @@ class APICompileInfo:
         self.message                            = ''
         self.state                              = CS_INIT
 
-class APICoordinateSystemsInfo:
+class APICoordinateSystemsInfo(APIComparableMixin):
     """API coordinate systems info."""
     def __init__(self):
         self.has_data                           = False
@@ -762,7 +816,7 @@ class APIScanningLaserInfo:
         self.laser_mcs_y_position               = 0.0
         self.laser_mcs_z_position               = 0.0
 
-class APISystemInfo:
+class APISystemInfo(APIComparableMixin):
     """API data structure for system info."""
     def __init__(self):
         self.has_data = False
@@ -782,59 +836,6 @@ class APISystemInfo:
         self.operative_system                   = ''
         self.operative_system_crc               = ''
         self.pld_version                        = ''
-
-    def is_equal(self, data: APISystemInfo) -> bool:
-        """Evaluate if class attributes are equal to attributes of another instance of the class."""
-        try:
-            if not isinstance(data, APISystemInfo):
-                return False
-            return (
-                self.machine_name               == data.machine_name                and
-                self.control_software_version   == data.control_software_version    and
-                self.core_version               == data.core_version                and
-                self.api_server_version         == data.api_server_version          and
-                self.firmware_version           == data.firmware_version            and
-                self.firmware_version_tag       == data.firmware_version_tag        and
-                self.firmware_interface_level   == data.firmware_interface_level    and
-                self.order_code                 == data.order_code                  and
-                self.customer_id                == data.customer_id                 and
-                self.serial_number              == data.serial_number               and
-                self.part_number                == data.part_number                 and
-                self.customization_number       == data.customization_number        and
-                self.hardware_version           == data.hardware_version            and
-                self.operative_system           == data.operative_system            and
-                self.operative_system_crc       == data.operative_system_crc        and
-                self.pld_version                == data.pld_version
-            )
-        except Exception:
-            return False
-
-    @staticmethod
-    def are_equal(data_a: APISystemInfo, data_b: APISystemInfo) -> bool:
-        """Evaluate if classes attributes are equal."""
-        try:
-            if not all(isinstance(data, APISystemInfo) for data in [data_a, data_b]):
-                return False
-            return (
-                data_a.machine_name             == data_b.machine_name                and
-                data_a.control_software_version == data_b.control_software_version    and
-                data_a.core_version             == data_b.core_version                and
-                data_a.api_server_version       == data_b.api_server_version          and
-                data_a.firmware_version         == data_b.firmware_version            and
-                data_a.firmware_version_tag     == data_b.firmware_version_tag        and
-                data_a.firmware_interface_level == data_b.firmware_interface_level    and
-                data_a.order_code               == data_b.order_code                  and
-                data_a.customer_id              == data_b.customer_id                 and
-                data_a.serial_number            == data_b.serial_number               and
-                data_a.part_number              == data_b.part_number                 and
-                data_a.customization_number     == data_b.customization_number        and
-                data_a.hardware_version         == data_b.hardware_version            and
-                data_a.operative_system         == data_b.operative_system            and
-                data_a.operative_system_crc     == data_b.operative_system_crc        and
-                data_a.pld_version              == data_b.pld_version
-            )
-        except Exception:
-            return False
 
 class APIToolsLibCount:
     """API data structure for tools library count."""
@@ -3053,6 +3054,55 @@ class CncAPIClientCore:
             for key, value in optional_fields:
                 if value is not None:
                     data[key] = value
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_wcs_info(self, wcs: int, offset: list) -> bool:
+        """
+        Sets desired WCS offsets.
+
+        Args:
+            wcs: Define what of wcs, from 1 to 9, you want to set offsets
+            offset: a list of 6 elements, representing x/y/z/a/b/c axes, where any element could be:
+                None    = not change this axis value
+                int     = will be internally converted to float
+                float   = will be used as is as
+        """
+        try:
+            if not self.is_connected:
+                return False
+
+            if type(wcs) is not int:
+                return False
+            if (wcs < 0) or (wcs > 9):
+                return False
+
+            if not isinstance(offset, list):
+                return False
+            if len(offset) != 6:
+                return False
+
+            data = {
+                "set": "wcs.info",
+                "wcs": wcs,
+                "data": {},
+            }
+            has_data = False
+            axis = ['x','y','z','a','b','c']
+            for idx, item in enumerate(offset):
+                if item is None:
+                    continue
+                if not isinstance(item, float) and type(item) is not int:
+                    return False
+
+                data['data'][f'{axis[idx]}'] = float(item)
+                has_data = True
+
+            if not has_data:
+                return False
 
             request = self.create_compact_json_request(data)
             return self.__execute_request(request)

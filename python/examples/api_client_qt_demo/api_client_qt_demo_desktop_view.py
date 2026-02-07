@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      02/02/2026
+# Created:      06/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -39,9 +39,9 @@ from collections import namedtuple
 import cnc_api_client_core as cnc
 from utils import DecimalsTrimMode, format_float, is_in_str_list_range
 
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QFileDialog, QLabel, QLineEdit, QMainWindow, QPushButton
+from PySide6.QtWidgets import QFileDialog, QLabel, QLineEdit, QMainWindow, QPushButton, QTableWidgetItem
 
 from ui_desktop_view import Ui_DesktopView
 
@@ -66,7 +66,7 @@ DEF_LOAD_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions.
 DEF_SAVE_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions_new.ngc'
 
 # == debug settings
-DBG_UPD_TICK_TIME           = False
+DBG_UPD_TICK_TIME           = True
 
 # == program constants
 OVERRIDE_SEATTLE_TIME       = 500
@@ -187,7 +187,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.set_program_position_y = None
         self.set_program_position_z = None
         self.units_mode = None
+
+        # in use cached variables to reduce UI update time
         self.system_info_in_use = None
+        self.coordinates_system_info_in_use = None
 
         # create an action to manage all event executions
         self.on_action_main_execute = QAction("", self)
@@ -356,7 +359,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             if self.api_server_connection_state == ASCS_DISCONNECTED:
                 if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
                     self.api_server_connection_state = ASCS_CONNECTED
-                    a = self.api.get_coordinate_systems_info()
                 else:
                     self.api.close()
                     self.api_server_connection_state = ASCS_ERROR
@@ -610,7 +612,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.set_program_position_z = 0.0
         #FToolInfoLabel: THtmlLabel
         self.units_mode = cnc.UM_METRIC
-        self.system_info_in_use = None
 
         # load settings from memento
         self.__memento_load()
@@ -882,6 +883,48 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # update tab g-code values
         if self.ui.tabWidget.currentWidget() == self.ui.tabGCode:
             pass
+
+        # update tab coordinate system
+        if self.ui.tabWidget.currentWidget() == self.ui.tabWCS:
+            csi = self.api.get_coordinate_systems_info()
+            if not csi.is_equal(self.coordinates_system_info_in_use):
+                self.coordinates_system_info_in_use = csi
+
+                def set_active_wcs_header_bold(table, working_wcs: int):
+                    active_row = int(working_wcs)
+                    if active_row < 1 or active_row > 9:
+                        active_row = -1
+                    for r in range(table.rowCount()):
+                        hdr = table.verticalHeaderItem(r)
+                        if hdr is None:
+                            hdr = QTableWidgetItem(table.verticalHeaderItem(r).text() if table.verticalHeaderItem(r) else "")
+                            table.setVerticalHeaderItem(r, hdr)
+                        f = hdr.font()
+                        f.setBold(r == active_row)
+                        hdr.setFont(f)
+
+                wcs_names = ['G54', 'G55', 'G56', 'G57', 'G58', 'G59', 'G59.1', 'G59.2', 'G59.3']
+                if 1 <= csi.working_wcs <= 9:
+                    wcs_name = wcs_names[csi.working_wcs - 1]
+                    self.ui.csWorkingWCS.setText(f"Working WCS.{csi.working_wcs:d} - [ {wcs_name} ]")
+                else:
+                    self.ui.csWorkingWCS.setText("Unavailable working WCS")
+                set_active_wcs_header_bold(self.ui.csOffsetsTable, csi.working_wcs)
+                for r in range(self.ui.csOffsetsTable.rowCount()):
+                    if r == 0:
+                        offsets = csi.working_offset
+                    else:
+                        offsets = getattr(csi, f"wcs_{r}")
+                    for c in range(self.ui.csOffsetsTable.columnCount()):
+                        item = self.ui.csOffsetsTable.item(r, c)
+                        if item is None:
+                            item = QTableWidgetItem()
+                            item.setTextAlignment(Qt.AlignCenter)
+                            self.ui.csOffsetsTable.setItem(r, c, item)
+                        if csi.has_data:
+                            item.setText(str(offsets[c]))
+                        else:
+                            item.setText('- - -')
 
         # update tab cnc values
         if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:
