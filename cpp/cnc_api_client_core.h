@@ -579,7 +579,7 @@ public:
 class APILocalizationInfo {
 public:
     struct LocalizationData {
-        std::string locale;
+        std::string locale_name;
         std::string description;
         std::string owner;
         std::string revisor;
@@ -589,13 +589,14 @@ public:
     };
     
     bool has_data;
-    std::string locale;
+    int units_mode;
+    std::string locale_name;
     std::string description;
     std::string language;
     std::string language_list;
     std::vector<LocalizationData> list;
     
-    APILocalizationInfo() : has_data(false) {}
+    APILocalizationInfo() : has_data(false), units_mode(UM_METRIC) {}
 };
 
 class APIMachineSettings {
@@ -1126,6 +1127,7 @@ public:
     // ========== API Server "set" Requests ==========
     bool set_cnc_parameters(int address, const std::vector<double>* values = nullptr,
                            const std::vector<std::string>* descriptions = nullptr);
+    bool set_localization(int units_mode = -1, const std::string& locale_name = "");
     bool set_override_fast(int value);
     bool set_override_feed(int value);
     bool set_override_feed_custom_1(int value);

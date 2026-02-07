@@ -10,6 +10,9 @@
 #include <thread>
 #include <chrono>
 
+// Uncomment the following line to enable set_localization() test (requires RosettaCNC v14.3+)
+// #define TEST_SET_LOCALIZATION_V14_3
+
 using namespace RosettaCNC;
 
 // Helper function to get state machine description
@@ -436,6 +439,10 @@ int main() {
     std::cout << "Testing get_localization_info()..." << std::endl;
     APILocalizationInfo localization_info = client.get_localization_info();
     if (localization_info.has_data) {
+        std::cout << "Units Mode: " << localization_info.units_mode 
+                 << (localization_info.units_mode == UM_METRIC ? " (Metric)" : " (Imperial)") << std::endl;
+        std::cout << "Locale Name: " << localization_info.locale_name << std::endl;
+        std::cout << "Description: " << localization_info.description << std::endl;
         std::cout << "Language: " << localization_info.language << std::endl;
         std::cout << "Language List: " << localization_info.language_list << std::endl;
     } else {
@@ -678,6 +685,27 @@ int main() {
         } else {
             std::cout << "FAILED" << std::endl;
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+#ifdef TEST_SET_LOCALIZATION_V14_3
+        // Test 17: set_localization (units mode) - Requires RosettaCNC v14.3+
+        std::cout << "Test 17: set_localization() - setting units to METRIC... ";
+        if (client.set_localization(UM_METRIC, "")) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        
+        // Test 18: set_localization (locale name) - Requires RosettaCNC v14.3+
+        std::cout << "Test 18: set_localization() - setting locale to 'it-IT'... ";
+        if (client.set_localization(-1, "it-IT")) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+#endif // TEST_SET_LOCALIZATION_V14_3
         
         std::cout << "\nAll SET method tests completed!" << std::endl;
     } else {

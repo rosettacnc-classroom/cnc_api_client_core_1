@@ -22,7 +22,7 @@ This project contains the C++ implementation of the RosettaCNC API client, porte
 
 ### 📊 Overall Summary
 - **GET Methods**: 27/27 ✅ (100%)
-- **SET Methods**: 15/18 ✅ (83%)
+- **SET Methods**: 16/18 ✅ (89%)
 - **CMD Methods**: 2/36 ✅ (6%)
 
 ---
@@ -61,7 +61,7 @@ All GET methods have been implemented and tested with real CNC server:
 
 ---
 
-## ✅ Implemented SET Methods (15/18 - 83%)
+## ✅ Implemented SET Methods (16/18 - 89%)
 
 ### Override (8/8) ✅
 1. ✅ `set_override_jog(int value)` - Jog speed override
@@ -81,13 +81,14 @@ All GET methods have been implemented and tested with real CNC server:
 13. ✅ `set_program_position_b(double value)` - Set B position
 14. ✅ `set_program_position_c(double value)` - Set C position
 
-### Other SET (1/4) ✅
+### Other SET (2/4) ✅
 15. ✅ `set_cnc_parameters(address, values, descriptions)` - Set CNC parameters
+16. ✅ `set_localization(units_mode, locale_name)` - Set localization (units and locale)
 
-### ❌ SET Methods To Implement (3)
-16. ❌ `set_tools_lib_info(const APIToolsLibInfoForSet* info)` - Set tool information
-17. ❌ `set_vm_geometry_info(const std::vector<APIVMGeometryInfo>& values)` - Set VM geometry info
-18. ❌ `set_work_order_data(order_code, data)` - Set work order data
+### ❌ SET Methods To Implement (2)
+17. ❌ `set_tools_lib_info(const APIToolsLibInfoForSet* info)` - Set tool information
+18. ❌ `set_vm_geometry_info(const std::vector<APIVMGeometryInfo>& values)` - Set VM geometry info
+19. ❌ `set_work_order_data(order_code, data)` - Set work order data
 
 ---
 

@@ -2318,6 +2318,21 @@ APILocalizationInfo CncAPIClientCore::get_localization_info() {
     result.has_data = true;
     
     // Parse localization fields
+    std::string units_mode_str = SimpleJSON::Parser::get_nested_value(response, "res", "units.mode");
+    if (!units_mode_str.empty()) {
+        try { result.units_mode = std::stoi(units_mode_str); } catch (...) {}
+    }
+    
+    std::string locale_name = SimpleJSON::Parser::get_nested_value(response, "res", "locale.name");
+    if (!locale_name.empty()) {
+        result.locale_name = locale_name;
+    }
+    
+    std::string description = SimpleJSON::Parser::get_nested_value(response, "res", "description");
+    if (!description.empty()) {
+        result.description = description;
+    }
+    
     std::string language = SimpleJSON::Parser::get_nested_value(response, "res", "language");
     if (!language.empty()) {
         result.language = language;
@@ -2653,6 +2668,33 @@ bool CncAPIClientCore::set_cnc_parameters(int address, const std::vector<double>
             if (i < d_count - 1) request += ",";
         }
         request += "]";
+    }
+    
+    request += "}";
+    
+    std::string response = send_command(request);
+    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::set_localization(int units_mode, const std::string& locale_name) {
+    if (units_mode == -1 && locale_name.empty()) {
+        return false;
+    }
+    
+    // Validate units_mode if provided
+    if (units_mode != -1 && units_mode != UM_METRIC && units_mode != UM_IMPERIAL) {
+        return false;
+    }
+    
+    // Build JSON request
+    std::string request = "{\"set\":\"localization\"";
+    
+    if (units_mode != -1) {
+        request += ",\"units_mode\":" + std::to_string(units_mode);
+    }
+    
+    if (!locale_name.empty()) {
+        request += ",\"locale.name\":\"" + locale_name + "\"";
     }
     
     request += "}";
