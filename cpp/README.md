@@ -23,7 +23,7 @@ This project contains the C++ implementation of the RosettaCNC API client, porte
 ### 📊 Overall Summary
 - **GET Methods**: 27/27 ✅ (100%)
 - **SET Methods**: 16/18 ✅ (89%)
-- **CMD Methods**: 2/36 ✅ (6%)
+- **CMD Methods**: 3/36 ✅ (8%)
 
 ---
 
@@ -92,13 +92,16 @@ All GET methods have been implemented and tested with real CNC server:
 
 ---
 
-## ✅ Implemented CMD Methods (2/36 - 6%)
+## ✅ Implemented CMD Methods (3/36 - 8%)
 
 ### Execution Control (2/5) ✅
 1. ✅ `cnc_start()` - Start program execution
 2. ✅ `cnc_stop()` - Stop execution
 
-### ❌ CMD Methods To Implement (34)
+### Program Management (1/9) ✅
+3. ✅ `program_load(const std::string& file_name)` - Load program
+
+### ❌ CMD Methods To Implement (33)
 
 #### Execution Control (3/5)
 - ❌ `cnc_pause()` - Pause execution
@@ -123,8 +126,7 @@ All GET methods have been implemented and tested with real CNC server:
 #### MDI Commands (1)
 - ❌ `cnc_mdi_command(const std::string& command)` - Execute MDI command
 
-#### Program Management (9)
-- ❌ `program_load(const std::string& file_name)` - Load program
+#### Program Management (8)
 - ❌ `program_new()` - New program
 - ❌ `program_save()` - Save program
 - ❌ `program_save_as(const std::string& file_name)` - Save program as
@@ -176,8 +178,8 @@ The `main.cpp` program includes complete tests for all implemented methods:
 
 1. **GET Methods Test** - Automatic tests for all 27 GET methods
 2. **Real-time Monitoring** - 10 seconds of real-time CNC monitoring
-3. **SET Methods Test** (interactive) - Tests for all 15 implemented SET methods
-4. **CMD Methods Test** (interactive) - Test cnc_start/stop with 5-second wait
+3. **SET Methods Test** (interactive) - Tests for all 16 implemented SET methods
+4. **CMD Methods Test** (interactive) - Test program_load, cnc_start/stop
 
 Run:
 ```bash

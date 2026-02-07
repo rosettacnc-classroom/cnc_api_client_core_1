@@ -738,7 +738,8 @@ CncAPIClientCore::CncAPIClientCore() :
     m_use_ssl(false),
     m_use_cnc_direct_access(false),
     m_port(15011),
-    m_ssl_initialized(false) {
+    m_ssl_initialized(false),
+    m_last_response("") {
     
     initialize_winsock();
     ZeroMemory(&m_cred_handle, sizeof(m_cred_handle));
@@ -1090,6 +1091,7 @@ std::string CncAPIClientCore::send_command(const std::string& request) {
             response += buffer[0];
         }
         
+        m_last_response = response;  // Store for debugging
         return response;
     } catch (...) {
         close();
@@ -1282,11 +1284,14 @@ bool CncAPIClientCore::cnc_jog_command(int command) {
 }
 
 bool CncAPIClientCore::program_load(const std::string& file_name) {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "program_load";
-    data["file_name"] = file_name;
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    if (file_name.empty()) {
+        return false;
+    }
+    
+    std::string escaped_name = escape_json_string(file_name);
+    std::string request = "{\"cmd\":\"program.load\",\"name\":\"" + escaped_name + "\"}";
+    std::string response = send_command(request);
+    return evaluate_response(response);
 }
 
 // ========== API Get Methods ==========

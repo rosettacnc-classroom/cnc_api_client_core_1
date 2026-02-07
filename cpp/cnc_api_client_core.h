@@ -1054,6 +1054,7 @@ public:
     bool connect_direct();
     bool close();
     bool is_connected() const { return m_is_connected; }
+    std::string get_last_response() const { return m_last_response; }  // For debugging
     
     // ========== API Server "cmd" Requests ==========
     bool cnc_change_function_state_mode(int name, int mode);
@@ -1158,6 +1159,7 @@ private:
     bool m_use_cnc_direct_access;
     std::string m_host;
     int m_port;
+    std::string m_last_response;  // Store last server response for debugging
     
     // SSL context (for TLS 1.2)
     CredHandle m_cred_handle;

@@ -721,7 +721,23 @@ int main() {
     if (test_cmd == "si" || test_cmd == "SI" || test_cmd == "Si") {
         std::cout << "\n========== Testing CMD Methods ==========\n" << std::endl;
         
-        std::cout << "Test: cnc_start() - Starting CNC program execution... ";
+        // Test program_load first
+        std::cout << "Test: program_load() - Loading test.ngc... ";
+        if (client.program_load("D:/USR/cnc_api_client_core_1/cpp/test.ngc")) {
+            std::cout << "OK" << std::endl;
+        } else {
+            std::cout << "FAILED" << std::endl;
+            std::cout << "Server response: " << client.get_last_response() << std::endl;
+        }
+        std::cout << std::endl;
+        
+        // Wait 5 seconds
+        for (int i = 1; i <= 5; i++) {
+            std::cout << "  " << i << " seconds..." << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+            std::cout << "Test: cnc_start() - Starting CNC program execution... ";
         if (client.cnc_start()) {
             std::cout << "OK" << std::endl;
             std::cout << "Program started. Waiting 5 seconds..." << std::endl;
@@ -743,7 +759,13 @@ int main() {
             std::cout << "Note: cnc_start may fail if no program is loaded or machine is not ready." << std::endl;
         }
         
-        std::cout << "\nCMD method tests completed!" << std::endl;
+        // Wait 5 seconds
+        for (int i = 1; i <= 5; i++) {
+            std::cout << "  " << i << " seconds..." << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+            std::cout << "\nCMD method tests completed!" << std::endl;
     } else {
         std::cout << "Test CMD methods skipped." << std::endl;
     }
