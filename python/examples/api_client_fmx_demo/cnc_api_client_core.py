@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      06/02/2026
+# Created:      07/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -3060,16 +3060,17 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def set_wcs_info(self, wcs: int, offset: list) -> bool:
+    def set_wcs_info(self, wcs: int, offset: list, activate: bool = False) -> bool:
         """
         Sets desired WCS offsets.
 
         Args:
-            wcs: Define what of wcs, from 1 to 9, you want to set offsets
-            offset: a list of 6 elements, representing x/y/z/a/b/c axes, where any element could be:
-                None    = not change this axis value
-                int     = will be internally converted to float
-                float   = will be used as is as
+            wcs         : define what of wcs, from 1 to 9, you want to set offsets
+            activate    : if True wcs become working wcs
+            offset      : a list of 6 elements, representing x/y/z/a/b/c axes, where any element could be:
+                            None    = not change this axis value
+                            int     = will be internally converted to float
+                            float   = will be used as is as
         """
         try:
             if not self.is_connected:
@@ -3077,7 +3078,7 @@ class CncAPIClientCore:
 
             if type(wcs) is not int:
                 return False
-            if (wcs < 0) or (wcs > 9):
+            if (wcs < 1) or (wcs > 9):
                 return False
 
             if not isinstance(offset, list):
@@ -3088,14 +3089,18 @@ class CncAPIClientCore:
             data = {
                 "set": "wcs.info",
                 "wcs": wcs,
-                "data": {},
             }
+
+            if activate:
+                data["activate"] = activate
+
             has_data = False
+            data["data"] = {}
             axis = ['x','y','z','a','b','c']
             for idx, item in enumerate(offset):
                 if item is None:
                     continue
-                if not isinstance(item, float) and type(item) is not int:
+                if not (isinstance(item, float) or type(item) is int):
                     return False
 
                 data['data'][f'{axis[idx]}'] = float(item)
