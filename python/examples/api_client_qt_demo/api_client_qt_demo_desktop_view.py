@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      06/02/2026
+# Created:      09/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -36,45 +36,56 @@ import time
 from statistics import median
 from collections import namedtuple
 
-import cnc_api_client_core as cnc
-from utils import DecimalsTrimMode, format_float, is_in_str_list_range
-
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QFileDialog, QLabel, QLineEdit, QMainWindow, QPushButton, QTableWidgetItem
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QFileDialog,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QPushButton,
+    QTableWidgetItem
+)
 
 from ui_desktop_view import Ui_DesktopView
+from utils import DecimalsTrimMode, format_float, is_in_str_list_range
 
+import cnc_api_client_core as cnc
 from cnc_memento import CncMemento
 
 # define here the version number to show in view caption
 VERSION = '1.0.1'
 
 # == application info
-APP_TITLE                   = f'API Client Demo with Qt PySide6 UI - {VERSION}'
+APP_TITLE                           = f'API Client Demo with Qt PySide6 UI - {VERSION}'
 
 # == default constants
-DEF_API_SERVER_HOST         = '127.0.0.1'
-DEF_API_SERVER_PORT         = 8000
-DEF_API_SERVER_USE_TLS      = False
-DEF_STAY_ON_TOP             = False
+DEF_API_SERVER_HOST                 = '127.0.0.1'
+DEF_API_SERVER_PORT                 = 8000
+DEF_API_SERVER_USE_TLS              = False
+DEF_STAY_ON_TOP                     = False
 
 # == settings file name
-SETTINGS_FILE_NAME          = 'settings.xml'
+SETTINGS_FILE_NAME                  = 'settings.xml'
 
-DEF_LOAD_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions.ngc'
-DEF_SAVE_PROGRAM_FILE_NAME  = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions_new.ngc'
+DEF_LOAD_PROGRAM_FILE_NAME          = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions.ngc'
+DEF_SAVE_PROGRAM_FILE_NAME          = 'D:\\gcode-repository\\_test_\\heavy\\2.8-milions_new.ngc'
 
 # == debug settings
-DBG_UPD_TICK_TIME           = True
+DBG_UPD_TICK_TIME                   = True
 
 # == program constants
-OVERRIDE_SEATTLE_TIME       = 500
+OVERRIDE_SEATTLE_TIME               = 500
+
+# == digits in float
+OFFSET_USE_DIGITS                   = 6
 
 # == api server connection state
-ASCS_DISCONNECTED           = 0
-ASCS_CONNECTED              = 1
-ASCS_ERROR                  = 2
+ASCS_DISCONNECTED                   = 0
+ASCS_CONNECTED                      = 1
+ASCS_ERROR                          = 2
 
 # == api server connection state texts (english)
 ASCS_TEXTS = [
@@ -121,7 +132,12 @@ SM_TEXTS = [
 SS_TEXTS = ['OFF', 'CW', 'CCW']
 
 # keyboard constants
-VK_RETURN                   = 0x0D
+VK_RETURN                           = 0x0D
+
+# == apply wcs change mode
+AWCM_ACTIVATE_WCS_ONLY              = 0         # apply wcs changes mode: activate wcs only
+AWCM_SET_WCS_OFFSET_ONLY            = 1         # apply wcs changes mode: set wcs offset only
+AWCM_SET_WCS_OFFSET_AND_ACTIVATE    = 2         # apply wcs changes mode: set wcs offset and activate
 
 AxisControls = namedtuple('AxisControls', ['label', 'value'])
 
@@ -156,6 +172,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
         self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
 
+        # lock tables header resize
+        self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.ui.csOffsetsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+
         # declare class public attributes (for pylint check)
         self.api = None
         self.ctx = None
@@ -178,15 +198,25 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # FOverrideFeedWatch: TStopWatch
         # FOverrideJogWatch: TStopWatch
         # FOverrideSpindleWatch: TStopWatch
-        self.program_load_file_name = None
-        self.program_save_file_name = None
-        self.set_program_position_a = None
-        self.set_program_position_b = None
-        self.set_program_position_c = None
-        self.set_program_position_x = None
-        self.set_program_position_y = None
-        self.set_program_position_z = None
-        self.units_mode = None
+
+        # declare editable fields support attributes
+        self.program_load_file_name = ''
+        self.program_save_file_name = ''
+        self.set_program_position_a = 0.0
+        self.set_program_position_b = 0.0
+        self.set_program_position_c = 0.0
+        self.set_program_position_x = 0.0
+        self.set_program_position_y = 0.0
+        self.set_program_position_z = 0.0
+        self.set_wcs = 1
+        self.set_wcs_x = 0.0
+        self.set_wcs_y = 0.0
+        self.set_wcs_z = 0.0
+        self.set_wcs_a = 0.0
+        self.set_wcs_b = 0.0
+        self.set_wcs_c = 0.0
+        self.apply_wcs_changes_mode = AWCM_SET_WCS_OFFSET_ONLY
+        self.units_mode = cnc.UM_METRIC
 
         # in use cached variables to reduce UI update time
         self.system_info_in_use = None
@@ -208,6 +238,13 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 obj.released.connect(self.__on_cnc_jog_command_mouse_up)
             else:
                 obj.clicked.connect(self.__on_action_main_execute)
+
+        # link actions to all radio button
+        self.apply_wcs_mode_group = QButtonGroup(self)
+        self.apply_wcs_mode_group.addButton(self.ui.csActivateWCSOnlyRadioButton, 0)
+        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetOnlyRadioButton, 1)
+        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetAndActivateRadioButton, 2)
+        self.apply_wcs_mode_group.idClicked.connect(self.__on_button_group_clicked)
 
         # create array of axis related objects [ helper attributes ]
         self.axes = ['X', 'Y', 'Z', 'A', 'B', 'C']
@@ -271,7 +308,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     def __on_action_main_execute(self):
         sender = self.sender()
 
-        # events for commands
+        # events from commands
         if sender == self.ui.CNCConnectionOpenButton:
             self.api.cnc_connection_open(use_ui=True)
         if sender == self.ui.CNCConnectionCloseButton:
@@ -297,7 +334,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.resetWarningsHistoryButton:
             self.api.reset_warnings_history()
 
-        # events for tab program
+        # events from tab program
         if sender == self.ui.programLoadSelectFileButton:
             file_path, selected_filter = QFileDialog.getOpenFileName(
                 self,
@@ -311,7 +348,32 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.programLoadButton:
             self.api.program_load(self.program_load_file_name)
 
-        # events for tab jog
+        # events from tab g-code
+
+        # events from tab wcs
+        if sender == self.ui.csApplyWCSChangesButton:
+            wcs = self.set_wcs
+            offset = [None, None, None, None, None, None]
+            if self.apply_wcs_changes_mode in [AWCM_SET_WCS_OFFSET_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]:
+                if self.ui.csSetWCSXCheckBox.isChecked():
+                    offset[0] = self.set_wcs_x
+                if self.ui.csSetWCSYCheckBox.isChecked():
+                    offset[1] = self.set_wcs_y
+                if self.ui.csSetWCSZCheckBox.isChecked():
+                    offset[2] = self.set_wcs_z
+                if self.ui.csSetWCSACheckBox.isChecked():
+                    offset[3] = self.set_wcs_a
+                if self.ui.csSetWCSBCheckBox.isChecked():
+                    offset[4] = self.set_wcs_b
+                if self.ui.csSetWCSCCheckBox.isChecked():
+                    offset[5] = self.set_wcs_c
+            activate = self.apply_wcs_changes_mode in [AWCM_ACTIVATE_WCS_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]
+            self.api.set_wcs_info(wcs, offset, activate=activate)
+            print(f'{wcs} | {offset} | {activate}')
+
+        # events from tab cnc
+
+        # events from tab jog
         if sender == self.ui.setProgramPositionXButton:
             self.api.set_program_position_x(self.set_program_position_x)
         if sender == self.ui.setProgramPositionYButton:
@@ -328,7 +390,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.jogSTOPButton:
             self.api.cnc_stop()
 
-        # events for tab ui dialogs
+        # events from tab overrides
+        # events from tab homing
+        # events from tab mdi
+        # events from tab d i/o
+        # events from tab a i/o
+        # events from tab scanning laser
+        # events from tab machining info
+
+        # events from tab ui dialogs
         if sender == self.ui.uidAboutButton:
             self.api.show_ui_dialog(cnc.UID_ABOUT)
         if sender == self.ui.uidATCManagementButton:
@@ -354,7 +424,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.uidWorkCoordinatesButton:
             self.api.show_ui_dialog(cnc.UID_WORK_COORDINATES)
 
-        # events for connection with API Server
+        # events from system info
+
+        # events from connection with API Server
         if sender == self.ui.ServerConnectDisconnectButton:
             if self.api_server_connection_state == ASCS_DISCONNECTED:
                 if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
@@ -374,8 +446,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 else:
                     self.api.close()
                     self.api_server_connection_state = ASCS_ERROR
-            else:
-                pass # !!! SHOULD NEVER HAPPEN !!!
 
     def __on_action_main_update(self):
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
@@ -402,6 +472,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.programSaveButton.setEnabled(False)
             self.ui.programSaveAsButton.setEnabled(False)
 
+            # update tab g-code
+
+            # update tab wcs
+            self.ui.csApplyWCSChangesButton.setEnabled(False)
+
             # update tab jog
             self.ui.cncJogCommandXMButton.setEnabled(False)
             self.ui.cncJogCommandXPButton.setEnabled(False)
@@ -425,6 +500,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionBButton.setEnabled(False)
             self.ui.setProgramPositionCButton.setEnabled(False)
 
+            # update tab overrides
+            # update tab homing
+            # update tab mdi
+            # update tab d i/o
+            # update tab a i/o
+            # update tab scanning laser
+            # update tab machining info
+
             # update tab ui dialogs
             self.ui.uidAboutButton.setEnabled(False)
             self.ui.uidATCManagementButton.setEnabled(False)
@@ -438,6 +521,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.uidProgramSettingsButton.setEnabled(False)
             self.ui.uidToolsLibraryButton.setEnabled(False)
             self.ui.uidWorkCoordinatesButton.setEnabled(False)
+
+            # update tab system info
         else:
             connected = self.ctx.cnc_info.state_machine != cnc.SM_DISCONNECTED
             enabled_commands = self.ctx.enabled_commands
@@ -464,6 +549,29 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.programSaveButton.setEnabled(enabled_commands.program_save)
             self.ui.programSaveAsButton.setEnabled(enabled_commands.program_save_as)
 
+            # update tab g-code
+
+            # update tab wcs
+            enabled = False
+            has_offset = (
+                self.ui.csSetWCSXCheckBox.isChecked() or
+                self.ui.csSetWCSYCheckBox.isChecked() or
+                self.ui.csSetWCSZCheckBox.isChecked() or
+                self.ui.csSetWCSACheckBox.isChecked() or
+                self.ui.csSetWCSBCheckBox.isChecked() or
+                self.ui.csSetWCSCCheckBox.isChecked()
+            )
+            if enabled_commands.cnc_parameters:
+                if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
+                    enabled = connected
+                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
+                    enabled = has_offset
+                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_AND_ACTIVATE:
+                    enabled = connected and has_offset
+            self.ui.csApplyWCSChangesButton.setEnabled(enabled)
+
+            # update tab cnc
+
             # update tab jog
             cnc_jog_command = self.ctx.enabled_commands.cnc_jog_command
             self.ui.cncJogCommandXMButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
@@ -489,6 +597,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionBButton.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
             self.ui.setProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
+            # update tab overrides
+            # update tab homing
+            # update tab mdi
+            # update tab d i/o
+            # update tab a i/o
+            # update tab scanning laser
+            # update tab machining info
+
             # update tab ui dialogs
             uid_available = self.ctx.enabled_commands.show_ui_dialog
             self.ui.uidAboutButton.setEnabled(uid_available)
@@ -504,12 +620,21 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.uidToolsLibraryButton.setEnabled(uid_available)
             self.ui.uidWorkCoordinatesButton.setEnabled(uid_available)
 
+            # update tab system info
+
         # update server connect/disconnect button
         self.ui.ServerConnectDisconnectButton.setEnabled(True)
         if self.api_server_connection_state == ASCS_CONNECTED:
             self.ui.ServerConnectDisconnectButton.setText('Disconnect')
         else:
             self.ui.ServerConnectDisconnectButton.setText('Connect')
+
+    def __on_button_group_clicked(self, button_id: int):
+        sender = self.sender()
+
+        if sender == self.apply_wcs_mode_group:
+            self.apply_wcs_changes_mode = button_id
+            self.__update_editable_fields()
 
     def __on_cnc_jog_command_mouse_down(self):
         sender = self.sender()
@@ -559,9 +684,56 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             except Exception:
                 return False
 
+        def try_str_2_int(dest_attr_name: str, min_val: int | None, max_val: int | None) -> bool:
+            try:
+                val = int(value)
+
+                # disallow bool-like input explicitly (e.g., value is True/False)
+                if type(value) is bool:
+                    return False
+
+                # validate min/max types (allow None or int)
+                if min_val is not None and type(min_val) is not int:
+                    return False
+                if max_val is not None and type(max_val) is not int:
+                    return False
+
+                # range checks
+                if min_val is not None and val < min_val:
+                    return False
+                if max_val is not None and val > max_val:
+                    return False
+
+                setattr(self, dest_attr_name, val)
+                return True
+            except Exception:
+                return False
+
         sender = self.sender()
         value = sender.text().strip()
 
+        # events from tab program
+        # events from tab g-code
+
+        # events from tab wcs
+        if sender == self.ui.csSetWCSEdit:
+            try_str_2_int('set_wcs', 1, 9)
+        if sender == self.ui.csSetWCSXEdit:
+            try_str_2_float('set_wcs_x')
+        if sender == self.ui.csSetWCSYEdit:
+            try_str_2_float('set_wcs_y')
+        if sender == self.ui.csSetWCSZEdit:
+            try_str_2_float('set_wcs_z')
+        if sender == self.ui.csSetWCSAEdit:
+            try_str_2_float('set_wcs_a')
+        if sender == self.ui.csSetWCSBEdit:
+            try_str_2_float('set_wcs_b')
+        if sender == self.ui.csSetWCSCEdit:
+            try_str_2_float('set_wcs_c')
+
+        # events from tab cnc
+
+        # events from tab jog
         if sender == self.ui.setProgramPositionXEdit:
             try_str_2_float('set_program_position_x')
         if sender == self.ui.setProgramPositionYEdit:
@@ -574,6 +746,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             try_str_2_float('set_program_position_b')
         if sender == self.ui.setProgramPositionCEdit:
             try_str_2_float('set_program_position_c')
+
+        # events from tab overrides
+        # events from tab homing
+        # events from tab mdi
+        # events from tab d i/o
+        # events from tab a i/o
+        # events from tab scanning laser
+        # events from tab machining info
+        # events from tab ui dialogs
+        # events from tab system info
 
         self.__update_editable_fields()
 
@@ -602,16 +784,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # FOverrideFeedWatch: TStopWatch
         # FOverrideJogWatch: TStopWatch
         # FOverrideSpindleWatch: TStopWatch
-        self.program_load_file_name = ''
-        self.program_save_file_name = ''
-        self.set_program_position_a = 0.0
-        self.set_program_position_b = 0.0
-        self.set_program_position_c = 0.0
-        self.set_program_position_x = 0.0
-        self.set_program_position_y = 0.0
-        self.set_program_position_z = 0.0
         #FToolInfoLabel: THtmlLabel
-        self.units_mode = cnc.UM_METRIC
 
         # load settings from memento
         self.__memento_load()
@@ -782,25 +955,52 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             return
         self.in_update = True
         try:
-            um = '{:.3f}' if self.units_mode == cnc.UM_METRIC else '{:.4f}'
+            pos_um = '{:.3f}' if self.units_mode == cnc.UM_METRIC else '{:.4f}'
+
+            # update tab: program
             self.ui.programLoadFileNameEdit.setText(self.program_load_file_name)
             self.ui.programSaveFileAsFileNameEdit.setText(self.program_save_file_name)
-            """
-            self.CNCResumeAfterStopFromLineEdit.Text = str(self.cnc_resume_after_stop_from_line)
-            self.CNCStartFromLineEdit.Text = str(self.cnc_start_from_line)
-            """
-            self.ui.setProgramPositionXEdit.setText(um.format(self.set_program_position_x))
-            self.ui.setProgramPositionYEdit.setText(um.format(self.set_program_position_y))
-            self.ui.setProgramPositionZEdit.setText(um.format(self.set_program_position_z))
-            self.ui.setProgramPositionAEdit.setText(um.format(self.set_program_position_a))
-            self.ui.setProgramPositionBEdit.setText(um.format(self.set_program_position_b))
-            self.ui.setProgramPositionCEdit.setText(um.format(self.set_program_position_c))
-            """
-            self.APIServerHostEdit.Text = self.api_server_host
-            self.APIServerPortEdit.Text = str(self.api_server_port)
-            self.UseTLSCheckBox.IsChecked = self.api_server_use_tls
-            self.StayOnTopCheckBox.IsChecked = self.stay_on_top
-            """
+
+            # update tab: g-code
+
+            # update tab: wcs
+            if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
+                self.ui.csActivateWCSOnlyRadioButton.setChecked(True)
+            elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
+                self.ui.csSetWCSOffsetOnlyRadioButton.setChecked(True)
+            elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_AND_ACTIVATE:
+                self.ui.csSetWCSOffsetAndActivateRadioButton.setChecked(True)
+            else:
+                self.apply_wcs_changes_mode = AWCM_SET_WCS_OFFSET_ONLY
+                self.ui.csSetWCSOffsetOnlyRadioButton.setChecked(True)
+
+            self.ui.csSetWCSEdit.setText(str(self.set_wcs))
+            self.ui.csSetWCSXEdit.setText(format_float(self.set_wcs_x, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+            self.ui.csSetWCSYEdit.setText(format_float(self.set_wcs_y, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+            self.ui.csSetWCSZEdit.setText(format_float(self.set_wcs_z, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+            self.ui.csSetWCSAEdit.setText(format_float(self.set_wcs_a, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+            self.ui.csSetWCSBEdit.setText(format_float(self.set_wcs_b, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+            self.ui.csSetWCSCEdit.setText(format_float(self.set_wcs_c, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
+
+            # update tab: cnc
+
+            # update tab: jog
+            self.ui.setProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
+            self.ui.setProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
+            self.ui.setProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
+            self.ui.setProgramPositionAEdit.setText(pos_um.format(self.set_program_position_a))
+            self.ui.setProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
+            self.ui.setProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
+
+            # update tab: overrides
+            # update tab: homing
+            # update tab: mdi
+            # update tab: d i/o
+            # update tab: a i/o
+            # update tab: scanning laser
+            # update tab: machine info
+            # update tab: ui dialogs
+            # update tab: system info
         finally:
             self.in_update = False
 
@@ -875,7 +1075,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
         self.ui.toolInfoLabel.setText(text)
 
-        # update tab program values
+        # update tab program
         if self.ui.tabWidget.currentWidget() == self.ui.tabProgram:
             self.ui.programLoadFileNameEdit.setEnabled(enabled_commands.program_load)
             self.ui.programSaveFileAsFileNameEdit.setEnabled(enabled_commands.program_load)
@@ -922,9 +1122,50 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                             item.setTextAlignment(Qt.AlignCenter)
                             self.ui.csOffsetsTable.setItem(r, c, item)
                         if csi.has_data:
-                            item.setText(str(offsets[c]))
+                            item.setText(format_float(offsets[c], OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
                         else:
                             item.setText('- - -')
+
+            if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
+                self.ui.csWorkingWCS.setEnabled(False)
+                self.ui.csActivateWCSOnlyRadioButton.setEnabled(False)
+                self.ui.csSetWCSOffsetOnlyRadioButton.setEnabled(False)
+                self.ui.csSetWCSOffsetAndActivateRadioButton.setEnabled(False)
+                self.ui.csSetWCSLabel.setEnabled(False)
+                self.ui.csSetWCSEdit.setEnabled(False)
+                self.ui.csSetWCSXCheckBox.setEnabled(False)
+                self.ui.csSetWCSXEdit.setEnabled(False)
+                self.ui.csSetWCSYCheckBox.setEnabled(False)
+                self.ui.csSetWCSYEdit.setEnabled(False)
+                self.ui.csSetWCSZCheckBox.setEnabled(False)
+                self.ui.csSetWCSZEdit.setEnabled(False)
+                self.ui.csSetWCSACheckBox.setEnabled(False)
+                self.ui.csSetWCSAEdit.setEnabled(False)
+                self.ui.csSetWCSBCheckBox.setEnabled(False)
+                self.ui.csSetWCSBEdit.setEnabled(False)
+                self.ui.csSetWCSCCheckBox.setEnabled(False)
+                self.ui.csSetWCSCEdit.setEnabled(False)
+            else:
+                self.ui.csWorkingWCS.setEnabled(True)
+                self.ui.csActivateWCSOnlyRadioButton.setEnabled(True)
+                self.ui.csSetWCSOffsetOnlyRadioButton.setEnabled(True)
+                self.ui.csSetWCSOffsetAndActivateRadioButton.setEnabled(True)
+                self.ui.csSetWCSLabel.setEnabled(True)
+                self.ui.csSetWCSEdit.setEnabled(True)
+
+                enabled = self.apply_wcs_changes_mode in [AWCM_SET_WCS_OFFSET_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]
+                self.ui.csSetWCSXCheckBox.setEnabled(enabled)
+                self.ui.csSetWCSXEdit.setEnabled(enabled and self.ui.csSetWCSXCheckBox.isChecked())
+                self.ui.csSetWCSYCheckBox.setEnabled(enabled)
+                self.ui.csSetWCSYEdit.setEnabled(enabled and self.ui.csSetWCSYCheckBox.isChecked())
+                self.ui.csSetWCSZCheckBox.setEnabled(enabled)
+                self.ui.csSetWCSZEdit.setEnabled(enabled and self.ui.csSetWCSZCheckBox.isChecked())
+                self.ui.csSetWCSACheckBox.setEnabled(enabled)
+                self.ui.csSetWCSAEdit.setEnabled(enabled and self.ui.csSetWCSACheckBox.isChecked())
+                self.ui.csSetWCSBCheckBox.setEnabled(enabled)
+                self.ui.csSetWCSBEdit.setEnabled(enabled and self.ui.csSetWCSBCheckBox.isChecked())
+                self.ui.csSetWCSCCheckBox.setEnabled(enabled)
+                self.ui.csSetWCSCEdit.setEnabled(enabled and self.ui.csSetWCSCCheckBox.isChecked())
 
         # update tab cnc values
         if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:

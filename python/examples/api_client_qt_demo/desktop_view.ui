@@ -455,6 +455,243 @@
        <string>Selected WCS : None</string>
       </property>
      </widget>
+     <widget class="QLineEdit" name="csSetWCSEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>106</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSXEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>134</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSXCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>135</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>X</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSYEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>162</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSYCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>163</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSZEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>190</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSZCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>191</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Z</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSAEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>218</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSACheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>219</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSBEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>246</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSBCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>247</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>B</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="csSetWCSCEdit">
+      <property name="geometry">
+       <rect>
+        <x>780</x>
+        <y>274</y>
+        <width>113</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="csSetWCSCCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>275</y>
+        <width>31</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>C</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="csApplyWCSChangesButton">
+      <property name="geometry">
+       <rect>
+        <x>732</x>
+        <y>302</y>
+        <width>161</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Apply WCS Changes</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="csSetWCSOffsetOnlyRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>55</y>
+        <width>175</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set WCS Offset ONLY</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="csActivateWCSOnlyRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>33</y>
+        <width>175</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Activate WCS ONLY</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="csSetWCSOffsetAndActivateRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>77</y>
+        <width>175</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set WCS Offset and Activate</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="csSetWCSLabel">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>109</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WCS</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabCNC">
      <attribute name="title">

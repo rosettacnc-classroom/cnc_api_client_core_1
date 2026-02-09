@@ -3106,7 +3106,7 @@ class CncAPIClientCore:
                 data['data'][f'{axis[idx]}'] = float(item)
                 has_data = True
 
-            if not has_data:
+            if not has_data and not activate:
                 return False
 
             request = self.create_compact_json_request(data)

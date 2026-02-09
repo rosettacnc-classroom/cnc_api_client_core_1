@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewWPfJhR.ui'
+## Form generated from reading UI file 'desktop_viewxXPzpU.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -17,9 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
     QFrame, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QPushButton, QSizePolicy, QStatusBar,
-    QTabWidget, QTableWidget, QTableWidgetItem, QTextEdit,
-    QWidget)
+    QMainWindow, QPushButton, QRadioButton, QSizePolicy,
+    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
+    QTextEdit, QWidget)
 
 class Ui_DesktopView(object):
     def setupUi(self, DesktopView):
@@ -171,6 +171,67 @@ class Ui_DesktopView(object):
         self.csWorkingWCS = QLabel(self.tabWCS)
         self.csWorkingWCS.setObjectName(u"csWorkingWCS")
         self.csWorkingWCS.setGeometry(QRect(16, 10, 201, 16))
+        self.csSetWCSEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSEdit.setObjectName(u"csSetWCSEdit")
+        self.csSetWCSEdit.setGeometry(QRect(780, 106, 113, 22))
+        self.csSetWCSEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSXEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSXEdit.setObjectName(u"csSetWCSXEdit")
+        self.csSetWCSXEdit.setGeometry(QRect(780, 134, 113, 22))
+        self.csSetWCSXEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSXCheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSXCheckBox.setObjectName(u"csSetWCSXCheckBox")
+        self.csSetWCSXCheckBox.setGeometry(QRect(730, 135, 31, 20))
+        self.csSetWCSYEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSYEdit.setObjectName(u"csSetWCSYEdit")
+        self.csSetWCSYEdit.setGeometry(QRect(780, 162, 113, 22))
+        self.csSetWCSYEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSYCheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSYCheckBox.setObjectName(u"csSetWCSYCheckBox")
+        self.csSetWCSYCheckBox.setGeometry(QRect(730, 163, 31, 20))
+        self.csSetWCSZEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSZEdit.setObjectName(u"csSetWCSZEdit")
+        self.csSetWCSZEdit.setGeometry(QRect(780, 190, 113, 22))
+        self.csSetWCSZEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSZCheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSZCheckBox.setObjectName(u"csSetWCSZCheckBox")
+        self.csSetWCSZCheckBox.setGeometry(QRect(730, 191, 31, 20))
+        self.csSetWCSAEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSAEdit.setObjectName(u"csSetWCSAEdit")
+        self.csSetWCSAEdit.setGeometry(QRect(780, 218, 113, 22))
+        self.csSetWCSAEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSACheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSACheckBox.setObjectName(u"csSetWCSACheckBox")
+        self.csSetWCSACheckBox.setGeometry(QRect(730, 219, 31, 20))
+        self.csSetWCSBEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSBEdit.setObjectName(u"csSetWCSBEdit")
+        self.csSetWCSBEdit.setGeometry(QRect(780, 246, 113, 22))
+        self.csSetWCSBEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSBCheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSBCheckBox.setObjectName(u"csSetWCSBCheckBox")
+        self.csSetWCSBCheckBox.setGeometry(QRect(730, 247, 31, 20))
+        self.csSetWCSCEdit = QLineEdit(self.tabWCS)
+        self.csSetWCSCEdit.setObjectName(u"csSetWCSCEdit")
+        self.csSetWCSCEdit.setGeometry(QRect(780, 274, 113, 22))
+        self.csSetWCSCEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.csSetWCSCCheckBox = QCheckBox(self.tabWCS)
+        self.csSetWCSCCheckBox.setObjectName(u"csSetWCSCCheckBox")
+        self.csSetWCSCCheckBox.setGeometry(QRect(730, 275, 31, 20))
+        self.csApplyWCSChangesButton = QPushButton(self.tabWCS)
+        self.csApplyWCSChangesButton.setObjectName(u"csApplyWCSChangesButton")
+        self.csApplyWCSChangesButton.setGeometry(QRect(732, 302, 161, 24))
+        self.csSetWCSOffsetOnlyRadioButton = QRadioButton(self.tabWCS)
+        self.csSetWCSOffsetOnlyRadioButton.setObjectName(u"csSetWCSOffsetOnlyRadioButton")
+        self.csSetWCSOffsetOnlyRadioButton.setGeometry(QRect(730, 55, 175, 20))
+        self.csActivateWCSOnlyRadioButton = QRadioButton(self.tabWCS)
+        self.csActivateWCSOnlyRadioButton.setObjectName(u"csActivateWCSOnlyRadioButton")
+        self.csActivateWCSOnlyRadioButton.setGeometry(QRect(730, 33, 175, 20))
+        self.csSetWCSOffsetAndActivateRadioButton = QRadioButton(self.tabWCS)
+        self.csSetWCSOffsetAndActivateRadioButton.setObjectName(u"csSetWCSOffsetAndActivateRadioButton")
+        self.csSetWCSOffsetAndActivateRadioButton.setGeometry(QRect(730, 77, 175, 20))
+        self.csSetWCSLabel = QLabel(self.tabWCS)
+        self.csSetWCSLabel.setObjectName(u"csSetWCSLabel")
+        self.csSetWCSLabel.setGeometry(QRect(730, 109, 31, 16))
         self.tabWidget.addTab(self.tabWCS, "")
         self.tabCNC = QWidget()
         self.tabCNC.setObjectName(u"tabCNC")
@@ -1003,7 +1064,7 @@ class Ui_DesktopView(object):
 
         self.retranslateUi(DesktopView)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(DesktopView)
@@ -1053,6 +1114,18 @@ class Ui_DesktopView(object):
         ___qtablewidgetitem14 = self.csOffsetsTable.verticalHeaderItem(8)
         ___qtablewidgetitem14.setText(QCoreApplication.translate("DesktopView", u" WCS.9 - [ G59.3 ]", None));
         self.csWorkingWCS.setText(QCoreApplication.translate("DesktopView", u"Selected WCS : None", None))
+        self.csSetWCSEdit.setText("")
+        self.csSetWCSXCheckBox.setText(QCoreApplication.translate("DesktopView", u"X", None))
+        self.csSetWCSYCheckBox.setText(QCoreApplication.translate("DesktopView", u"Y", None))
+        self.csSetWCSZCheckBox.setText(QCoreApplication.translate("DesktopView", u"Z", None))
+        self.csSetWCSACheckBox.setText(QCoreApplication.translate("DesktopView", u"A", None))
+        self.csSetWCSBCheckBox.setText(QCoreApplication.translate("DesktopView", u"B", None))
+        self.csSetWCSCCheckBox.setText(QCoreApplication.translate("DesktopView", u"C", None))
+        self.csApplyWCSChangesButton.setText(QCoreApplication.translate("DesktopView", u"Apply WCS Changes", None))
+        self.csSetWCSOffsetOnlyRadioButton.setText(QCoreApplication.translate("DesktopView", u"Set WCS Offset ONLY", None))
+        self.csActivateWCSOnlyRadioButton.setText(QCoreApplication.translate("DesktopView", u"Activate WCS ONLY", None))
+        self.csSetWCSOffsetAndActivateRadioButton.setText(QCoreApplication.translate("DesktopView", u"Set WCS Offset and Activate", None))
+        self.csSetWCSLabel.setText(QCoreApplication.translate("DesktopView", u"WCS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabWCS), QCoreApplication.translate("DesktopView", u"WCS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabCNC), QCoreApplication.translate("DesktopView", u"CNC", None))
         self.cncJogCommandXMButton.setText(QCoreApplication.translate("DesktopView", u"X -", None))
