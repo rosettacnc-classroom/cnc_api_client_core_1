@@ -3,9 +3,9 @@
         "version": 1,
         "api_server_host": "127.0.0.1",
         "api_server_port": 8000,
-        "api_server_use_tls": false,
+        "api_server_use_tls": true,
         "stay_on_top": true,
-        "program_load_file_name": "C:\\Users\\silverio.di.QEMSRL\\Desktop\\NC Files\\heavy\\2.8-milions.ngc",
+        "program_load_file_name": "C:/Users/silverio.di.QEMSRL/AppData/Roaming/RosettaCNC-1/samples/atomic_circle.ngc",
         "program_save_file_name": ""
     }
 }

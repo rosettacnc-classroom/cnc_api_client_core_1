@@ -45,8 +45,12 @@ FileName=$[Project-Path]ui_desktop_view.py
 ClassName=TProjectFileNode
 FileName=$[Project-Path]utils.py
 
+[Project\ChildNodes\Node0\ChildNodes\Node9]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]utils_qt.py
+
 [Project\ChildNodes\Node0\ChildNodes]
-Count=9
+Count=10
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

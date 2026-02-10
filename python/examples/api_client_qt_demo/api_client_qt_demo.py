@@ -21,19 +21,30 @@
 #               With cnc_vision_vcl/fmx objects is used Delphi coding style
 #-------------------------------------------------------------------------------
 import sys
+from pathlib import Path
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QGuiApplication, Qt
+from PySide6.QtGui import QGuiApplication, Qt, QIcon
 
+from utils_qt import QThemeManager
 from api_client_qt_demo_desktop_view import ApiClientQtDemoDesktopView
 
 def main():
     """Main entry point."""
 
-    # initialize application and enter in main loop
+    # initialize application and apply style and theme
     application = QApplication(sys.argv)
     application.setStyle('Fusion')
     QGuiApplication.styleHints().setColorScheme(Qt.ColorScheme.Light)
+    #theme = QThemeManager("styles")
+    #theme.load("Light")
+
+    # set global application icon
+    base_dir = Path(__file__).resolve().parent
+    icon_path = base_dir / 'images' / 'rosettacnc.ico'
+    application.setWindowIcon(QIcon(str(icon_path)))
+
+    # create main view and enter in main loop
     window = ApiClientQtDemoDesktopView()
     window.show()
     sys.exit(application.exec())

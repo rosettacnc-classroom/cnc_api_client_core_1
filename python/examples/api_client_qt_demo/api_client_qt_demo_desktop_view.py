@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      09/02/2026
+# Created:      10/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -40,6 +40,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QButtonGroup,
+    QCheckBox,
     QFileDialog,
     QHeaderView,
     QLabel,
@@ -155,6 +156,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # set caption
         self.setWindowTitle(APP_TITLE)
 
+        # set window ui to fixed size
+        self.setFixedSize(self.size())
+
         # set current persistable save version
         self.__persistable_save_version = 1
 
@@ -169,6 +173,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.StateMachineLabel.setMinimumWidth(629)
         self.StateMachineLabel.setMaximumWidth(629)
         self.APIServerConnectionStateLabel = QLabel("")
+        self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.ui.StatusBar.setContentsMargins(6, 0, 0, 0)
         self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
         self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
 
@@ -180,10 +186,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.api = None
         self.ctx = None
         self.api_server_connection_state = None
-        self.api_server_host = None
-        self.api_server_port = None
-        self.api_server_use_tls = None
-        self.stay_on_top = None
         self.stay_on_top_changed = None
         self.axes_mask_enablings_in_use = None
         self.cnc_resume_after_stop_from_line = None
@@ -200,6 +202,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # FOverrideSpindleWatch: TStopWatch
 
         # declare editable fields support attributes
+        self.api_server_host = None
+        self.api_server_port = None
+        self.api_server_use_tls = None
+        self.stay_on_top = None
         self.program_load_file_name = ''
         self.program_save_file_name = ''
         self.set_program_position_a = 0.0
@@ -245,6 +251,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetOnlyRadioButton, 1)
         self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetAndActivateRadioButton, 2)
         self.apply_wcs_mode_group.idClicked.connect(self.__on_button_group_clicked)
+
+        # link actions to all checkbox
+        for obj in self.findChildren(QCheckBox):
+            obj.clicked.connect(self.__on_check_box_clicked)
 
         # create array of axis related objects [ helper attributes ]
         self.axes = ['X', 'Y', 'Z', 'A', 'B', 'C']
@@ -636,6 +646,20 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.apply_wcs_changes_mode = button_id
             self.__update_editable_fields()
 
+    def __on_check_box_clicked(self):
+        if self.in_update:
+            return
+
+        sender = self.sender()
+        value = sender.isChecked()
+
+        if sender == self.ui.useTLSCheckBox:
+            self.api_server_use_tls = value
+
+        if sender == self.ui.stayOnTopCheckBox:
+            self.stay_on_top = value
+            self.stay_on_top_changed = True
+
     def __on_cnc_jog_command_mouse_down(self):
         sender = self.sender()
 
@@ -767,6 +791,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.tmrUpdate.stop()
 
     def __on_form_show(self):
+        # avoid event for stay on top chaning
+        if self.stay_on_top_changed is not None:
+            return
+        self.first_show_event = False
+
         # set default attributes values
         self.api = None
         self.ctx = None
@@ -814,6 +843,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update action main linked objects enablings
         self.__on_action_main_update()
+
+        # update stay on top mode
+        if self.stay_on_top_changed:
+            self.__set_stay_on_top(self.stay_on_top)
+            self.stay_on_top_changed = False
     #
     # == END: events implementation
 
@@ -870,6 +904,18 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     #
     # == END: memento section
 
+
+    # == BEG: generic methods
+    #
+    def __set_stay_on_top(self, enabled: bool) -> None:
+        flags = self.windowFlags()
+        is_on_top = bool(flags & Qt.WindowStaysOnTopHint)
+        if enabled == is_on_top:
+            return
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, enabled)
+        self.show()
+    #
+    # == END: generic methods
 
     # == BEG: laser methods
     #
@@ -956,6 +1002,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.in_update = True
         try:
             pos_um = '{:.3f}' if self.units_mode == cnc.UM_METRIC else '{:.4f}'
+
+            # update main view
+            self.ui.apiServerHostEdit.setText(self.api_server_host)
+            self.ui.apiServerPortEdit.setText(str(self.api_server_port))
+            self.ui.useTLSCheckBox.setChecked(self.api_server_use_tls)
+            self.ui.stayOnTopCheckBox.setChecked(self.stay_on_top)
 
             # update tab: program
             self.ui.programLoadFileNameEdit.setText(self.program_load_file_name)
@@ -1255,6 +1307,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update general objects enabling
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
+            # update main view
+            self.ui.apiServerHostEdit.setEnabled(True)
+            self.ui.apiServerPortEdit.setEnabled(True)
+            self.ui.useTLSCheckBox.setEnabled(True)
             """
             self.SpindleStatusLabel.Enabled = False
             self.SpindleStatusValue.Enabled = False
@@ -1276,6 +1332,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.CNCResumeAfterStopFromLineEdit.Enabled = False
             self.CNCMDICommandMemo.Enabled = False
             """
+            # update tab jog
             self.ui.setProgramPositionXEdit.setEnabled(False)
             self.ui.setProgramPositionYEdit.setEnabled(False)
             self.ui.setProgramPositionZEdit.setEnabled(False)
@@ -1288,6 +1345,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.UseTLSCheckBox.Enabled = True
             """
         else:
+            # update main view
+            self.ui.apiServerHostEdit.setEnabled(False)
+            self.ui.apiServerPortEdit.setEnabled(False)
+            self.ui.useTLSCheckBox.setEnabled(False)
             """
             self.SpindleStatusLabel.Enabled = True
             self.SpindleStatusValue.Enabled = True
@@ -1309,7 +1370,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.CNCResumeAfterStopFromLineEdit.Enabled = self.ctx.enabled_commands.cnc_resume
             self.CNCMDICommandMemo.Enabled = self.ctx.enabled_commands.cnc_mdi_command
             """
-
+            # update tab jog
             set_program_position = self.ctx.enabled_commands.set_program_position
             self.ui.setProgramPositionXEdit.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
             self.ui.setProgramPositionYEdit.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)

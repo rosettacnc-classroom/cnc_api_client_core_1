@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewxXPzpU.ui'
+## Form generated from reading UI file 'desktop_viewPHnssL.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -25,7 +25,7 @@ class Ui_DesktopView(object):
     def setupUi(self, DesktopView):
         if not DesktopView.objectName():
             DesktopView.setObjectName(u"DesktopView")
-        DesktopView.resize(1038, 755)
+        DesktopView.resize(1038, 761)
         font = QFont()
         font.setFamilies([u"Tahoma"])
         font.setPointSize(8)

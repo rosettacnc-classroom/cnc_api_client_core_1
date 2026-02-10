@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>1038</width>
-    <height>755</height>
+    <height>761</height>
    </rect>
   </property>
   <property name="font">
@@ -34,7 +34,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
