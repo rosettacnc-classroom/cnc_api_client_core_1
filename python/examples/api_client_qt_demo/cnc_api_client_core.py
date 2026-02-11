@@ -53,8 +53,6 @@
 #-------------------------------------------------------------------------------
 from __future__ import annotations
 
-import time
-
 import ssl
 import json
 import socket
@@ -2314,18 +2312,12 @@ class CncAPIClientCore:
             if not self.is_connected:
                 return data
             request = '{"get":"program.info"}'
-            t1 = time.perf_counter() # TODO: remove after test
             response = self.__send_command(request, first_timeout=50)
-            t2 = time.perf_counter() # TODO: remove after test
-            print(f'API send command              :{(t2 - t1):12.8f} s') # TODO: remove after test
-            t3 = time.perf_counter() # TODO: remove after test
             if response:
                 j = json.loads(response)
                 data.file_name                          = j['res']['file.name']
                 data.code                               = j['res']['code']
                 data.has_data = True
-            t4 = time.perf_counter() # TODO: remove after test
-            print(f'API extract data              :{(t4 - t3):12.8f} s') # TODO: remove after test
             return data
         except Exception:
             return APIProgramInfo()
