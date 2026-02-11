@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewPHnssL.ui'
+## Form generated from reading UI file 'desktop_viewZowEHc.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -17,9 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
     QFrame, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QPushButton, QRadioButton, QSizePolicy,
-    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
-    QTextEdit, QWidget)
+    QMainWindow, QPlainTextEdit, QPushButton, QRadioButton,
+    QSizePolicy, QStatusBar, QTabWidget, QTableWidget,
+    QTableWidgetItem, QTextEdit, QWidget)
 
 class Ui_DesktopView(object):
     def setupUi(self, DesktopView):
@@ -103,6 +103,28 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabProgram, "")
         self.tabGCode = QWidget()
         self.tabGCode.setObjectName(u"tabGCode")
+        self.gcodeProgramEdit = QPlainTextEdit(self.tabGCode)
+        self.gcodeProgramEdit.setObjectName(u"gcodeProgramEdit")
+        self.gcodeProgramEdit.setGeometry(QRect(8, 8, 901, 209))
+        font2 = QFont()
+        font2.setFamilies([u"DejaVu Sans Mono"])
+        font2.setPointSize(8)
+        self.gcodeProgramEdit.setFont(font2)
+        self.gcodeGetProgramTextButton = QPushButton(self.tabGCode)
+        self.gcodeGetProgramTextButton.setObjectName(u"gcodeGetProgramTextButton")
+        self.gcodeGetProgramTextButton.setGeometry(QRect(8, 224, 120, 24))
+        self.gcodeSetProgramTextButton = QPushButton(self.tabGCode)
+        self.gcodeSetProgramTextButton.setObjectName(u"gcodeSetProgramTextButton")
+        self.gcodeSetProgramTextButton.setGeometry(QRect(140, 224, 120, 24))
+        self.gcodeAddProgramTextEdit = QLineEdit(self.tabGCode)
+        self.gcodeAddProgramTextEdit.setObjectName(u"gcodeAddProgramTextEdit")
+        self.gcodeAddProgramTextEdit.setGeometry(QRect(8, 270, 901, 22))
+        self.gcodeAddProgramTextButton = QPushButton(self.tabGCode)
+        self.gcodeAddProgramTextButton.setObjectName(u"gcodeAddProgramTextButton")
+        self.gcodeAddProgramTextButton.setGeometry(QRect(8, 296, 120, 24))
+        self.gcodeClearProgramButton = QPushButton(self.tabGCode)
+        self.gcodeClearProgramButton.setObjectName(u"gcodeClearProgramButton")
+        self.gcodeClearProgramButton.setGeometry(QRect(398, 320, 120, 41))
         self.tabWidget.addTab(self.tabGCode, "")
         self.tabWCS = QWidget()
         self.tabWCS.setObjectName(u"tabWCS")
@@ -324,19 +346,19 @@ class Ui_DesktopView(object):
         self.textAxisPositionText = QLabel(self.tabJOG)
         self.textAxisPositionText.setObjectName(u"textAxisPositionText")
         self.textAxisPositionText.setGeometry(QRect(224, 14, 481, 182))
-        font2 = QFont()
-        font2.setFamilies([u"Tahoma"])
-        font2.setPointSize(20)
-        self.textAxisPositionText.setFont(font2)
+        font3 = QFont()
+        font3.setFamilies([u"Tahoma"])
+        font3.setPointSize(20)
+        self.textAxisPositionText.setFont(font3)
         self.textAxisPositionText.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.jogSTOPButton = QPushButton(self.tabJOG)
         self.jogSTOPButton.setObjectName(u"jogSTOPButton")
         self.jogSTOPButton.setGeometry(QRect(16, 208, 889, 147))
-        font3 = QFont()
-        font3.setFamilies([u"Tahoma"])
-        font3.setPointSize(46)
-        font3.setBold(True)
-        self.jogSTOPButton.setFont(font3)
+        font4 = QFont()
+        font4.setFamilies([u"Tahoma"])
+        font4.setPointSize(46)
+        font4.setBold(True)
+        self.jogSTOPButton.setFont(font4)
         self.tabWidget.addTab(self.tabJOG, "")
         self.tabOverrides = QWidget()
         self.tabOverrides.setObjectName(u"tabOverrides")
@@ -408,10 +430,7 @@ class Ui_DesktopView(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.systemInfoEdit.sizePolicy().hasHeightForWidth())
         self.systemInfoEdit.setSizePolicy(sizePolicy)
-        font4 = QFont()
-        font4.setFamilies([u"DejaVu Sans Mono"])
-        font4.setPointSize(8)
-        self.systemInfoEdit.setFont(font4)
+        self.systemInfoEdit.setFont(font2)
         self.systemInfoEdit.setFrameShape(QFrame.Shape.NoFrame)
         self.systemInfoEdit.setReadOnly(True)
         self.tabWidget.addTab(self.tabSystemInfo, "")
@@ -1082,6 +1101,11 @@ class Ui_DesktopView(object):
         self.programSaveLabel.setText(QCoreApplication.translate("DesktopView", u"SAVE PROGRAM", None))
         self.programSaveAsLabel.setText(QCoreApplication.translate("DesktopView", u"SAVE PROGRAM AS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabProgram), QCoreApplication.translate("DesktopView", u"Program", None))
+        self.gcodeProgramEdit.setPlainText("")
+        self.gcodeGetProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Get Code", None))
+        self.gcodeSetProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Set Code", None))
+        self.gcodeAddProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Add Line", None))
+        self.gcodeClearProgramButton.setText(QCoreApplication.translate("DesktopView", u"Clear All", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabGCode), QCoreApplication.translate("DesktopView", u"G-Code", None))
         ___qtablewidgetitem = self.csOffsetsTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("DesktopView", u"X", None));

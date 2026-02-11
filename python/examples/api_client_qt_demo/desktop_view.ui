@@ -277,6 +277,87 @@
      <attribute name="title">
       <string>G-Code</string>
      </attribute>
+     <widget class="QPlainTextEdit" name="gcodeProgramEdit">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>8</y>
+        <width>901</width>
+        <height>209</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="plainText">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="gcodeGetProgramTextButton">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>224</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Get Code</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="gcodeSetProgramTextButton">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>224</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set Code</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="gcodeAddProgramTextEdit">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>270</y>
+        <width>901</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="gcodeAddProgramTextButton">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>296</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add Line</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="gcodeClearProgramButton">
+      <property name="geometry">
+       <rect>
+        <x>398</x>
+        <y>320</y>
+        <width>120</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Clear All</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabWCS">
      <attribute name="title">

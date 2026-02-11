@@ -13,15 +13,17 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      10/02/2026
+# Created:      11/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
+# pylint: disable=C0123 -> unidiomatic-typecheck
 # pylint: disable=C0301 -> line-too-long
 # pylint: disable=C0302 -> too-many-lines
 # pylint: disable=R0902 -> too-many-instance-attributes
+# pylint: disable=R0911 -> too-many-return-statements
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0914 -> too-many-locals
 # pylint: disable=R0915 -> too-many-statements
@@ -33,6 +35,7 @@
 #-------------------------------------------------------------------------------
 import os
 import time
+import ipaddress
 from statistics import median
 from collections import namedtuple
 
@@ -50,7 +53,10 @@ from PySide6.QtWidgets import (
     QTableWidgetItem
 )
 
+from qt_gcode_highlighter import GCodeHighlighter
+
 from ui_desktop_view import Ui_DesktopView
+
 from utils import DecimalsTrimMode, format_float, is_in_str_list_range
 
 import cnc_api_client_core as cnc
@@ -161,6 +167,21 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # set current persistable save version
         self.__persistable_save_version = 1
+
+        # apply and set gcode editor highlighter
+        self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
+        self.ui.gcodeProgramEdit.setStyleSheet(
+        """
+            QPlainTextEdit {
+                background-color: #1E1E1E;
+                color: #F8F8F2;
+                border: 1px solid #44475A;
+                selection-background-color: #44475A;
+                selection-color: #F8F8F2;
+                padding: 10px;
+            }
+        """
+        )
 
         # create and set update timer
         self.tmrUpdate = QTimer(self)
@@ -359,6 +380,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.program_load(self.program_load_file_name)
 
         # events from tab g-code
+        if sender == self.ui.gcodeGetProgramTextButton:
+            data = self.api.get_program_info()
+            if data.has_data:
+                self.ui.gcodeProgramEdit.setPlainText(data.code)
+        if sender == self.ui.gcodeSetProgramTextButton:
+            self.api.program_gcode_set_text(self.ui.gcodeProgramEdit.toPlainText())
+        if sender == self.ui.gcodeAddProgramTextButton:
+            self.api.program_gcode_add_text(self.ui.gcodeAddProgramTextEdit.text())
+        if sender == self.ui.gcodeClearProgramButton:
+            self.api.program_new()
 
         # events from tab wcs
         if sender == self.ui.csApplyWCSChangesButton:
@@ -733,13 +764,27 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             except Exception:
                 return False
 
+        def try_str_2_ipv4(dest_attr_name: str) -> bool:
+            try:
+                ipaddress.IPv4Address(value)
+                setattr(self, dest_attr_name, value)
+                return True
+            except ValueError:
+                return False
+
         sender = self.sender()
         value = sender.text().strip()
 
-        # events from tab program
-        # events from tab g-code
+        # event from main view
+        if sender == self.ui.apiServerHostEdit:
+            try_str_2_ipv4('api_server_host')
+        if sender == self.ui.apiServerPortEdit:
+            try_str_2_int('api_server_port', 1, 65535)
 
-        # events from tab wcs
+        # event from tab program
+        # event from tab g-code
+
+        # event from tab wcs
         if sender == self.ui.csSetWCSEdit:
             try_str_2_int('set_wcs', 1, 9)
         if sender == self.ui.csSetWCSXEdit:
@@ -755,9 +800,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.csSetWCSCEdit:
             try_str_2_float('set_wcs_c')
 
-        # events from tab cnc
+        # event from tab cnc
 
-        # events from tab jog
+        # event from tab jog
         if sender == self.ui.setProgramPositionXEdit:
             try_str_2_float('set_program_position_x')
         if sender == self.ui.setProgramPositionYEdit:
@@ -771,15 +816,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.setProgramPositionCEdit:
             try_str_2_float('set_program_position_c')
 
-        # events from tab overrides
-        # events from tab homing
-        # events from tab mdi
-        # events from tab d i/o
-        # events from tab a i/o
-        # events from tab scanning laser
-        # events from tab machining info
-        # events from tab ui dialogs
-        # events from tab system info
+        # event from tab overrides
+        # event from tab homing
+        # event from tab mdi
+        # event from tab d i/o
+        # event from tab a i/o
+        # event from tab scanning laser
+        # event from tab machining info
+        # event from tab ui dialogs
+        # event from tab system info
 
         self.__update_editable_fields()
 
