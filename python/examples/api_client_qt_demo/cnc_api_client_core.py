@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      07/02/2026
+# Created:      11/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -52,6 +52,8 @@
 # pylint: disable=W0719 -> broad-exception-raised           ## take care when you use that ##
 #-------------------------------------------------------------------------------
 from __future__ import annotations
+
+import time
 
 import ssl
 import json
@@ -798,6 +800,13 @@ class APIMachiningInfo:
         self.joints_in_feed_length_a            = 0.0
         self.joints_in_feed_length_b            = 0.0
         self.joints_in_feed_length_c            = 0.0
+
+class APIProgramInfo:
+    """API data structure for program info."""
+    def __init__(self):
+        self.has_data                           = False
+        self.file_name                          = ""
+        self.code                               = ""
 
 class APIProgrammedPoints:
     """API data structure for programmed points."""
@@ -2298,6 +2307,29 @@ class CncAPIClientCore:
         except Exception:
             return APIMachiningInfo()
 
+    def get_program_info(self) -> APIProgramInfo:
+        """xxx"""
+        try:
+            data = APIProgramInfo()
+            if not self.is_connected:
+                return data
+            request = '{"get":"program.info"}'
+            t1 = time.perf_counter() # TODO: remove after test
+            response = self.__send_command(request, first_timeout=50)
+            t2 = time.perf_counter() # TODO: remove after test
+            print(f'API send command              :{(t2 - t1):12.8f} s') # TODO: remove after test
+            t3 = time.perf_counter() # TODO: remove after test
+            if response:
+                j = json.loads(response)
+                data.file_name                          = j['res']['file.name']
+                data.code                               = j['res']['code']
+                data.has_data = True
+            t4 = time.perf_counter() # TODO: remove after test
+            print(f'API extract data              :{(t4 - t3):12.8f} s') # TODO: remove after test
+            return data
+        except Exception:
+            return APIProgramInfo()
+
     def get_programmed_points(self) -> APIProgrammedPoints:
         """xxx"""
         try:
@@ -3264,45 +3296,75 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def __send_command(self, request: str) -> str:
+    def __send_command(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> str:
 
-        def __flush_receiving_buffer():
+        def __flush_receiving_buffer(max_flush: int = 1048576):
             try:
                 self.ipc.settimeout(0.0)
-                self.ipc.recv(1024)
-            except Exception:
+                flushed = 0
+                while flushed < max_flush:
+                    data = self.ipc.recv(4096)
+                    if not data:
+                        break
+                    flushed += len(data)
+            except (BlockingIOError, socket.error):
                 pass
 
-        if self.is_connected is False:
+        if not self.is_connected or not request:
             return ''
-        l = len(request)
-        if l == 0:
-            return ''
-        if request[l - 1] != b'\n':
-            request = request + '\n'
+
+        if not request.endswith('\n'):
+            request += '\n'
+
         if self.use_cnc_direct_access:
             try:
                 return cda.api_server_request(request)
             except Exception:
                 self.close()
                 return ''
-        else:
-            try:
-                __flush_receiving_buffer()
-                self.ipc.sendall(request.encode())
-                self.ipc.settimeout(5)
-                response_data = []
-                while True:
-                    data = self.ipc.recv(1)
-                    self.ipc.settimeout(1)
-                    if data in [b'\n']:
-                        break
-                    response_data.append(data)
-                response = b''.join(response_data).decode()
-                return response
-            except socket.error:
-                self.close()
-                return ''
+
+        try:
+            # flush receiving buffer and send request
+            __flush_receiving_buffer()
+            self.ipc.sendall(request.encode())
+
+            # init receive attributes
+            buffer = bytearray()
+            chunk_size = 65536
+            search_start = 0
+            first_chunk = True
+
+            # set timeout to cover API Server request evaluation -> response time
+            self.ipc.settimeout(first_timeout)
+
+            # response receiving loop
+            while True:
+                # get chunk of data checking for connection closed (chunk is empty)
+                chunk = self.ipc.recv(chunk_size)
+                if not chunk:
+                    self.close()
+                    return ''
+
+                # switch to chunk_timeout after first chunk of data received
+                if first_chunk:
+                    self.ipc.settimeout(chunk_timeout)
+                    first_chunk = False
+
+                # add received chunk of data to buffer
+                buffer.extend(chunk)
+
+                # search \n only in the new part of the buffer
+                newline_pos = buffer.find(b'\n', search_start)
+                if newline_pos != -1:
+                    return buffer[:newline_pos].decode('utf-8')
+
+                search_start = len(buffer)
+
+        except socket.timeout:
+            return ''
+        except socket.error:
+            self.close()
+            return ''
 
     @staticmethod
     def create_compact_json_request(data: dict) -> str:
