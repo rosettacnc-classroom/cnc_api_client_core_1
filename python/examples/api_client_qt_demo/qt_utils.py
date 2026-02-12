@@ -1,8 +1,8 @@
-"""Utilities for QT."""
+"""QT Utilities."""
 #-------------------------------------------------------------------------------
-# Name:         utils_qt
+# Name:         qt_utils
 #
-# Purpose:      Utilities for QT
+# Purpose:      QT PySide 6 Utilities
 #
 # Note          Compatible with API server version 1.5.3
 #               1 (on 1.x.y) means interface contract
@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      10/02/2026
+# Created:      12/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/

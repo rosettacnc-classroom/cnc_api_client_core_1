@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      11/02/2026
+# Created:      12/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -166,6 +166,14 @@ SM_RETRACT                          = 17        # CNC Board: ST_MACH.SM_RETRACT 
 SD_STOPPED                          = 1         # spindle direction: stopped
 SD_CW                               = 2         # spindle direction: clockwise
 SD_CCW                              = 3         # spindle direction: counterclockwise
+
+# spindle phase
+SP_STOPPED                          = 0         # spindle phase: stopped
+SP_RUNNING                          = 1         # spindle phase: running
+SP_RUNNING_WAIT_SETTLE              = 2         # spindle phase: running, waiting for settle time
+SP_RUNNING_WAIT_AT_SPEED            = 3         # spindle phase: running, waiting for at-speed input
+SP_STOPPING_WAIT_SETTLE             = 4         # spindle phase: stopping, waiting for settle time
+SP_STOPPING_WAIT_ZERO_SPEED         = 5         # spindle phase: stopping, waiting for zero-speed input
 
 # spindle shaft
 ST_STOPPED                          = 0         # spindle shaft: stopped
@@ -523,6 +531,7 @@ class APICncInfo:
         self.spindle_actual                     = 0
         self.spindle_load                       = 0
         self.spindle_torque                     = 0
+        self.spindle_phase                      = SP_STOPPED
         self.spindle_direction                  = SD_STOPPED
         self.spindle_not_ready                  = False
         self.spindle_shaft                      = ST_STOPPED
@@ -1923,6 +1932,7 @@ class CncAPIClientCore:
                 data.spindle_actual                     = j['res']['spindle']['actual']
                 data.spindle_load                       = j['res']['spindle']['load']
                 data.spindle_torque                     = j['res']['spindle']['torque']
+                data.spindle_phase                      = j['res']['spindle']['phase']
                 data.spindle_direction                  = j['res']['spindle']['direction']
                 data.spindle_not_ready                  = j['res']['spindle']['not.ready']
                 data.spindle_shaft                      = j['res']['spindle']['shaft']

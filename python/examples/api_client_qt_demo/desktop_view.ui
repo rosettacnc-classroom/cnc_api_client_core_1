@@ -778,6 +778,332 @@
      <attribute name="title">
       <string>CNC</string>
      </attribute>
+     <widget class="QLabel" name="cncProgramAnalysisLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>16</y>
+        <width>137</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>PROGRAM ANALYSIS</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisMTButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>48</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis MT</string>
+      </property>
+     </widget>
+     <widget class="Line" name="cncProgramAnalysisLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>33</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisRTButton">
+      <property name="geometry">
+       <rect>
+        <x>146</x>
+        <y>48</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis RT</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisRFButton">
+      <property name="geometry">
+       <rect>
+        <x>276</x>
+        <y>48</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis RF</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisRVButton">
+      <property name="geometry">
+       <rect>
+        <x>406</x>
+        <y>48</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis RV</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisRZButton">
+      <property name="geometry">
+       <rect>
+        <x>536</x>
+        <y>48</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis RZ</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncProgramAnalysisAbortButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>80</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Abort Analysis</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cncProgramAnalysisStateLabel">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>80</y>
+        <width>501</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analysis State :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cncProgramAnalysisMessageLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>112</y>
+        <width>501</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Message :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cncCNCCommandsLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>144</y>
+        <width>137</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>CNC COMMANDS</string>
+      </property>
+     </widget>
+     <widget class="Line" name="cncCNCCommandsLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>161</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncStartButton_2">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>176</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Start</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncStopButton_2">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>176</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stop</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncPauseButton_2">
+      <property name="geometry">
+       <rect>
+        <x>208</x>
+        <y>176</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Pause</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncContinueButton_2">
+      <property name="geometry">
+       <rect>
+        <x>296</x>
+        <y>176</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Continue</string>
+      </property>
+     </widget>
+     <widget class="Line" name="cncCNCCommandsSpecialLine">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>233</y>
+        <width>889</width>
+        <height>2</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="cncCNCCommandsSpecialLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>216</y>
+        <width>191</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>CNC COMMANDS - SPECIAL</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncStartFromLineButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>248</y>
+        <width>180</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Start from Line</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncResumeAfterStopButton_2">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>280</y>
+        <width>180</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Resume after Stop</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cncResumeAfterStopFromLineButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>312</y>
+        <width>180</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Resume after Stop from Line</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cncStartFromLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>208</x>
+        <y>249</y>
+        <width>100</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="cncResumeAfterStopFromLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>208</x>
+        <y>313</y>
+        <width>100</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabJOG">
      <attribute name="title">

@@ -5,7 +5,7 @@
         "api_server_port": 8000,
         "api_server_use_tls": false,
         "stay_on_top": false,
-        "program_load_file_name": "C:/Users/silverio.di.QEMSRL/AppData/Roaming/RosettaCNC-1/samples/atomic_circle.ngc",
+        "program_load_file_name": "C:/Users/silverio.di.QEMSRL/Desktop/nc-code/continue-loop-raise-exceptions.ngc",
         "program_save_file_name": ""
     }
 }

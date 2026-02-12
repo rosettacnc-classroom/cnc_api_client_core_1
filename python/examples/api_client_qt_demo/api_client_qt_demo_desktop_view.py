@@ -339,7 +339,28 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     def __on_action_main_execute(self):
         sender = self.sender()
 
-        # events from commands
+        # event main view
+        if sender == self.ui.ServerConnectDisconnectButton:
+            if self.api_server_connection_state == ASCS_DISCONNECTED:
+                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
+                    self.api_server_connection_state = ASCS_CONNECTED
+                else:
+                    self.api.close()
+                    self.api_server_connection_state = ASCS_ERROR
+            elif self.api_server_connection_state == ASCS_CONNECTED:
+                if self.api.is_connected:
+                    if not self.api.close():
+                        self.api_server_connection_state = ASCS_ERROR
+                        return
+                self.api_server_connection_state = ASCS_DISCONNECTED
+            elif self.api_server_connection_state == ASCS_ERROR:
+                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
+                    self.api_server_connection_state = ASCS_CONNECTED
+                else:
+                    self.api.close()
+                    self.api_server_connection_state = ASCS_ERROR
+
+        # event commands
         if sender == self.ui.CNCConnectionOpenButton:
             self.api.cnc_connection_open(use_ui=True)
         if sender == self.ui.CNCConnectionCloseButton:
@@ -365,7 +386,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.resetWarningsHistoryButton:
             self.api.reset_warnings_history()
 
-        # events from tab program
+        # event tab program
+        if sender == self.ui.programNewButton:
+            self.api.program_new()
         if sender == self.ui.programLoadSelectFileButton:
             file_path, selected_filter = QFileDialog.getOpenFileName(
                 self,
@@ -378,8 +401,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.__update_editable_fields()
         if sender == self.ui.programLoadButton:
             self.api.program_load(self.program_load_file_name)
+        if sender == self.ui.programSaveButton:
+            self.api.program_save()
+        if sender == self.ui.programSaveAsButton:
+            self.api.program_save_as(self.program_save_file_name)
 
-        # events from tab g-code
+        # event tab g-code
         if sender == self.ui.gcodeGetProgramTextButton:
             data = self.api.get_program_info()
             if data.has_data:
@@ -390,8 +417,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.program_gcode_add_text(self.ui.gcodeAddProgramTextEdit.text())
         if sender == self.ui.gcodeClearProgramButton:
             self.api.program_new()
+            self.ui.gcodeProgramEdit.setPlainText('')
+            self.ui.gcodeAddProgramTextEdit.setText('')
 
-        # events from tab wcs
+        # event tab wcs
         if sender == self.ui.csApplyWCSChangesButton:
             wcs = self.set_wcs
             offset = [None, None, None, None, None, None]
@@ -412,9 +441,35 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.set_wcs_info(wcs, offset, activate=activate)
             print(f'{wcs} | {offset} | {activate}')
 
-        # events from tab cnc
+        # event tab cnc
+        if sender == self.ui.cncProgramAnalysisMTButton:
+            pass
+        if sender == self.ui.cncProgramAnalysisRTButton:
+            pass
+        if sender == self.ui.cncProgramAnalysisRFButton:
+            pass
+        if sender == self.ui.cncProgramAnalysisRVButton:
+            pass
+        if sender == self.ui.cncProgramAnalysisRZButton:
+            pass
+        if sender == self.ui.cncProgramAnalysisAbortButton:
+            pass
+        if sender == self.ui.cncStartButton:
+            pass
+        if sender == self.ui.cncStopButton:
+            pass
+        if sender == self.ui.cncPauseButton:
+            pass
+        if sender == self.ui.cncContinueButton:
+            pass
+        if sender == self.ui.cncStartFromLineButton:
+            pass
+        if sender == self.ui.cncResumeAfterStopButton:
+            pass
+        if sender == self.ui.cncResumeAfterStopFromLineButton:
+            pass
 
-        # events from tab jog
+        # event tab jog
         if sender == self.ui.setProgramPositionXButton:
             self.api.set_program_position_x(self.set_program_position_x)
         if sender == self.ui.setProgramPositionYButton:
@@ -431,15 +486,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.jogSTOPButton:
             self.api.cnc_stop()
 
-        # events from tab overrides
-        # events from tab homing
-        # events from tab mdi
-        # events from tab d i/o
-        # events from tab a i/o
-        # events from tab scanning laser
-        # events from tab machining info
+        # event tab overrides
+        # event tab homing
+        # event tab mdi
+        # event tab d i/o
+        # event tab a i/o
+        # event tab scanning laser
+        # event tab machining info
 
-        # events from tab ui dialogs
+        # event tab ui dialogs
         if sender == self.ui.uidAboutButton:
             self.api.show_ui_dialog(cnc.UID_ABOUT)
         if sender == self.ui.uidATCManagementButton:
@@ -465,28 +520,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.uidWorkCoordinatesButton:
             self.api.show_ui_dialog(cnc.UID_WORK_COORDINATES)
 
-        # events from system info
-
-        # events from connection with API Server
-        if sender == self.ui.ServerConnectDisconnectButton:
-            if self.api_server_connection_state == ASCS_DISCONNECTED:
-                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
-                    self.api_server_connection_state = ASCS_CONNECTED
-                else:
-                    self.api.close()
-                    self.api_server_connection_state = ASCS_ERROR
-            elif self.api_server_connection_state == ASCS_CONNECTED:
-                if self.api.is_connected:
-                    if not self.api.close():
-                        self.api_server_connection_state = ASCS_ERROR
-                        return
-                self.api_server_connection_state = ASCS_DISCONNECTED
-            elif self.api_server_connection_state == ASCS_ERROR:
-                if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
-                    self.api_server_connection_state = ASCS_CONNECTED
-                else:
-                    self.api.close()
-                    self.api_server_connection_state = ASCS_ERROR
+        # event system info
 
     def __on_action_main_update(self):
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
@@ -514,6 +548,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.programSaveAsButton.setEnabled(False)
 
             # update tab g-code
+            self.ui.gcodeGetProgramTextButton.setEnabled(False)
+            self.ui.gcodeSetProgramTextButton.setEnabled(False)
+            self.ui.gcodeAddProgramTextButton.setEnabled(False)
+            self.ui.gcodeClearProgramButton.setEnabled(False)
 
             # update tab wcs
             self.ui.csApplyWCSChangesButton.setEnabled(False)
@@ -591,6 +629,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.programSaveAsButton.setEnabled(enabled_commands.program_save_as)
 
             # update tab g-code
+            self.ui.gcodeGetProgramTextButton.setEnabled(enabled_commands.has_data)
+            self.ui.gcodeSetProgramTextButton.setEnabled(enabled_commands.program_gcode_set_text)
+            self.ui.gcodeAddProgramTextButton.setEnabled(enabled_commands.program_gcode_add_text)
+            self.ui.gcodeClearProgramButton.setEnabled(enabled_commands.program_gcode_set_text)
 
             # update tab wcs
             enabled = False
@@ -1054,13 +1096,13 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.useTLSCheckBox.setChecked(self.api_server_use_tls)
             self.ui.stayOnTopCheckBox.setChecked(self.stay_on_top)
 
-            # update tab: program
+            # update tab program
             self.ui.programLoadFileNameEdit.setText(self.program_load_file_name)
             self.ui.programSaveFileAsFileNameEdit.setText(self.program_save_file_name)
 
-            # update tab: g-code
+            # update tab g-code
 
-            # update tab: wcs
+            # update tab wcs
             if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
                 self.ui.csActivateWCSOnlyRadioButton.setChecked(True)
             elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
@@ -1079,9 +1121,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.csSetWCSBEdit.setText(format_float(self.set_wcs_b, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
             self.ui.csSetWCSCEdit.setText(format_float(self.set_wcs_c, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
 
-            # update tab: cnc
+            # update tab cnc
 
-            # update tab: jog
+            # update tab jog
             self.ui.setProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
             self.ui.setProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
             self.ui.setProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
@@ -1089,15 +1131,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
             self.ui.setProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
 
-            # update tab: overrides
-            # update tab: homing
-            # update tab: mdi
-            # update tab: d i/o
-            # update tab: a i/o
-            # update tab: scanning laser
-            # update tab: machine info
-            # update tab: ui dialogs
-            # update tab: system info
+            # update tab overrides
+            # update tab homing
+            # update tab mdi
+            # update tab d i/o
+            # update tab a i/o
+            # update tab scanning laser
+            # update tab machine info
+            # update tab ui dialogs
+            # update tab system info
         finally:
             self.in_update = False
 
@@ -1179,7 +1221,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update tab g-code values
         if self.ui.tabWidget.currentWidget() == self.ui.tabGCode:
-            pass
+            self.ui.gcodeProgramEdit.setEnabled(enabled_commands.program_gcode_set_text)
+            self.ui.gcodeAddProgramTextEdit.setEnabled(enabled_commands.program_gcode_add_text)
 
         # update tab coordinate system
         if self.ui.tabWidget.currentWidget() == self.ui.tabWCS:
@@ -1223,8 +1266,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                         else:
                             item.setText('- - -')
 
-            if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
+            if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR] or not enabled_commands.cnc_parameters:
                 self.ui.csWorkingWCS.setEnabled(False)
+                self.ui.csOffsetsTable.setEnabled(False)
                 self.ui.csActivateWCSOnlyRadioButton.setEnabled(False)
                 self.ui.csSetWCSOffsetOnlyRadioButton.setEnabled(False)
                 self.ui.csSetWCSOffsetAndActivateRadioButton.setEnabled(False)
@@ -1244,6 +1288,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.csSetWCSCEdit.setEnabled(False)
             else:
                 self.ui.csWorkingWCS.setEnabled(True)
+                self.ui.csOffsetsTable.setEnabled(True)
                 self.ui.csActivateWCSOnlyRadioButton.setEnabled(True)
                 self.ui.csSetWCSOffsetOnlyRadioButton.setEnabled(True)
                 self.ui.csSetWCSOffsetAndActivateRadioButton.setEnabled(True)
@@ -1356,27 +1401,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.apiServerHostEdit.setEnabled(True)
             self.ui.apiServerPortEdit.setEnabled(True)
             self.ui.useTLSCheckBox.setEnabled(True)
-            """
-            self.SpindleStatusLabel.Enabled = False
-            self.SpindleStatusValue.Enabled = False
-            self.CoolantMistLabel.Enabled = False
-            self.CoolantMistValue.Enabled = False
-            self.CoolantFloodLabel.Enabled = False
-            self.CoolantFloodValue.Enabled = False
-            self.GCodeLineLabel.Enabled = False
-            self.GCodeLineValue.Enabled = False
-            self.WorkedTimeLabel.Enabled = False
-            self.WorkedTimeValue.Enabled = False
-            self.PlannedTimeLabel.Enabled = False
-            self.PlannedTimeValue.Enabled = False
-            self.ProgramLoadFileNameEdit.Enabled = False
-            self.ProgramSaveFileNameEdit.Enabled = False
-            self.ProgramGCodeSetTextMemo.Enabled = False
-            self.ProgramGCodeAddTextEdit.Enabled = False
-            self.CNCStartFromLineEdit.Enabled = False
-            self.CNCResumeAfterStopFromLineEdit.Enabled = False
-            self.CNCMDICommandMemo.Enabled = False
-            """
+
             # update tab jog
             self.ui.setProgramPositionXEdit.setEnabled(False)
             self.ui.setProgramPositionYEdit.setEnabled(False)
@@ -1384,37 +1409,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionAEdit.setEnabled(False)
             self.ui.setProgramPositionBEdit.setEnabled(False)
             self.ui.setProgramPositionCEdit.setEnabled(False)
-            """
-            self.APIServerHostEdit.Enabled = True
-            self.APIServerPortEdit.Enabled = True
-            self.UseTLSCheckBox.Enabled = True
-            """
         else:
             # update main view
             self.ui.apiServerHostEdit.setEnabled(False)
             self.ui.apiServerPortEdit.setEnabled(False)
             self.ui.useTLSCheckBox.setEnabled(False)
-            """
-            self.SpindleStatusLabel.Enabled = True
-            self.SpindleStatusValue.Enabled = True
-            self.CoolantMistLabel.Enabled = True
-            self.CoolantMistValue.Enabled = True
-            self.CoolantFloodLabel.Enabled = True
-            self.CoolantFloodValue.Enabled = True
-            self.GCodeLineLabel.Enabled = True
-            self.GCodeLineValue.Enabled = True
-            self.WorkedTimeLabel.Enabled = True
-            self.WorkedTimeValue.Enabled = True
-            self.PlannedTimeLabel.Enabled = True
-            self.PlannedTimeValue.Enabled = True
-            self.ProgramLoadFileNameEdit.Enabled = self.ctx.enabled_commands.program_load
-            self.ProgramSaveFileNameEdit.Enabled = self.ctx.enabled_commands.program_save
-            self.ProgramGCodeSetTextMemo.Enabled = self.ctx.enabled_commands.program_gcode_set_text
-            self.ProgramGCodeAddTextEdit.Enabled = self.ctx.enabled_commands.program_gcode_add_text
-            self.CNCStartFromLineEdit.Enabled = self.ctx.enabled_commands.cnc_start_from_line
-            self.CNCResumeAfterStopFromLineEdit.Enabled = self.ctx.enabled_commands.cnc_resume
-            self.CNCMDICommandMemo.Enabled = self.ctx.enabled_commands.cnc_mdi_command
-            """
+
             # update tab jog
             set_program_position = self.ctx.enabled_commands.set_program_position
             self.ui.setProgramPositionXEdit.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
@@ -1423,10 +1423,5 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionAEdit.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
             self.ui.setProgramPositionBEdit.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
             self.ui.setProgramPositionCEdit.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
-            """
-            self.APIServerHostEdit.Enabled = False
-            self.APIServerPortEdit.Enabled = False
-            self.UseTLSCheckBox.Enabled = False
-            """
     #
     # == END: update methods
