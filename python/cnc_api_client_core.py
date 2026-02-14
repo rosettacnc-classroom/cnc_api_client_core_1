@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      12/02/2026
+# Created:      14/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -670,6 +670,7 @@ class APIEnabledCommands:
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
         self.set_program_position               = 0
+        self.set_kinematics                     = False
         self.show_ui_dialog                     = False
         self.tools_lib_write                    = False
 
@@ -2136,6 +2137,7 @@ class CncAPIClientCore:
                 data.reset_warnings                     = j['res']['reset.warnings']
                 data.reset_warnings_history             = j['res']['reset.warnings.history']
                 data.set_program_position               = j['res']['set.program.position']
+                data.set_kinematics                     = j['res']['set.kinematics']
                 data.show_ui_dialog                     = j['res']['show.ui.dialog']
                 data.tools_lib_write                    = j['res']['tools.lib.write']
                 data.has_data                           = True
