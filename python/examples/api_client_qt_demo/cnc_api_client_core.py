@@ -2847,7 +2847,7 @@ class CncAPIClientCore:
                     return False
                 if units_mode not in [UM_METRIC, UM_IMPERIAL]:
                     return False
-                data['units_mode'] = units_mode
+                data['units.mode'] = units_mode
                 has_data = True
 
             if locale_name is not None:
