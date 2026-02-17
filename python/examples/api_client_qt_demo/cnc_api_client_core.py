@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      14/02/2026
+# Created:      17/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -366,19 +366,22 @@ FS_ALLOWED_COMBO = {
     FS_NM_AUX_32:            {FS_MD_OFF, FS_MD_ON, FS_MD_TOGGLE},
 }
 
-# show ui dialogs name [ with Control Software in run as API Server ]
-UID_ABOUT                           = 'about'
-UID_ATC_MANAGEMENT                  = 'atc.management'              # requires connection with CNC in connected state
-UID_BOARD_ETHERCAT_MONITOR          = 'board.ethercat.monitor'      # requires connection with CNC in connected state
-UID_BOARD_FIRMWARE_MANAGER          = 'board.firmware.manager'
-UID_BOARD_MONITOR                   = 'board.monitor'               # requires connection with CNC in connected state
-UID_BOARD_SETTINGS                  = 'board.settings'
-UID_CHANGE_BOARD_IP                 = 'change.board.ip'
-UID_MACROS_MANAGEMENT               = 'macros.management'
-UID_PARAMETERS_LIBRARY              = 'parameters.library'
-UID_PROGRAM_SETTINGS                = 'program.settings'
-UID_TOOLS_LIBRARY                   = 'tools.library'
-UID_WORK_COORDINATES                = 'work.coordinates'
+# show ui dialogs ID [ with Control Software in run as API Server ]
+UID_ID_ABOUT                        = 1
+UID_ID_ATC_MANAGEMENT               = 2         # requires connection with CNC in connected state
+UID_ID_BOARD_ETHERCAT_MONITOR       = 3         # requires connection with CNC in connected state
+UID_ID_BOARD_FIRMWARE_MANAGER       = 4
+UID_ID_BOARD_MONITOR                = 5         # requires connection with CNC in connected state
+UID_ID_BOARD_SETTINGS               = 6
+UID_ID_CHANGE_BOARD_IP              = 7
+UID_ID_MACROS_MANAGEMENT            = 8
+UID_ID_PARAMETERS_LIBRARY           = 9
+UID_ID_PROGRAM_SETTINGS             = 10
+UID_ID_TOOLS_LIBRARY                = 11
+UID_ID_WORK_COORDINATES             = 12
+
+UID_ID_FIRST                        = UID_ID_ABOUT
+UID_ID_LAST                         = UID_ID_WORK_COORDINATES
 
 # service popup menu enabling mask [ with Control Software in run as API Server ] !!! UNUSED YET !!!
 SPMEM_ABOUT                         =  1 << 0
@@ -1436,11 +1439,13 @@ class CncAPIClientCore:
         """Resets the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
 
-    def show_ui_dialog(self, name: str = '') -> bool:
-        """Shows UI Dialog by name."""
-        if not isinstance(name, str):
+    def show_ui_dialog(self, uid_id: int = 0) -> bool:
+        """Shows UI Dialog by user interface dialog ID."""
+        if not isinstance(uid_id, int) or type(uid_id) is bool:
             return False
-        request = {"cmd": "show.ui.dialog", "name": name}
+        if not UID_ID_FIRST <= uid_id <= UID_ID_LAST:
+            return False
+        request = {"cmd": "show.ui.dialog", "uid_id": uid_id}
         return self.__execute_request(json.dumps(request))
 
     def tools_lib_add(self, info: APIToolsLibInfoForSet = None) -> bool:
