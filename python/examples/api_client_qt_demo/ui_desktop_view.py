@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewVFUJpO.ui'
+## Form generated from reading UI file 'desktop_viewFkwDRE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QMainWindow, QPlainTextEdit, QPushButton, QRadioButton,
     QSizePolicy, QStatusBar, QTabWidget, QTableWidget,
     QTableWidgetItem, QTextEdit, QWidget)
+
+from pyqtgraph import PlotWidget
 
 class Ui_DesktopView(object):
     def setupUi(self, DesktopView):
@@ -440,6 +442,11 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabJOG, "")
         self.tabOverrides = QWidget()
         self.tabOverrides.setObjectName(u"tabOverrides")
+        self.frame = PlotWidget(self.tabOverrides)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(9, 9, 901, 351))
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.tabWidget.addTab(self.tabOverrides, "")
         self.tabHoming = QWidget()
         self.tabHoming.setObjectName(u"tabHoming")
@@ -1161,7 +1168,7 @@ class Ui_DesktopView(object):
 
         self.retranslateUi(DesktopView)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(DesktopView)

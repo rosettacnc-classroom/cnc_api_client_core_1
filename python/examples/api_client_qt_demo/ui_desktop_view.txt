@@ -1,0 +1,147 @@
+tabWidget
+    tabProgram
+        programNewLabel
+        programNewLine
+        programNewButton                            -> program_new
+        programLoadLabel
+        programLoadLine
+        programLoadFileNameEdit
+        programLoadButton                           -> program_load                 self.program_load_file_name
+        programSaveLabel
+        programSaveLine
+        programSaveButton                           -> program_save
+        programSaveAsLabel
+        programSaveAsLine
+        programSaveFileAsFileNameEdit
+        programSaveAsButton                         -> program_save_as              self.program_save_file_name
+    tabGCode
+        gcodeProgramEdit
+        gcodeGetProgramTextButton                   -> get_program_info
+        gcodeSetProgramTextButton                   -> program_gcode_set_text
+        gcodeAddProgramTextEdit
+        gcodeAddProgramTextButton                   -> program_gcode_add_text
+        gcodeClearProgramButton                     -> program_new
+    tabWCS
+        csWorkingWCS
+        csOffsetsTable
+        csActivateWCSOnlyRadioButton
+        csSetWCSOffsetOnlyRadioButton
+        csSetWCSOffsetAndActivateRadioButton
+        csSetWCSLabel
+        csSetWCSEdit
+        csSetWCSXCheckBox
+        csSetWCSXEdit
+        csSetWCSYCheckBox
+        csSetWCSYEdit
+        csSetWCSZCheckBox
+        csSetWCSZEdit
+        csSetWCSACheckBox
+        csSetWCSAEdit
+        csSetWCSBCheckBox
+        csSetWCSBEdit
+        csSetWCSCCheckBox
+        csSetWCSCEdit
+        csApplyWCSChangesButton
+    tabCNC
+        cncProgramAnalysisLabel
+        cncProgramAnalysisLine
+        cncCNCCommandsLabel
+        cncCNCCommandsLine
+        cncCNCCommandsSpecialLabel
+        cncCNCCommandsSpecialLine
+        cncProgramAnalysisMTButton
+        cncProgramAnalysisRTButton
+        cncProgramAnalysisRFButton
+        cncProgramAnalysisRVButton
+        cncProgramAnalysisRZButton
+        cncProgramAnalysisAbortButton
+        cncProgramAnalysisStateLabel
+        cncProgramAnalysisMessageLabel
+        cncStartButton
+        cncStopButton
+        cncPauseButton
+        cncContinueButton
+        cncStartFromLineButton
+        cncResumeAfterStopButton
+        cncStartFromLineEdit
+        cncResumeAfterStopFromLineButton
+        cncResumeAfterStopFromLineEdit
+    tabJOG
+        cncJogCommandXMButton
+        cncJogCommandXPButton       
+        cncJogCommandYMButton
+        cncJogCommandYPButton       
+        cncJogCommandZMButton
+        cncJogCommandZPButton       
+        cncJogCommandAMButton
+        cncJogCommandAPButton       
+        cncJogCommandBMButton
+        cncJogCommandBPButton       
+        cncJogCommandCMButton
+        cncJogCommandCPButton
+        jogSetSeparatorLine
+        textAxisPositionText
+        setProgramPositionXEdit
+        setProgramPositionXButton
+        setProgramPositionYEdit
+        setProgramPositionYButton
+        setProgramPositionZEdit
+        setProgramPositionZButton
+        setProgramPositionAEdit
+        setProgramPositionAButton
+        setProgramPositionBEdit
+        setProgramPositionBButton
+        setProgramPositionCEdit
+        setProgramPositionCButton
+        jogSTOPButton
+    tabOverrides
+    tabHoming
+    tabMDI
+    tabDIO
+    tabAIO
+    tabScanningLaser
+    tabMachiningInfo
+    tabUIDialogs
+        uidProgramSettingsButton
+        uidWorkCoordinatesButton
+        uidParametersLibraryButton
+        uidToolsLibraryButton
+        uidBoardMonitorButton
+        uidBoardSettingsButton
+        uidBoardEtherCATMonitorButton
+        uidChangeBoardIPButton
+        uidBoardFirmwareManagerButton
+        uidMacrosManagementButton
+        uidATCManagementButton
+        uidAboutButton
+    tabSystemInfo
+        systemInfoEdit
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

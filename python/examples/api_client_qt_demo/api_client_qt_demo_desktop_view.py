@@ -54,6 +54,7 @@ from PySide6.QtWidgets import (
 )
 
 from qt_gcode_highlighter import GCodeHighlighter
+from qt_realtime_scope import QRealTimeScope
 
 from ui_desktop_view import Ui_DesktopView
 
@@ -167,6 +168,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # set current persistable save version
         self.__persistable_save_version = 1
+
+        # set axes velocity plot data
+        self.realtime_scope = QRealTimeScope(self.ui.frame, 6, 800)
 
         # apply and set gcode editor highlighter
         self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
@@ -496,29 +500,29 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # event tab ui dialogs
         if sender == self.ui.uidAboutButton:
-            self.api.show_ui_dialog(cnc.UID_ABOUT)
+            self.api.show_ui_dialog(cnc.UID_ID_ABOUT)
         if sender == self.ui.uidATCManagementButton:
-            self.api.show_ui_dialog(cnc.UID_ATC_MANAGEMENT)
+            self.api.show_ui_dialog(cnc.UID_ID_ATC_MANAGEMENT)
         if sender == self.ui.uidBoardEtherCATMonitorButton:
-            self.api.show_ui_dialog(cnc.UID_BOARD_ETHERCAT_MONITOR)
+            self.api.show_ui_dialog(cnc.UID_ID_BOARD_ETHERCAT_MONITOR)
         if sender == self.ui.uidBoardFirmwareManagerButton:
-            self.api.show_ui_dialog(cnc.UID_BOARD_FIRMWARE_MANAGER)
+            self.api.show_ui_dialog(cnc.UID_ID_BOARD_FIRMWARE_MANAGER)
         if sender == self.ui.uidBoardMonitorButton:
-            self.api.show_ui_dialog(cnc.UID_BOARD_MONITOR)
+            self.api.show_ui_dialog(cnc.UID_ID_BOARD_MONITOR)
         if sender == self.ui.uidBoardSettingsButton:
-            self.api.show_ui_dialog(cnc.UID_BOARD_SETTINGS)
+            self.api.show_ui_dialog(cnc.UID_ID_BOARD_SETTINGS)
         if sender == self.ui.uidChangeBoardIPButton:
-            self.api.show_ui_dialog(cnc.UID_CHANGE_BOARD_IP)
+            self.api.show_ui_dialog(cnc.UID_ID_CHANGE_BOARD_IP)
         if sender == self.ui.uidMacrosManagementButton:
-            self.api.show_ui_dialog(cnc.UID_MACROS_MANAGEMENT)
+            self.api.show_ui_dialog(cnc.UID_ID_MACROS_MANAGEMENT)
         if sender == self.ui.uidParametersLibraryButton:
-            self.api.show_ui_dialog(cnc.UID_PARAMETERS_LIBRARY)
+            self.api.show_ui_dialog(cnc.UID_ID_PARAMETERS_LIBRARY)
         if sender == self.ui.uidProgramSettingsButton:
-            self.api.show_ui_dialog(cnc.UID_PROGRAM_SETTINGS)
+            self.api.show_ui_dialog(cnc.UID_ID_PROGRAM_SETTINGS)
         if sender == self.ui.uidToolsLibraryButton:
-            self.api.show_ui_dialog(cnc.UID_TOOLS_LIBRARY)
+            self.api.show_ui_dialog(cnc.UID_ID_TOOLS_LIBRARY)
         if sender == self.ui.uidWorkCoordinatesButton:
-            self.api.show_ui_dialog(cnc.UID_WORK_COORDINATES)
+            self.api.show_ui_dialog(cnc.UID_ID_WORK_COORDINATES)
 
         # event system info
 
@@ -1319,7 +1323,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update tab overrides values
         if self.ui.tabWidget.currentWidget() == self.ui.tabOverrides:
-            pass
+            if axes_info.has_data:
+                self.realtime_scope.push(axes_info.program_position)
 
         # update tab homing values
         if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:

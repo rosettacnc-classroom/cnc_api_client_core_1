@@ -34,7 +34,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>5</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -1499,6 +1499,22 @@
      <attribute name="title">
       <string>Overrides</string>
      </attribute>
+     <widget class="PlotWidget" name="frame">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>9</y>
+        <width>901</width>
+        <height>351</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabHoming">
      <attribute name="title">
@@ -4256,6 +4272,14 @@ History</string>
   </widget>
   <widget class="QStatusBar" name="StatusBar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QFrame</extends>
+   <header location="global">pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>cncJogCommandAPButton</tabstop>
   <tabstop>cncJogCommandBPButton</tabstop>
