@@ -4344,7 +4344,9 @@ History</string>
   <tabstop>cncJogCommandYPButton</tabstop>
   <tabstop>cncJogCommandZPButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
  <designerdata>
   <property name="gridDeltaX">

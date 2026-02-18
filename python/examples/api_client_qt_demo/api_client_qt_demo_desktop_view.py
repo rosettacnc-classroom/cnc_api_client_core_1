@@ -55,6 +55,7 @@ from PySide6.QtWidgets import (
 
 from qt_gcode_highlighter import GCodeHighlighter
 from qt_realtime_scope import QRealTimeScope
+from qt_utils import QLedWidget
 
 from ui_desktop_view import Ui_DesktopView
 
@@ -197,11 +198,13 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.StateMachineLabel = QLabel("")
         self.StateMachineLabel.setMinimumWidth(629)
         self.StateMachineLabel.setMaximumWidth(629)
+        self.StateCommunicationLed = QLedWidget(self.ui.StatusBar, self.ui.StatusBar.contentsRect().height() - 16, ':/images/images/circular-led.svg')
         self.APIServerConnectionStateLabel = QLabel("")
         self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.ui.StatusBar.setContentsMargins(6, 0, 0, 0)
         self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
         self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
+        self.ui.StatusBar.addPermanentWidget(self.StateCommunicationLed)
 
         # lock tables header resize
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
@@ -1390,6 +1393,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.APIServerConnectionStateLabel.setText('Connection with Server : ' + text)
         else:
             self.APIServerConnectionStateLabel.setText('Connection with Server [TLS] : ' + text)
+        if not self.api_server_connection_state:
+            self.StateCommunicationLed.setState(False)
+        else:
+            self.StateCommunicationLed.setState(True, 0.3)
 
         # update axis enablings
         if (self.axes_mask_enablings_in_use != cnc_info.axes_mask) or connection_with_cnc_changed:
