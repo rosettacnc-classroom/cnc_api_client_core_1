@@ -91,6 +91,11 @@ OVERRIDE_SEATTLE_TIME               = 500
 # == digits in float
 OFFSET_USE_DIGITS                   = 6
 
+# == api server connection led colors
+ASCL_DISCONNECTED                   = "#b0b0b0"
+ASCL_CONNECTED                      = "#21c45a"
+ASCL_ERROR                          = "#ff7259"
+
 # == api server connection state
 ASCS_DISCONNECTED                   = 0
 ASCS_CONNECTED                      = 1
@@ -100,7 +105,7 @@ ASCS_ERROR                          = 2
 ASCS_TEXTS = [
     'DISCONNECTED',
     'CONNECTED',
-    'ERROR'
+    'DISCONNECTED AFTER AN ERROR'
 ]
 
 # == compile state texts (english)
@@ -198,13 +203,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.StateMachineLabel = QLabel("")
         self.StateMachineLabel.setMinimumWidth(629)
         self.StateMachineLabel.setMaximumWidth(629)
-        self.StateCommunicationLed = QLedWidget(self.ui.StatusBar, self.ui.StatusBar.contentsRect().height() - 16, ':/images/images/circular-led.svg')
         self.APIServerConnectionStateLabel = QLabel("")
         self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.APIServerConnectionStateLed = QLedWidget(
+            self.ui.StatusBar,
+            self.ui.StatusBar.contentsRect().height() - 16,
+            ':/images/images/circular-led.svg',
+            color_on=ASCL_CONNECTED,
+            color_off=ASCL_DISCONNECTED
+        )
         self.ui.StatusBar.setContentsMargins(6, 0, 0, 0)
         self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
         self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
-        self.ui.StatusBar.addPermanentWidget(self.StateCommunicationLed)
+        self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLed)
 
         # lock tables header resize
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
@@ -369,7 +380,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # event commands
         if sender == self.ui.CNCConnectionOpenButton:
-            self.api.cnc_connection_open(use_ui=True)
+            self.api.cnc_connection_open(use_ui=False, use_fast_mode=False, skip_firmware_check=True, overwrite_cnc_settings=True)
         if sender == self.ui.CNCConnectionCloseButton:
             self.api.cnc_connection_close()
 
@@ -614,8 +625,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             enabled_commands = self.ctx.enabled_commands
 
             # update commands
-            self.ui.CNCConnectionCloseButton.setEnabled(connected)
-            self.ui.CNCConnectionOpenButton.setEnabled(not connected)
+            self.ui.CNCConnectionCloseButton.setEnabled(enabled_commands.cnc_connection_close)
+            self.ui.CNCConnectionOpenButton.setEnabled(enabled_commands.cnc_connection_open)
 
             self.ui.cncStartButton.setEnabled(enabled_commands.cnc_start)
             self.ui.cncStopButton.setEnabled(enabled_commands.cnc_stop)
@@ -1393,10 +1404,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.APIServerConnectionStateLabel.setText('Connection with Server : ' + text)
         else:
             self.APIServerConnectionStateLabel.setText('Connection with Server [TLS] : ' + text)
-        if not self.api_server_connection_state:
-            self.StateCommunicationLed.setState(False)
+        if self.api_server_connection_state in [None, ASCS_DISCONNECTED]:
+            self.APIServerConnectionStateLed.setColors(ASCL_CONNECTED, ASCL_DISCONNECTED)
+            self.APIServerConnectionStateLed.setState(False)
+        elif self.api_server_connection_state == ASCS_ERROR:
+            self.APIServerConnectionStateLed.setColors(ASCL_CONNECTED, ASCL_ERROR)
+            self.APIServerConnectionStateLed.setState(False)
         else:
-            self.StateCommunicationLed.setState(True, 0.3)
+            self.APIServerConnectionStateLed.setColors(ASCL_CONNECTED, ASCL_DISCONNECTED)
+            self.APIServerConnectionStateLed.setState(True, 0.3)
 
         # update axis enablings
         if (self.axes_mask_enablings_in_use != cnc_info.axes_mask) or connection_with_cnc_changed:

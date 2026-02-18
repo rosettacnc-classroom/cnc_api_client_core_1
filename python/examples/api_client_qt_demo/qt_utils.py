@@ -226,7 +226,7 @@ class QLedWidget(QLabel):
     # == END: public getters/setters
 
 
-    # == BEG: public API
+    # == BEG: public attributes
     #
     def getState(self) -> bool:
         """Returns the current state. Prefer the :attr:"state" property."""
@@ -248,7 +248,7 @@ class QLedWidget(QLabel):
         - "state=True", "random_blink_interval<=0"  -> LED forced **on**.
         - "state=True", "random_blink_interval>0"   -> Random blinking:
           alternates between ON and OFF at random intervals between
-          :data:"_BLINK_MIN_INTERVAL_S" and *random_blink_interval* seconds.
+          data:"_BLINK_MIN_INTERVAL_S" and *random_blink_interval* seconds.
 
         Args:
             state                   : Desired logical state.
@@ -294,7 +294,7 @@ class QLedWidget(QLabel):
     def sizeHint(self) -> QSize:
         return QSize(self.width(), self.height())
     #
-    # == END: public API
+    # == END: public attributes
 
 
     # == BEG: Qt event overrides
@@ -307,7 +307,7 @@ class QLedWidget(QLabel):
     # == END: Qt event overrides
 
 
-    # == BEG: private helpers
+    # == BEG: non-public attributes
     #
     def _apply_pixmap(self) -> None:
         self._rebuild_cache()
@@ -364,4 +364,4 @@ class QLedWidget(QLabel):
         self._state = state
         self._apply_pixmap()
     #
-    # == END: private helpers
+    # == END: non-public attributes

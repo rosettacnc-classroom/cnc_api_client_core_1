@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewzKjRcD.ui'
+## Form generated from reading UI file 'desktop_viewuuujoJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -443,11 +443,6 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabJOG, "")
         self.tabOverrides = QWidget()
         self.tabOverrides.setObjectName(u"tabOverrides")
-        self.frame = PlotWidget(self.tabOverrides)
-        self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(9, 9, 901, 351))
-        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.tabWidget.addTab(self.tabOverrides, "")
         self.tabHoming = QWidget()
         self.tabHoming.setObjectName(u"tabHoming")
@@ -1101,6 +1096,11 @@ class Ui_DesktopView(object):
         self.stayOnTopCheckBox = QCheckBox(self.centralwidget)
         self.stayOnTopCheckBox.setObjectName(u"stayOnTopCheckBox")
         self.stayOnTopCheckBox.setGeometry(QRect(440, 709, 89, 22))
+        self.frame = PlotWidget(self.centralwidget)
+        self.frame.setObjectName(u"frame")
+        self.frame.setGeometry(QRect(690, 13, 231, 251))
+        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Shadow.Raised)
         DesktopView.setCentralWidget(self.centralwidget)
         self.StatusBar = QStatusBar(DesktopView)
         self.StatusBar.setObjectName(u"StatusBar")
@@ -1169,7 +1169,7 @@ class Ui_DesktopView(object):
 
         self.retranslateUi(DesktopView)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(DesktopView)

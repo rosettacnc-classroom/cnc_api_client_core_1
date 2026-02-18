@@ -34,7 +34,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -1499,22 +1499,6 @@
      <attribute name="title">
       <string>Overrides</string>
      </attribute>
-     <widget class="PlotWidget" name="frame">
-      <property name="geometry">
-       <rect>
-        <x>9</x>
-        <y>9</y>
-        <width>901</width>
-        <height>351</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Shape::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Shadow::Raised</enum>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="tabHoming">
      <attribute name="title">
@@ -4267,6 +4251,22 @@ History</string>
     </property>
     <property name="text">
      <string>Stay on Top</string>
+    </property>
+   </widget>
+   <widget class="PlotWidget" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>690</x>
+      <y>13</y>
+      <width>231</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
     </property>
    </widget>
   </widget>
