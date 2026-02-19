@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      17/02/2026
+# Created:      19/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -498,7 +498,7 @@ class APIAxesInfo:
         self.homing_done                        = False
         self.homing_done_mask                   = 0
 
-class APICncInfo:
+class APICncInfo(APIComparableMixin):
     """API data structure for cnc info."""
     def __init__(self):
         self.has_data                           = False

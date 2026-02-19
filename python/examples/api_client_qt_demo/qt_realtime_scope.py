@@ -24,6 +24,18 @@ class QRealTimeScope:
         self.channels = channels
         self.samples = samples
 
+        # enable antialiasing and OpenGL support
+        pg.setConfigOptions(antialias=True)
+        pg.setConfigOptions(useOpenGL=True)
+
+        # remove tick and number from bottom axis (ruler)
+        ax = self.widget.getPlotItem().getAxis('bottom')
+        ax.setTicks([])
+        ax.setStyle(showValues=False)
+
+        #
+        #self.widget.getPlotItem().layout.setRowFixedHeight(3, 0)  # spesso la row dell’asse bottom è 3
+
         # set channels color
         self.colors = [
             pg.mkPen(color=(0, 255, 0)),

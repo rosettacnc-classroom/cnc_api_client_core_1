@@ -35,15 +35,15 @@ FileName=$[Project-Path]qt_gcode_highlighter.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node6]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]qt_utils.py
+FileName=$[Project-Path]qt_realtime_scope.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]settings.xml
+FileName=$[Project-Path]qt_utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=D:\x\develop\qem\rosettacnc_github.com\cnc_api_client_core_1\python\test-get_coordinate_systems_info.py
+FileName=$[Project-Path]resources_rc.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode

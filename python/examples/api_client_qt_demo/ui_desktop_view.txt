@@ -1,4 +1,5 @@
 tabWidget
+
     tabProgram
         programNewLabel
         programNewLine
@@ -14,6 +15,7 @@ tabWidget
         programSaveAsLine
         programSaveFileAsFileNameEdit
         programSaveAsButton                         -> program_save_as              self.program_save_file_name
+
     tabGCode
         gcodeProgramEdit
         gcodeGetProgramTextButton                   -> get_program_info
@@ -21,6 +23,7 @@ tabWidget
         gcodeAddProgramTextEdit
         gcodeAddProgramTextButton                   -> program_gcode_add_text
         gcodeClearProgramButton                     -> program_new
+
     tabWCS
         csWorkingWCS
         csOffsetsTable
@@ -42,6 +45,7 @@ tabWidget
         csSetWCSCCheckBox
         csSetWCSCEdit
         csApplyWCSChangesButton
+
     tabCNC
         cncProgramAnalysisLabel
         cncProgramAnalysisLine
@@ -66,6 +70,7 @@ tabWidget
         cncStartFromLineEdit
         cncResumeAfterStopFromLineButton
         cncResumeAfterStopFromLineEdit
+
     tabJOG
         cncJogCommandXMButton
         cncJogCommandXPButton       
@@ -94,13 +99,45 @@ tabWidget
         setProgramPositionCEdit
         setProgramPositionCButton
         jogSTOPButton
+
     tabOverrides
+        ovrJogLabel
+        ovrJogSlider
+        ovrJogValue
+        ovrSpindleLabel
+        ovrSpindleSlider
+        ovrSpindleValue
+        ovrFastLabel
+        ovrFastSlider
+        ovrFastValue
+        ovrFeedLabel
+        ovrFeedSlider
+        ovrFeedValue
+        ovrFeedCSM1Label
+        ovrFeedCSM1Slider
+        ovrFeedCSM1Value
+        ovrFeedCSM2Label
+        ovrFeedCSM2Slider
+        ovrFeedCSM2Value
+        ovrPlasmaPowerLabel
+        ovrPlasmaPowerSlider
+        ovrPlasmaPowerValue
+        ovrPlasmaVoltageLabel
+        ovrPlasmaVoltageSlider
+        ovrPlasmaVoltageValue
+
     tabHoming
+
     tabMDI
+
     tabDIO
+
     tabAIO
+
     tabScanningLaser
+
     tabMachiningInfo
+
     tabUIDialogs
         uidProgramSettingsButton
         uidWorkCoordinatesButton
@@ -114,6 +151,7 @@ tabWidget
         uidMacrosManagementButton
         uidATCManagementButton
         uidAboutButton
+
     tabSystemInfo
         systemInfoEdit
         

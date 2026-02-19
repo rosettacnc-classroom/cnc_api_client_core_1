@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      11/02/2026
+# Created:      19/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -39,9 +39,10 @@ import ipaddress
 from statistics import median
 from collections import namedtuple
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
+    QAbstractSlider,
     QButtonGroup,
     QCheckBox,
     QFileDialog,
@@ -50,6 +51,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QPushButton,
+    QSlider,
     QTableWidgetItem
 )
 
@@ -153,6 +155,9 @@ AWCM_ACTIVATE_WCS_ONLY              = 0         # apply wcs changes mode: activa
 AWCM_SET_WCS_OFFSET_ONLY            = 1         # apply wcs changes mode: set wcs offset only
 AWCM_SET_WCS_OFFSET_AND_ACTIVATE    = 2         # apply wcs changes mode: set wcs offset and activate
 
+# settle times to sync api get values after an api set value
+SETTLE_TIME_SLIDER                  = 0.4
+
 AxisControls = namedtuple('AxisControls', ['label', 'value'])
 
 class ApiClientQtDemoDesktopView(QMainWindow):
@@ -225,20 +230,13 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.api = None
         self.ctx = None
         self.api_server_connection_state = None
-        self.stay_on_top_changed = None
         self.axes_mask_enablings_in_use = None
         self.cnc_resume_after_stop_from_line = None
         self.cnc_start_from_line = None
         self.connection_with_cnc = None
-        # FDIOImageBitmap: TBitmap
         self.in_update = None
-        # FMachiningInfoImageBitmap: TBitmap
-        # FOverrideFastWatch: TStopWatch
-        # FOverrideFeedCustom1Watch: TStopWatch
-        # FOverrideFeedCustom2Watch: TStopWatch
-        # FOverrideFeedWatch: TStopWatch
-        # FOverrideJogWatch: TStopWatch
-        # FOverrideSpindleWatch: TStopWatch
+        self.slider_update_inhibition_until = 0.0
+        self.stay_on_top_changed = None
 
         # declare editable fields support attributes
         self.api_server_host = None
@@ -271,7 +269,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.on_action_main_execute = QAction("", self)
         self.on_action_main_execute.triggered.connect(self.__on_action_main_execute)
 
-        # link actions to all edit
+        # link actions to all edits
         for obj in self.findChildren(QLineEdit):
             obj.editingFinished.connect(self.__on_editing_finished)
 
@@ -284,16 +282,34 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             else:
                 obj.clicked.connect(self.__on_action_main_execute)
 
-        # link actions to all radio button
+        # link actions to all checkbox
+        for obj in self.findChildren(QCheckBox):
+            obj.clicked.connect(self.__on_check_box_clicked)
+
+        # link actions to all radio buttons
         self.apply_wcs_mode_group = QButtonGroup(self)
         self.apply_wcs_mode_group.addButton(self.ui.csActivateWCSOnlyRadioButton, 0)
         self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetOnlyRadioButton, 1)
         self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetAndActivateRadioButton, 2)
         self.apply_wcs_mode_group.idClicked.connect(self.__on_button_group_clicked)
 
-        # link actions to all checkbox
-        for obj in self.findChildren(QCheckBox):
-            obj.clicked.connect(self.__on_check_box_clicked)
+        # link actions to override value labels enabled to double-click
+        self.override_value_labels = {
+            self.ui.ovrJogValue             : "jog",
+            self.ui.ovrSpindleValue         : "spindle",
+            self.ui.ovrFastValue            : "fast",
+            self.ui.ovrFeedValue            : "feed",
+            self.ui.ovrFeedCSM1Value        : "feed_custom_1",
+            self.ui.ovrFeedCSM2Value        : "feed_custom_2",
+            self.ui.ovrPlasmaVoltageValue   : "plasma_voltage",
+            self.ui.ovrPlasmaPowerValue     : "plasma_power",
+        }
+        for label in self.override_value_labels:
+            label.installEventFilter(self)
+
+        # link actions to all sliders
+        for obj in self.findChildren(QSlider):
+            obj.actionTriggered.connect(self.__on_slider_action)
 
         # create array of axis related objects [ helper attributes ]
         self.axes = ['X', 'Y', 'Z', 'A', 'B', 'C']
@@ -345,6 +361,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     def closeEvent(self, event):
         self.__on_form_close()
         super().closeEvent(event)
+    def eventFilter(self, obj, event):
+        """Handles double-clicks on all QLabels."""
+        if isinstance(obj, QLabel) and event.type() == QEvent.MouseButtonDblClick:
+            self.__on_label_double_click(obj)
+            return True
+        return super().eventFilter(obj, event)
     def showEvent(self, event):
         super().showEvent(event)
         self.__on_form_show()
@@ -457,7 +479,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     offset[5] = self.set_wcs_c
             activate = self.apply_wcs_changes_mode in [AWCM_ACTIVATE_WCS_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]
             self.api.set_wcs_info(wcs, offset, activate=activate)
-            print(f'{wcs} | {offset} | {activate}')
 
         # event tab cnc
         if sender == self.ui.cncProgramAnalysisMTButton:
@@ -942,6 +963,69 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # enable first stay on top update
         self.stay_on_top_changed = True
 
+    def __on_label_double_click(self, sender: QLabel):
+        # check if sender in override value labels dict
+        name = self.override_value_labels.get(sender)
+        if name is not None:
+            # get cnc info
+            cnc_info = self.api.get_cnc_info()
+            if not cnc_info.has_data:
+                return
+            enabled = getattr(cnc_info, f'override_{name}_enabled')
+            locked = getattr(cnc_info, f'override_{name}_locked')
+            if enabled and not locked:
+                # set related ovveride value
+                value = min(100, getattr(cnc_info, f'override_{name}_max'))
+                method = getattr(self.api, f'set_override_{name}')
+                method(value)
+                # start slide update inhibition until timer
+                self.slider_update_inhibition_until = time.perf_counter() + SETTLE_TIME_SLIDER
+                return
+
+    def __on_slider_action(self, action_value: int):
+        sender: QSlider = self.sender()
+        action =  QAbstractSlider.SliderAction(action_value)
+
+        # evaluate action to get predicted value
+        v = sender.value()
+        if action == QAbstractSlider.SliderSingleStepAdd:
+            value = min(v + sender.singleStep(), sender.maximum())
+        elif action == QAbstractSlider.SliderSingleStepSub:
+            value = max(v - sender.singleStep(), sender.minimum())
+        elif action == QAbstractSlider.SliderPageStepAdd:
+            value = min(v + sender.pageStep(), sender.maximum())
+        elif action == QAbstractSlider.SliderPageStepSub:
+            value = max(v - sender.pageStep(), sender.minimum())
+        elif action == QAbstractSlider.SliderToMinimum:
+            value = sender.minimum()
+        elif action == QAbstractSlider.SliderToMaximum:
+            value = sender.maximum()
+        elif action == QAbstractSlider.SliderMove:
+            value = sender.sliderPosition()
+        else:
+            return
+
+        # write new ovverride value
+        if sender == self.ui.ovrJogSlider:
+            self.api.set_override_jog(value)
+        if sender == self.ui.ovrSpindleSlider:
+            self.api.set_override_spindle(value)
+        if sender == self.ui.ovrFastSlider:
+            self.api.set_override_fast(value)
+        if sender == self.ui.ovrFeedSlider:
+            self.api.set_override_feed(value)
+        if sender == self.ui.ovrFeedCSM1Slider:
+            self.api.set_override_feed_custom_1(value)
+        if sender == self.ui.ovrFeedCSM2Slider:
+            self.api.set_override_feed_custom_2(value)
+        if sender == self.ui.ovrPlasmaPowerSlider:
+            self.api.set_override_plasma_power(value)
+        if sender == self.ui.ovrPlasmaVoltageSlider:
+            self.api.set_override_plasma_voltage(value)
+
+        # start slide update inhibition until timer
+        self.slider_update_inhibition_until = time.perf_counter() + SETTLE_TIME_SLIDER
+
     def __on_timer_update(self):
         # update non editable objects with related data
         self.__updated_objects()
@@ -1232,6 +1316,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
         self.ui.toolInfoLabel.setText(text)
 
+        # update realtime scope
+        if axes_info.has_data:
+            self.realtime_scope.push(axes_info.program_position)
+
         # update tab program
         if self.ui.tabWidget.currentWidget() == self.ui.tabProgram:
             self.ui.programLoadFileNameEdit.setEnabled(enabled_commands.program_load)
@@ -1337,8 +1425,38 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update tab overrides values
         if self.ui.tabWidget.currentWidget() == self.ui.tabOverrides:
-            if axes_info.has_data:
-                self.realtime_scope.push(axes_info.program_position)
+
+            # update override sliders limits
+            self.ui.ovrJogSlider.setRange(cnc_info.override_jog_min, cnc_info.override_jog_max)
+            self.ui.ovrSpindleSlider.setRange(cnc_info.override_spindle_min, cnc_info.override_spindle_max)
+            self.ui.ovrFastSlider.setRange(cnc_info.override_fast_min, cnc_info.override_fast_max)
+            self.ui.ovrFeedSlider.setRange(cnc_info.override_feed_min, cnc_info.override_feed_max)
+            self.ui.ovrFeedCSM1Slider.setRange(cnc_info.override_feed_custom_1_min, cnc_info.override_feed_custom_1_max)
+            self.ui.ovrFeedCSM2Slider.setRange(cnc_info.override_feed_custom_2_min, cnc_info.override_feed_custom_2_max)
+            self.ui.ovrPlasmaPowerSlider.setRange(cnc_info.override_plasma_power_min, cnc_info.override_plasma_power_max)
+            self.ui.ovrPlasmaVoltageSlider.setRange(cnc_info.override_plasma_voltage_min, cnc_info.override_plasma_voltage_max)
+
+            # update override sliders values
+            if time.perf_counter() > self.slider_update_inhibition_until:
+                self.slider_update_inhibition_until = 0.0
+                self.ui.ovrJogSlider.setValue(cnc_info.override_jog)
+                self.ui.ovrSpindleSlider.setValue(cnc_info.override_spindle)
+                self.ui.ovrFastSlider.setValue(cnc_info.override_fast)
+                self.ui.ovrFeedSlider.setValue(cnc_info.override_feed)
+                self.ui.ovrFeedCSM1Slider.setValue(cnc_info.override_feed_custom_1)
+                self.ui.ovrFeedCSM2Slider.setValue(cnc_info.override_feed_custom_2)
+                self.ui.ovrPlasmaPowerSlider.setValue(cnc_info.override_plasma_power)
+                self.ui.ovrPlasmaVoltageSlider.setValue(cnc_info.override_plasma_voltage)
+
+            # update override labels value
+            self.ui.ovrJogValue.setText(str(cnc_info.override_jog))
+            self.ui.ovrSpindleValue.setText(str(cnc_info.override_spindle))
+            self.ui.ovrFastValue.setText(str(cnc_info.override_fast))
+            self.ui.ovrFeedValue.setText(str(cnc_info.override_feed))
+            self.ui.ovrFeedCSM1Value.setText(str(cnc_info.override_feed_custom_1))
+            self.ui.ovrFeedCSM2Value.setText(str(cnc_info.override_feed_custom_2))
+            self.ui.ovrPlasmaPowerValue.setText(str(cnc_info.override_plasma_power))
+            self.ui.ovrPlasmaVoltageValue.setText(str(cnc_info.override_plasma_voltage))
 
         # update tab homing values
         if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:
@@ -1423,33 +1541,124 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     axis.label.setEnabled(enabled)
                     axis.value.setEnabled(enabled)
 
-        # update general objects enabling
+        # update objects enablings
+        #
+        # TAKE CARE
+        # =========
+        # Buttons widgets enablings are managed by self.__on_action_main_update()
+        #
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
-            # update main view
+            # enablings main view
             self.ui.apiServerHostEdit.setEnabled(True)
             self.ui.apiServerPortEdit.setEnabled(True)
             self.ui.useTLSCheckBox.setEnabled(True)
 
-            # update tab jog
+            # enablings tab program
+            # enablings tab g-code
+            # enablings tab wcs
+
+            # enablings tab jog
             self.ui.setProgramPositionXEdit.setEnabled(False)
             self.ui.setProgramPositionYEdit.setEnabled(False)
             self.ui.setProgramPositionZEdit.setEnabled(False)
             self.ui.setProgramPositionAEdit.setEnabled(False)
             self.ui.setProgramPositionBEdit.setEnabled(False)
             self.ui.setProgramPositionCEdit.setEnabled(False)
+
+            # enablings tab overrides
+            self.ui.ovrJogLabel.setEnabled(False)
+            self.ui.ovrJogSlider.setEnabled(False)
+            self.ui.ovrJogValue.setEnabled(False)
+            self.ui.ovrSpindleLabel.setEnabled(False)
+            self.ui.ovrSpindleSlider.setEnabled(False)
+            self.ui.ovrSpindleValue.setEnabled(False)
+            self.ui.ovrFastLabel.setEnabled(False)
+            self.ui.ovrFastSlider.setEnabled(False)
+            self.ui.ovrFastValue.setEnabled(False)
+            self.ui.ovrFeedLabel.setEnabled(False)
+            self.ui.ovrFeedSlider.setEnabled(False)
+            self.ui.ovrFeedValue.setEnabled(False)
+            self.ui.ovrFeedCSM1Label.setEnabled(False)
+            self.ui.ovrFeedCSM1Slider.setEnabled(False)
+            self.ui.ovrFeedCSM1Value.setEnabled(False)
+            self.ui.ovrFeedCSM2Label.setEnabled(False)
+            self.ui.ovrFeedCSM2Slider.setEnabled(False)
+            self.ui.ovrFeedCSM2Value.setEnabled(False)
+            self.ui.ovrPlasmaPowerLabel.setEnabled(False)
+            self.ui.ovrPlasmaPowerSlider.setEnabled(False)
+            self.ui.ovrPlasmaPowerValue.setEnabled(False)
+            self.ui.ovrPlasmaVoltageLabel.setEnabled(False)
+            self.ui.ovrPlasmaVoltageSlider.setEnabled(False)
+            self.ui.ovrPlasmaVoltageValue.setEnabled(False)
+
+            # enablings tab homing
+            # enablings tab mdi
+            # enablings tab d i/o
+            # enablings tab a i/o
+            # enablings tab scanning laser
+            # enablings tab machining info
+            # enablings tab ui dialogs
+            # enablings tab system info
         else:
-            # update main view
+            # enablings main view
             self.ui.apiServerHostEdit.setEnabled(False)
             self.ui.apiServerPortEdit.setEnabled(False)
             self.ui.useTLSCheckBox.setEnabled(False)
 
-            # update tab jog
-            set_program_position = self.ctx.enabled_commands.set_program_position
+            # enablings tab program
+            # enablings tab g-code
+            # enablings tab wcs
+
+            # enablings tab jog
+            set_program_position = enabled_commands.set_program_position
             self.ui.setProgramPositionXEdit.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
             self.ui.setProgramPositionYEdit.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
             self.ui.setProgramPositionZEdit.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
             self.ui.setProgramPositionAEdit.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
             self.ui.setProgramPositionBEdit.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
             self.ui.setProgramPositionCEdit.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
+
+            # enablings tab overrides
+            self.ui.ovrJogLabel.setEnabled(cnc_info.override_jog_enabled)
+            self.ui.ovrJogSlider.setEnabled(
+                cnc_info.override_jog_enabled and not cnc_info.override_jog_locked)
+            self.ui.ovrJogValue.setEnabled(cnc_info.override_jog_enabled)
+            self.ui.ovrSpindleLabel.setEnabled(cnc_info.override_spindle_enabled)
+            self.ui.ovrSpindleSlider.setEnabled(
+                cnc_info.override_spindle_enabled and not cnc_info.override_spindle_locked)
+            self.ui.ovrSpindleValue.setEnabled(cnc_info.override_spindle_enabled)
+            self.ui.ovrFastLabel.setEnabled(cnc_info.override_fast_enabled)
+            self.ui.ovrFastSlider.setEnabled(
+                cnc_info.override_fast_enabled and not cnc_info.override_fast_locked)
+            self.ui.ovrFastValue.setEnabled(cnc_info.override_fast_enabled)
+            self.ui.ovrFeedLabel.setEnabled(cnc_info.override_feed_enabled)
+            self.ui.ovrFeedSlider.setEnabled(
+                cnc_info.override_feed_enabled and not cnc_info.override_feed_locked)
+            self.ui.ovrFeedValue.setEnabled(cnc_info.override_feed_enabled)
+            self.ui.ovrFeedCSM1Label.setEnabled(cnc_info.override_feed_custom_1_enabled)
+            self.ui.ovrFeedCSM1Slider.setEnabled(
+                cnc_info.override_feed_custom_1_enabled and not cnc_info.override_feed_custom_1_locked)
+            self.ui.ovrFeedCSM1Value.setEnabled(cnc_info.override_feed_custom_1_enabled)
+            self.ui.ovrFeedCSM2Label.setEnabled(cnc_info.override_feed_custom_2_enabled)
+            self.ui.ovrFeedCSM2Slider.setEnabled(
+                cnc_info.override_feed_custom_2_enabled and not cnc_info.override_feed_custom_2_locked)
+            self.ui.ovrFeedCSM2Value.setEnabled(cnc_info.override_feed_custom_2_enabled)
+            self.ui.ovrPlasmaPowerLabel.setEnabled(cnc_info.override_plasma_power_enabled)
+            self.ui.ovrPlasmaPowerSlider.setEnabled(
+                cnc_info.override_plasma_power_enabled and not cnc_info.override_plasma_power_locked)
+            self.ui.ovrPlasmaPowerValue.setEnabled(cnc_info.override_plasma_power_enabled)
+            self.ui.ovrPlasmaVoltageLabel.setEnabled(cnc_info.override_plasma_voltage_enabled)
+            self.ui.ovrPlasmaVoltageSlider.setEnabled(
+                cnc_info.override_plasma_voltage_enabled and not cnc_info.override_plasma_voltage_locked)
+            self.ui.ovrPlasmaVoltageValue.setEnabled(cnc_info.override_plasma_voltage_enabled)
+
+            # enablings tab homing
+            # enablings tab mdi
+            # enablings tab d i/o
+            # enablings tab a i/o
+            # enablings tab scanning laser
+            # enablings tab machining info
+            # enablings tab ui dialogs
+            # enablings tab system info
     #
     # == END: update methods

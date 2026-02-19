@@ -1499,6 +1499,451 @@
      <attribute name="title">
       <string>Overrides</string>
      </attribute>
+     <widget class="QSlider" name="ovrJogSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>22</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrJogLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>22</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>JOG</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrJogValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>22</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrSpindleLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>56</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>SPINDLE</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrSpindleValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>56</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrSpindleSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>56</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFastLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>90</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>FAST</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrFastSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>90</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFastValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>90</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrFeedSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>124</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>124</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>124</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>FEED</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedCSM1Label">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>158</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>FEED CSM1</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrFeedCSM1Slider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>158</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedCSM1Value">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>158</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedCSM2Label">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>192</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>FEED CSM2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrFeedCSM2Value">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>192</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrFeedCSM2Slider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>192</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrPlasmaPowerValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>226</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrPlasmaPowerLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>226</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PLASMA POWER</string>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrPlasmaPowerSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>226</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrPlasmaVoltageLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>260</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>PLASMA VOLTAGE</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrPlasmaVoltageValue">
+      <property name="geometry">
+       <rect>
+        <x>342</x>
+        <y>260</y>
+        <width>30</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QSlider" name="ovrPlasmaVoltageSlider">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>260</y>
+        <width>200</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="ovrNoteLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>300</y>
+        <width>571</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;NOTE&lt;br/&gt;&lt;/span&gt;Double-clicking on the percentage value sets the value to 100 or to its maximum value if it is less than 100.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabHoming">
      <attribute name="title">
