@@ -181,7 +181,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.__persistable_save_version = 1
 
         # set axes velocity plot data
-        self.realtime_scope = QRealTimeScope(self.ui.frame, 6, 800)
+        self.realtime_scope = QRealTimeScope(self.ui.axesPositionsPlot, 6, 4000)
 
         # apply and set gcode editor highlighter
         self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
@@ -854,6 +854,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 return False
 
         sender = self.sender()
+        if sender is None:
+            return
         value = sender.text().strip()
 
         # event from main view
@@ -1297,28 +1299,31 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         um_vel_rf = '{:7.0f} dg/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} dg/min'
         um_decimals = 3 if self.units_mode == cnc.UM_METRIC else 4
 
-        # update axes info
-        for axis_group, attr_name, is_velocity in self.axis_data_mapping:
-            data = getattr(axes_info, attr_name)
-            for i, axis in enumerate(axis_group):
-                fmt = (um_vel_lf if i < 3 else um_vel_rf) if is_velocity else (um_spc_lf if i < 3 else um_spc_rf)
-                axis.value.setText(fmt.format(data[i]))
-        self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
+        # update tab genera
+        if self.ui.tabWidgetMain.currentWidget() == self.ui.tabGeneral:
+            # update axes info
+            for axis_group, attr_name, is_velocity in self.axis_data_mapping:
+                data = getattr(axes_info, attr_name)
+                for i, axis in enumerate(axis_group):
+                    fmt = (um_vel_lf if i < 3 else um_vel_rf) if is_velocity else (um_spc_lf if i < 3 else um_spc_rf)
+                    axis.value.setText(fmt.format(data[i]))
+            self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
 
-        # update tool info
-        text = ''
-        if cnc_info.tool_slot == 0:
-            text = f'T{cnc_info.tool_id:d} -'
-        else:
-            text = f'T{cnc_info.tool_id:d} Slot:{cnc_info.tool_slot:d} -'
-        text = text + ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
-        text = text + ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
-        text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
-        self.ui.toolInfoLabel.setText(text)
+            # update tool info
+            text = ''
+            if cnc_info.tool_slot == 0:
+                text = f'T{cnc_info.tool_id:d} -'
+            else:
+                text = f'T{cnc_info.tool_id:d} Slot:{cnc_info.tool_slot:d} -'
+            text = text + ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
+            text = text + ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
+            text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
+            self.ui.toolInfoLabel.setText(text)
 
-        # update realtime scope
-        if axes_info.has_data:
-            self.realtime_scope.push(axes_info.program_position)
+        # update tab axes position scope
+        if self.ui.tabWidgetMain.currentWidget() == self.ui.tabAxesPositionScope:
+            if axes_info.has_data:
+                self.realtime_scope.push(axes_info.program_position)
 
         # update tab program
         if self.ui.tabWidget.currentWidget() == self.ui.tabProgram:

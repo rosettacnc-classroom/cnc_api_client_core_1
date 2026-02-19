@@ -125,6 +125,7 @@ tabWidget
         ovrPlasmaVoltageLabel
         ovrPlasmaVoltageSlider
         ovrPlasmaVoltageValue
+        ovrNoteLabel
 
     tabHoming
 

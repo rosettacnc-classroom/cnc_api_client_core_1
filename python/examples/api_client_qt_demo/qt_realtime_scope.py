@@ -33,9 +33,6 @@ class QRealTimeScope:
         ax.setTicks([])
         ax.setStyle(showValues=False)
 
-        #
-        #self.widget.getPlotItem().layout.setRowFixedHeight(3, 0)  # spesso la row dell’asse bottom è 3
-
         # set channels color
         self.colors = [
             pg.mkPen(color=(0, 255, 0)),
@@ -49,7 +46,7 @@ class QRealTimeScope:
         # Plot performance / behavior tweaks
         self.widget.setClipToView(True)
         self.widget.setDownsampling(mode="peak")
-        self.widget.setRange(xRange=(0, self.samples - 1))
+        self.widget.setRange(xRange=(0, self.samples - 1), padding=0)
         self.widget.setMouseEnabled(x=False, y=False)
 
         # set y range in fixed mode
@@ -57,6 +54,10 @@ class QRealTimeScope:
         self.widget.enableAutoRange('y', False)
         self.widget.setYRange(-100.0, 100.0, padding=0)
         """
+
+        # set y width to fixed size (in pixel)
+        axis_y = self.widget.getPlotItem().getAxis('left')
+        axis_y.setWidth(50)
 
         # ring buffer state
         self._head = 0
