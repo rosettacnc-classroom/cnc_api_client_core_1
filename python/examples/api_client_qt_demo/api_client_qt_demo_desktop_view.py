@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      19/02/2026
+# Created:      22/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -199,10 +199,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         )
 
         # create and set update timer
-        self.tmrUpdate = QTimer(self)
-        self.tmrUpdate.setInterval(1)
-        self.tmrUpdate.timeout.connect(self.__on_timer_update)
-        self.tmrUpdate.setSingleShot(False)
+        self.tmr_update = QTimer(self)
+        self.tmr_update.setInterval(1)
+        self.tmr_update.timeout.connect(self.__on_timer_update)
+        self.tmr_update.setSingleShot(False)
 
         # create labels for status bar
         self.StateMachineLabel = QLabel("")
@@ -455,8 +455,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.program_gcode_set_text(self.ui.gcodeProgramEdit.toPlainText())
         if sender == self.ui.gcodeAddProgramTextButton:
             self.api.program_gcode_add_text(self.ui.gcodeAddProgramTextEdit.text())
-        if sender == self.ui.gcodeClearProgramButton:
-            self.api.program_new()
+        if sender == self.ui.gcodeClearProgramTextButton:
+            self.api.program_gcode_set_text('')
             self.ui.gcodeProgramEdit.setPlainText('')
             self.ui.gcodeAddProgramTextEdit.setText('')
 
@@ -590,7 +590,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.gcodeGetProgramTextButton.setEnabled(False)
             self.ui.gcodeSetProgramTextButton.setEnabled(False)
             self.ui.gcodeAddProgramTextButton.setEnabled(False)
-            self.ui.gcodeClearProgramButton.setEnabled(False)
+            self.ui.gcodeClearProgramTextButton.setEnabled(False)
 
             # update tab wcs
             self.ui.csApplyWCSChangesButton.setEnabled(False)
@@ -671,7 +671,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.gcodeGetProgramTextButton.setEnabled(enabled_commands.has_data)
             self.ui.gcodeSetProgramTextButton.setEnabled(enabled_commands.program_gcode_set_text)
             self.ui.gcodeAddProgramTextButton.setEnabled(enabled_commands.program_gcode_add_text)
-            self.ui.gcodeClearProgramButton.setEnabled(enabled_commands.program_gcode_set_text)
+            self.ui.gcodeClearProgramTextButton.setEnabled(enabled_commands.program_gcode_set_text)
 
             # update tab wcs
             enabled = False
@@ -916,7 +916,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.__memento_save()
 
         # disable and unlink update timer
-        self.tmrUpdate.stop()
+        self.tmr_update.stop()
 
     def __on_form_show(self):
         # avoid event for stay on top chaning
@@ -956,7 +956,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         ###self.__on_action_main_update(None)
 
         # enable update timer and call first update NOW
-        self.tmrUpdate.start()
+        self.tmr_update.start()
         self.__on_timer_update()
 
         # update editable fields
@@ -1332,7 +1332,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update tab g-code values
         if self.ui.tabWidget.currentWidget() == self.ui.tabGCode:
-            self.ui.gcodeProgramEdit.setEnabled(enabled_commands.program_gcode_set_text)
+            self.ui.gcodeProgramEdit.setEnabled(enabled_commands.has_data)
             self.ui.gcodeAddProgramTextEdit.setEnabled(enabled_commands.program_gcode_add_text)
 
         # update tab coordinate system

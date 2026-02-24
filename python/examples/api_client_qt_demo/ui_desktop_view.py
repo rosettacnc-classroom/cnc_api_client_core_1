@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewrdAdQF.ui'
+## Form generated from reading UI file 'desktop_viewAPTgcb.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -108,26 +108,26 @@ class Ui_DesktopView(object):
         self.tabGCode.setObjectName(u"tabGCode")
         self.gcodeProgramEdit = QPlainTextEdit(self.tabGCode)
         self.gcodeProgramEdit.setObjectName(u"gcodeProgramEdit")
-        self.gcodeProgramEdit.setGeometry(QRect(8, 8, 901, 209))
+        self.gcodeProgramEdit.setGeometry(QRect(8, 8, 769, 319))
         font2 = QFont()
         font2.setFamilies([u"DejaVu Sans Mono"])
         font2.setPointSize(8)
         self.gcodeProgramEdit.setFont(font2)
         self.gcodeGetProgramTextButton = QPushButton(self.tabGCode)
         self.gcodeGetProgramTextButton.setObjectName(u"gcodeGetProgramTextButton")
-        self.gcodeGetProgramTextButton.setGeometry(QRect(8, 224, 120, 24))
+        self.gcodeGetProgramTextButton.setGeometry(QRect(789, 8, 120, 41))
         self.gcodeSetProgramTextButton = QPushButton(self.tabGCode)
         self.gcodeSetProgramTextButton.setObjectName(u"gcodeSetProgramTextButton")
-        self.gcodeSetProgramTextButton.setGeometry(QRect(140, 224, 120, 24))
+        self.gcodeSetProgramTextButton.setGeometry(QRect(789, 61, 120, 41))
         self.gcodeAddProgramTextEdit = QLineEdit(self.tabGCode)
         self.gcodeAddProgramTextEdit.setObjectName(u"gcodeAddProgramTextEdit")
-        self.gcodeAddProgramTextEdit.setGeometry(QRect(8, 270, 901, 22))
+        self.gcodeAddProgramTextEdit.setGeometry(QRect(8, 334, 769, 22))
         self.gcodeAddProgramTextButton = QPushButton(self.tabGCode)
         self.gcodeAddProgramTextButton.setObjectName(u"gcodeAddProgramTextButton")
-        self.gcodeAddProgramTextButton.setGeometry(QRect(8, 296, 120, 24))
-        self.gcodeClearProgramButton = QPushButton(self.tabGCode)
-        self.gcodeClearProgramButton.setObjectName(u"gcodeClearProgramButton")
-        self.gcodeClearProgramButton.setGeometry(QRect(398, 320, 120, 41))
+        self.gcodeAddProgramTextButton.setGeometry(QRect(789, 333, 120, 24))
+        self.gcodeClearProgramTextButton = QPushButton(self.tabGCode)
+        self.gcodeClearProgramTextButton.setObjectName(u"gcodeClearProgramTextButton")
+        self.gcodeClearProgramTextButton.setGeometry(QRect(789, 114, 120, 41))
         self.tabWidget.addTab(self.tabGCode, "")
         self.tabWCS = QWidget()
         self.tabWCS.setObjectName(u"tabWCS")
@@ -1313,7 +1313,7 @@ class Ui_DesktopView(object):
         self.gcodeGetProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Get Code", None))
         self.gcodeSetProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Set Code", None))
         self.gcodeAddProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Add Line", None))
-        self.gcodeClearProgramButton.setText(QCoreApplication.translate("DesktopView", u"Clear All", None))
+        self.gcodeClearProgramTextButton.setText(QCoreApplication.translate("DesktopView", u"Clear Code", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabGCode), QCoreApplication.translate("DesktopView", u"G-Code", None))
         ___qtablewidgetitem = self.csOffsetsTable.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("DesktopView", u"X", None));
