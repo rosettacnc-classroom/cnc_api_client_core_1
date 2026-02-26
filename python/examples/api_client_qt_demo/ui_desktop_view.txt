@@ -130,6 +130,8 @@ tabWidget
     tabHoming
 
     tabMDI
+        mdiCommandEdit
+        mdiCommandExecuteButton
 
     tabDIO
 

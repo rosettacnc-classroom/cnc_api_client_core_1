@@ -1954,6 +1954,29 @@
      <attribute name="title">
       <string>MDI</string>
      </attribute>
+     <widget class="QPlainTextEdit" name="mdiCommandEdit">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>8</y>
+        <width>899</width>
+        <height>320</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="mdiCommandExecuteButton">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>334</y>
+        <width>120</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Execute MDI</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabDIO">
      <attribute name="title">

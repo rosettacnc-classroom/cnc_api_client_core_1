@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      19/02/2026
+# Created:      26/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -274,6 +274,21 @@ AT_GANTRY_1                         = 5         # axis type: slave axis for gant
 AT_GANTRY_2                         = 6         # axis type: slave axis for gantry 2: IMPLEMENTED ONLY ON ETHERCAT !!!
 AT_GANTRY_3                         = 7         # axis type: slave axis for gantry 3: NOT IMPLEMENTED YET !!!
 
+# operator request type
+OPRT_NONE                           = 0         # operator request: none
+
+OPRT_USER_MEDIA_CONTINUE            = 1         # operator request: user media with continue
+OPRT_USER_MEDIA_STOP                = 2         # operator request: user media with stop
+OPRT_USER_MEDIA_STOP_CONTINUE       = 3         # operator request: user media with stop or continue
+OPRT_USER_MEDIA_VALUE_OR_STOP       = 4         # operator request: user media with value, and continue, or stop
+OPRT_USER_MEDIA_VALUES_OR_STOP      = 5         # operator request: user media with values, and continue, or stop
+
+OPRT_USER_MESSAGE_CONTINUE          = 6         # operator request: user message with continue
+OPRT_USER_MESSAGE_STOP              = 7         # operator request: user message with stop
+OPRT_USER_MESSAGE_STOP_CONTINUE     = 8         # operator request: user message with stop or continue
+OPRT_USER_MESSAGE_VALUE_OR_STOP     = 9         # operator request: user message with value, and continue, or stop
+OPRT_USER_MESSAGE_VALUES_OR_STOP    = 10        # operator request: user message with values, and continue, or stop
+
 # function state name
 FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
 FS_NM_SPINDLE_CCW                   = 1         # function state name: spindle counter-clockwise
@@ -509,6 +524,7 @@ class APICncInfo(APIComparableMixin):
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
+        self.operator_request_pending           = False
         self.current_alarm_datetime             = datetime.min
         self.current_alarm_code                 = 0
         self.current_alarm_info1                = 0
@@ -811,6 +827,27 @@ class APIMachiningInfo:
         self.joints_in_feed_length_a            = 0.0
         self.joints_in_feed_length_b            = 0.0
         self.joints_in_feed_length_c            = 0.0
+
+class APIOperatorRequest:
+    """API data structure for operator request."""
+    def __init__(self):
+        self.has_data                           = False
+        self.id                                 = ''
+        self.type                               = OPRT_NONE
+        self.media                              = ''
+        self.message                            = ''
+        self.data_elements                      = 0
+        self.data_d01                           = 0.0
+        self.data_d02                           = 0.0
+        self.data_d03                           = 0.0
+        self.data_d04                           = 0.0
+        self.data_d05                           = 0.0
+        self.data_d06                           = 0.0
+        self.data_d07                           = 0.0
+        self.data_d08                           = 0.0
+        self.data_d09                           = 0.0
+        self.data_d10                           = 0.0
+        self.external_continue_requested        = False
 
 class APIProgramInfo:
     """API data structure for program info."""
@@ -1913,6 +1950,7 @@ class CncAPIClientCore:
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
+                data.operator_request_pending           = j['res']['operator.request.pending']
                 data.current_alarm_datetime             = self.__d(j['res']['current.alarm']['datetime'])
                 data.current_alarm_code                 = j['res']['current.alarm']['code']
                 data.current_alarm_info1                = j['res']['current.alarm']['info1']
@@ -2321,6 +2359,37 @@ class CncAPIClientCore:
             return data
         except Exception:
             return APIMachiningInfo()
+
+    def get_operator_request(self) -> APIOperatorRequest:
+        """xxx"""
+        try:
+            data = APIOperatorRequest()
+            if not self.is_connected:
+                return data
+            request = '{"get":"operator.request"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.id                                 = j['res']['id']
+                data.type                               = j['res']['type']
+                data.media                              = j['res']['media']
+                data.message                            = j['res']['message']
+                data.data_elements                      = j['res']['data']['elements']
+                data.data_d01                           = j['res']['data']['d01']
+                data.data_d02                           = j['res']['data']['d02']
+                data.data_d03                           = j['res']['data']['d03']
+                data.data_d04                           = j['res']['data']['d04']
+                data.data_d05                           = j['res']['data']['d05']
+                data.data_d06                           = j['res']['data']['d06']
+                data.data_d07                           = j['res']['data']['d07']
+                data.data_d08                           = j['res']['data']['d08']
+                data.data_d09                           = j['res']['data']['d09']
+                data.data_d10                           = j['res']['data']['d10']
+                data.external_continue_requested        = j['res']['external.continue.requested']
+                data.has_data = True
+            return data
+        except Exception:
+            return APIOperatorRequest()
 
     def get_program_info(self) -> APIProgramInfo:
         """xxx"""
@@ -2861,6 +2930,15 @@ class CncAPIClientCore:
 
             request = self.create_compact_json_request(data)
             return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_operator_response(self) -> bool:
+        """xxx"""
+        try:
+            if not self.is_connected:
+                return False
+            return False # <-- TODO
         except Exception:
             return False
 
@@ -3424,7 +3502,7 @@ class CncAPIClientCore:
         return int(value)
 
     @staticmethod
-    def __s(value) -> int:
+    def __s(value) -> str:
         return str(value)
 
     #

@@ -39,22 +39,34 @@ FileName=$[Project-Path]qt_realtime_scope.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node7]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]qt_utils.py
+FileName=$[Project-Path]qt_user_dialogs.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node8]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]resources_rc.py
+FileName=$[Project-Path]qt_utils.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node9]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]ui_desktop_view.py
+FileName=$[Project-Path]resources_rc.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node10]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]ui_desktop_view.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node11]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]ui_user_media_dialog.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node12]
+ClassName=TProjectFileNode
+FileName=$[Project-Path]ui_user_message_dialog.py
+
+[Project\ChildNodes\Node0\ChildNodes\Node13]
 ClassName=TProjectFileNode
 FileName=$[Project-Path]utils.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=11
+Count=14
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

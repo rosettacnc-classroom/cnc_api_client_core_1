@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewAPTgcb.ui'
+## Form generated from reading UI file 'desktop_viewfhxKkR.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -559,6 +559,12 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabHoming, "")
         self.tabMDI = QWidget()
         self.tabMDI.setObjectName(u"tabMDI")
+        self.mdiCommandEdit = QPlainTextEdit(self.tabMDI)
+        self.mdiCommandEdit.setObjectName(u"mdiCommandEdit")
+        self.mdiCommandEdit.setGeometry(QRect(8, 8, 899, 320))
+        self.mdiCommandExecuteButton = QPushButton(self.tabMDI)
+        self.mdiCommandExecuteButton.setObjectName(u"mdiCommandExecuteButton")
+        self.mdiCommandExecuteButton.setGeometry(QRect(8, 334, 120, 24))
         self.tabWidget.addTab(self.tabMDI, "")
         self.tabDIO = QWidget()
         self.tabDIO.setObjectName(u"tabDIO")
@@ -1425,6 +1431,7 @@ class Ui_DesktopView(object):
         self.ovrNoteLabel.setText(QCoreApplication.translate("DesktopView", u"<html><head/><body><p><span style=\" font-weight:700;\">NOTE<br/></span>Double-clicking on the percentage value sets the value to 100 or to its maximum value if it is less than 100.</p></body></html>", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabOverrides), QCoreApplication.translate("DesktopView", u"Overrides", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabHoming), QCoreApplication.translate("DesktopView", u"Homing", None))
+        self.mdiCommandExecuteButton.setText(QCoreApplication.translate("DesktopView", u"Execute MDI", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMDI), QCoreApplication.translate("DesktopView", u"MDI", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabDIO), QCoreApplication.translate("DesktopView", u"D I/O", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabAIO), QCoreApplication.translate("DesktopView", u"A I/O", None))

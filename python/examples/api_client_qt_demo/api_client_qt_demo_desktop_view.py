@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      22/02/2026
+# Created:      26/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -33,18 +33,19 @@
 # pylint: disable=W0612 -> unused-variable
 # pylint: disable=W0718 -> broad-exception-caught           ## take care when you use that ##
 #-------------------------------------------------------------------------------
-import os
 import time
 import ipaddress
+from pathlib import Path
 from statistics import median
 from collections import namedtuple
 
 from PySide6.QtCore import Qt, QEvent, QTimer
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QAbstractSlider,
     QButtonGroup,
     QCheckBox,
+    QDialog,
     QFileDialog,
     QHeaderView,
     QLabel,
@@ -56,6 +57,7 @@ from PySide6.QtWidgets import (
 )
 
 from qt_gcode_highlighter import GCodeHighlighter
+from qt_user_dialogs import UserMessageDialog
 from qt_realtime_scope import QRealTimeScope
 from qt_utils import QLedWidget
 
@@ -167,7 +169,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # call qt inherited view constructor
         super().__init__()
 
-        # set main ui
+        # set Qt Designer generated ui
         self.ui = Ui_DesktopView()
         self.ui.setupUi(self)
 
@@ -183,9 +185,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # set axes velocity plot data
         self.realtime_scope = QRealTimeScope(self.ui.axesPositionsPlot, 6, 4000)
 
-        # apply and set gcode editor highlighter
-        self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
-        self.ui.gcodeProgramEdit.setStyleSheet(
+        # create a mono font object for code editors
+        mono_font = QFont("Consolas")               # Windows
+        if not QFont(mono_font).exactMatch():
+            mono_font = QFont("Monaco")             # macOS
+        if not QFont(mono_font).exactMatch():
+            mono_font = QFont("DejaVu Sans Mono")   # Linux
+        if not QFont(mono_font).exactMatch():
+            mono_font = QFont("Courier New")        # Fallback universale
+        mono_font.setStyleHint(QFont.Monospace)
+        mono_font.setPointSize(9)
+
+        # create style sheet for code editors
+        code_editor_stylesheet = (
         """
             QPlainTextEdit {
                 background-color: #1E1E1E;
@@ -193,10 +205,20 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 border: 1px solid #44475A;
                 selection-background-color: #44475A;
                 selection-color: #F8F8F2;
-                padding: 10px;
+                padding: 0px;
             }
         """
         )
+
+        # apply and set gcode editor highlighter
+        self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
+        self.ui.gcodeProgramEdit.setFont(mono_font)
+        self.ui.gcodeProgramEdit.setStyleSheet(code_editor_stylesheet)
+
+        # apply and set mdi command editor highlighter
+        self.highlighter = GCodeHighlighter(self.ui.mdiCommandEdit.document())
+        self.ui.mdiCommandEdit.setFont(mono_font)
+        self.ui.mdiCommandEdit.setStyleSheet(code_editor_stylesheet)
 
         # create and set update timer
         self.tmr_update = QTimer(self)
@@ -237,6 +259,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.in_update = None
         self.slider_update_inhibition_until = 0.0
         self.stay_on_top_changed = None
+
+        # declare active operator request attributes
+        self.active_operator_request = None
+        self.active_operator_request_dialog = None
 
         # declare editable fields support attributes
         self.api_server_host = None
@@ -527,7 +553,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # event tab overrides
         # event tab homing
+
         # event tab mdi
+        if sender == self.ui.mdiCommandExecuteButton:
+            mdi_command = self.ui.mdiCommandEdit.toPlainText()
+            self.api.cnc_mdi_command(mdi_command)
+
         # event tab d i/o
         # event tab a i/o
         # event tab scanning laser
@@ -721,7 +752,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
             # update tab overrides
             # update tab homing
+
             # update tab mdi
+            self.ui.mdiCommandExecuteButton.setEnabled(enabled_commands.cnc_mdi_command)
+
             # update tab d i/o
             # update tab a i/o
             # update tab scanning laser
@@ -1035,6 +1069,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # update action main linked objects enablings
         self.__on_action_main_update()
 
+        # check operator request
+        self.__operator_request_check()
+
         # update stay on top mode
         if self.stay_on_top_changed:
             self.__set_stay_on_top(self.stay_on_top)
@@ -1054,8 +1091,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.stay_on_top = DEF_STAY_ON_TOP
 
             # load memento from file
-            file_path = os.path.dirname(__file__) + '\\'
-            memento = CncMemento.create_read_root(file_path + SETTINGS_FILE_NAME, 'root')
+            base_path = Path(__file__).resolve().parent
+            memento_path = base_path / SETTINGS_FILE_NAME
+            memento = CncMemento.create_read_root(str(memento_path), 'root')
             if memento is None:
                 return False
 
@@ -1088,8 +1126,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             memento.set('program_save_file_name', self.program_save_file_name)
 
             # save memento to file
-            file_path = os.path.dirname(__file__) + '\\'
-            return memento.save_to_file(file_path + SETTINGS_FILE_NAME, indent=4)
+            base_path = Path(__file__).resolve().parent
+            memento_path = base_path / SETTINGS_FILE_NAME
+            return memento.save_to_file(str(memento_path), indent=4)
         except Exception:
             return False
     #
@@ -1280,7 +1319,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         cnc_info = self.ctx.cnc_info
         axes_info = self.ctx.axes_info
         enabled_commands = self.ctx.enabled_commands
-        work_info = self.api.get_work_info()
 
         # get connection with cnc state and related changed state
         connection_with_cnc = cnc_info.state_machine != cnc.SM_DISCONNECTED
@@ -1469,7 +1507,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # update tab mdi values
         if self.ui.tabWidget.currentWidget() == self.ui.tabMDI:
-            pass
+            self.ui.mdiCommandEdit.setEnabled(enabled_commands.cnc_mdi_command)
 
         # update tab d(igital) i/o values
         if self.ui.tabWidget.currentWidget() == self.ui.tabDIO:
@@ -1667,3 +1705,75 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings tab system info
     #
     # == END: update methods
+
+    # == BEG: user dialogs
+    #
+    def __operator_request_check(self):
+
+        def kill_active_operator_request():
+            if isinstance(self.active_operator_request_dialog, QDialog):
+                self.active_operator_request_dialog.force_close()
+            self.active_operator_request_dialog = None
+            self.active_operator_request = None
+
+        cnc_info = self.ctx.cnc_info
+
+        # check if we do not have connection e/o data
+        if not cnc_info.has_data:
+            kill_active_operator_request()
+            return
+
+        # check if we do not have a pending operator request
+        if not cnc_info.operator_request_pending:
+            kill_active_operator_request()
+            return
+
+        # get operator request
+        operator_request = self.api.get_operator_request()
+        if not operator_request.has_data:
+            kill_active_operator_request()
+            return
+
+        # check if we are yet in a operator request dialog
+        if self.active_operator_request is not None:
+            if self.active_operator_request.id != operator_request.id:
+                kill_active_operator_request()
+                return
+            return
+
+        if operator_request.type in [
+            cnc.OPRT_USER_MEDIA_CONTINUE,
+            cnc.OPRT_USER_MEDIA_STOP,
+            cnc.OPRT_USER_MEDIA_STOP_CONTINUE,
+            cnc.OPRT_USER_MEDIA_VALUE_OR_STOP,
+            cnc.OPRT_USER_MEDIA_VALUES_OR_STOP,
+        ]:
+            self.__operator_request_show_user_media_dialog(operator_request)
+        elif operator_request.type in [
+            cnc.OPRT_USER_MESSAGE_CONTINUE,
+            cnc.OPRT_USER_MESSAGE_STOP,
+            cnc.OPRT_USER_MESSAGE_STOP_CONTINUE,
+            cnc.OPRT_USER_MESSAGE_VALUE_OR_STOP,
+            cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP,
+        ]:
+            self.__operator_request_show_user_message_dialog(operator_request)
+        else:
+            kill_active_operator_request()
+
+    def __operator_request_show_user_media_dialog(self, operator_request: cnc.APIOperatorRequest):
+        self.active_operator_request = operator_request
+        self.active_operator_request_dialog = UserMessageDialog(
+            parent=self,
+            operator_request=operator_request
+        )
+        self.active_operator_request_dialog.open()
+
+    def __operator_request_show_user_message_dialog(self, operator_request: cnc.APIOperatorRequest):
+        self.active_operator_request = operator_request
+        self.active_operator_request_dialog = UserMessageDialog(
+            parent=self,
+            operator_request=operator_request
+        )
+        self.active_operator_request_dialog.open()
+    #
+    # == END: user dialogs
