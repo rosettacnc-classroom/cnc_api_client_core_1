@@ -1743,19 +1743,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             return
 
         if operator_request.type in [
-            cnc.OPRT_USER_MEDIA_CONTINUE,
-            cnc.OPRT_USER_MEDIA_STOP,
-            cnc.OPRT_USER_MEDIA_STOP_CONTINUE,
-            cnc.OPRT_USER_MEDIA_VALUE_OR_STOP,
-            cnc.OPRT_USER_MEDIA_VALUES_OR_STOP,
+            cnc.ORQT_USER_MEDIA_CONTINUE,
+            cnc.ORQT_USER_MEDIA_STOP,
+            cnc.ORQT_USER_MEDIA_STOP_CONTINUE,
+            cnc.ORQT_USER_MEDIA_VALUE_OR_STOP,
+            cnc.ORQT_USER_MEDIA_VALUES_OR_STOP,
         ]:
             self.__operator_request_show_user_media_dialog(operator_request)
         elif operator_request.type in [
-            cnc.OPRT_USER_MESSAGE_CONTINUE,
-            cnc.OPRT_USER_MESSAGE_STOP,
-            cnc.OPRT_USER_MESSAGE_STOP_CONTINUE,
-            cnc.OPRT_USER_MESSAGE_VALUE_OR_STOP,
-            cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP,
+            cnc.ORQT_USER_MESSAGE_CONTINUE,
+            cnc.ORQT_USER_MESSAGE_STOP,
+            cnc.ORQT_USER_MESSAGE_STOP_CONTINUE,
+            cnc.ORQT_USER_MESSAGE_VALUE_OR_STOP,
+            cnc.ORQT_USER_MESSAGE_VALUES_OR_STOP,
         ]:
             self.__operator_request_show_user_message_dialog(operator_request)
         else:
@@ -1765,6 +1765,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.active_operator_request = operator_request
         self.active_operator_request_dialog = UserMessageDialog(
             parent=self,
+            api_client_core=self.api,
             operator_request=operator_request
         )
         self.active_operator_request_dialog.open()
@@ -1773,6 +1774,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.active_operator_request = operator_request
         self.active_operator_request_dialog = UserMessageDialog(
             parent=self,
+            api_client_core=self.api,
             operator_request=operator_request
         )
         self.active_operator_request_dialog.open()

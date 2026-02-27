@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      26/02/2026
+# Created:      27/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -54,6 +54,7 @@
 from __future__ import annotations
 
 import ssl
+import math
 import json
 import socket
 
@@ -275,19 +276,23 @@ AT_GANTRY_2                         = 6         # axis type: slave axis for gant
 AT_GANTRY_3                         = 7         # axis type: slave axis for gantry 3: NOT IMPLEMENTED YET !!!
 
 # operator request type
-OPRT_NONE                           = 0         # operator request: none
+ORQT_NONE                           = 0         # operator request type: none
 
-OPRT_USER_MEDIA_CONTINUE            = 1         # operator request: user media with continue
-OPRT_USER_MEDIA_STOP                = 2         # operator request: user media with stop
-OPRT_USER_MEDIA_STOP_CONTINUE       = 3         # operator request: user media with stop or continue
-OPRT_USER_MEDIA_VALUE_OR_STOP       = 4         # operator request: user media with value, and continue, or stop
-OPRT_USER_MEDIA_VALUES_OR_STOP      = 5         # operator request: user media with values, and continue, or stop
+ORQT_USER_MEDIA_CONTINUE            = 1         # operator request type: user media with continue
+ORQT_USER_MEDIA_STOP                = 2         # operator request type: user media with stop
+ORQT_USER_MEDIA_STOP_CONTINUE       = 3         # operator request type: user media with stop or continue
+ORQT_USER_MEDIA_VALUE_OR_STOP       = 4         # operator request type: user media with value, and continue, or stop
+ORQT_USER_MEDIA_VALUES_OR_STOP      = 5         # operator request type: user media with values, and continue, or stop
 
-OPRT_USER_MESSAGE_CONTINUE          = 6         # operator request: user message with continue
-OPRT_USER_MESSAGE_STOP              = 7         # operator request: user message with stop
-OPRT_USER_MESSAGE_STOP_CONTINUE     = 8         # operator request: user message with stop or continue
-OPRT_USER_MESSAGE_VALUE_OR_STOP     = 9         # operator request: user message with value, and continue, or stop
-OPRT_USER_MESSAGE_VALUES_OR_STOP    = 10        # operator request: user message with values, and continue, or stop
+ORQT_USER_MESSAGE_CONTINUE          = 6         # operator request type: user message with continue
+ORQT_USER_MESSAGE_STOP              = 7         # operator request type: user message with stop
+ORQT_USER_MESSAGE_STOP_CONTINUE     = 8         # operator request type: user message with stop or continue
+ORQT_USER_MESSAGE_VALUE_OR_STOP     = 9         # operator request type: user message with value, and continue, or stop
+ORQT_USER_MESSAGE_VALUES_OR_STOP    = 10        # operator request type: user message with values, and continue, or stop
+
+# operator response type
+ORPT_CONTINUE                       = 0         # operator response type = continue
+ORPT_STOP                           = 1         # operator response type = stop
 
 # function state name
 FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
@@ -833,21 +838,54 @@ class APIOperatorRequest:
     def __init__(self):
         self.has_data                           = False
         self.id                                 = ''
-        self.type                               = OPRT_NONE
+        self.type                               = ORQT_NONE
         self.media                              = ''
         self.message                            = ''
         self.data_elements                      = 0
-        self.data_d01                           = 0.0
-        self.data_d02                           = 0.0
-        self.data_d03                           = 0.0
-        self.data_d04                           = 0.0
-        self.data_d05                           = 0.0
-        self.data_d06                           = 0.0
-        self.data_d07                           = 0.0
-        self.data_d08                           = 0.0
-        self.data_d09                           = 0.0
-        self.data_d10                           = 0.0
+        self.data_d01                           = None
+        self.data_d02                           = None
+        self.data_d03                           = None
+        self.data_d04                           = None
+        self.data_d05                           = None
+        self.data_d06                           = None
+        self.data_d07                           = None
+        self.data_d08                           = None
+        self.data_d09                           = None
+        self.data_d10                           = None
         self.external_continue_requested        = False
+
+class APIOperatorResponse:
+    """API data structure for operator response."""
+    def __init__(self):
+        self.id                                 = ''
+        self.type                               = ORPT_STOP
+        self.data_elements                      = 0
+        self.data_d01                           = None
+        self.data_d02                           = None
+        self.data_d03                           = None
+        self.data_d04                           = None
+        self.data_d05                           = None
+        self.data_d06                           = None
+        self.data_d07                           = None
+        self.data_d08                           = None
+        self.data_d09                           = None
+        self.data_d10                           = None
+
+    def copy_data_from_request(self, request: APIOperatorRequest = None) -> bool:
+        if not isinstance(request, APIOperatorRequest):
+            return False
+        self.data_elements                      = request.data_elements
+        self.data_d01                           = request.data_d01
+        self.data_d02                           = request.data_d02
+        self.data_d03                           = request.data_d03
+        self.data_d04                           = request.data_d04
+        self.data_d05                           = request.data_d05
+        self.data_d06                           = request.data_d06
+        self.data_d07                           = request.data_d07
+        self.data_d08                           = request.data_d08
+        self.data_d09                           = request.data_d09
+        self.data_d10                           = request.data_d10
+        return True
 
 class APIProgramInfo:
     """API data structure for program info."""
@@ -2933,12 +2971,47 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def set_operator_response(self) -> bool:
-        """xxx"""
+    def set_operator_response(self, response: APIOperatorResponse = None) -> bool:
+        """Set operator response."""
         try:
             if not self.is_connected:
                 return False
-            return False # <-- TODO
+
+            if not isinstance(response, APIOperatorResponse):
+                return False
+            if not isinstance(response.id, str):
+                return False
+            if not isinstance(response.type, int) or isinstance(response.type, bool):
+                return False
+            if response.type not in [ORPT_CONTINUE, ORPT_STOP]:
+                return False
+            if not isinstance(response.data_elements, int) or isinstance(response.data_elements, bool):
+                return False
+            if response.data_elements < 0 or response.data_elements > 10:
+                return False
+
+            data = {
+                "set": "operator.response",
+                "id": response.id,
+                "type": response.type
+            }
+            data["data"] = {}
+            data["data"]["elements"] = response.data_elements
+            if response.data_elements != 0:
+
+                for idx in range(response.data_elements):
+                    name = f'd{(idx + 1):02}'
+                    value = getattr(response, f'data_{name}')
+                    if isinstance(value, float):
+                        if not math.isfinite(value):
+                            value = None
+                    else:
+                        if value is not None:
+                            value = None
+                    data["data"][name] = value
+
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
         except Exception:
             return False
 

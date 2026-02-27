@@ -69,6 +69,7 @@ class UserMediaDialog(QDialog):
 
     def __init__(
         self, parent=None,
+        api_client_core : cnc.CncAPIClientCore = None,
         operator_request : cnc.APIOperatorRequest = None
         ):
         # call qt inherited dialog constructor
@@ -89,6 +90,7 @@ class UserMessageDialog(QDialog):
 
     def __init__(
         self, parent=None,
+        api_client_core : cnc.CncAPIClientCore = None,
         operator_request : cnc.APIOperatorRequest = None
         ):
 
@@ -103,6 +105,7 @@ class UserMessageDialog(QDialog):
         self.setWindowFlags(Qt.Dialog | Qt.FramelessWindowHint)
 
         # save arguments
+        self.api_client_core = api_client_core
         self.operator_request = operator_request
 
         # create edifield handler
@@ -166,10 +169,17 @@ class UserMessageDialog(QDialog):
         sender = self.sender()
 
         if sender == self.ui.continueButton:
-            pass
+            response = cnc.APIOperatorResponse()
+            response.id = self.operator_request.id
+            response.type = cnc.ORPT_CONTINUE
+            response.copy_data_from_request(self.operator_request)
+            self.api_client_core.set_operator_response(response)
 
         if sender == self.ui.stopButton:
-            pass
+            response = cnc.APIOperatorResponse()
+            response.id = self.operator_request.id
+            response.type = cnc.ORPT_STOP
+            self.api_client_core.set_operator_response(response)
 
     def __on_editing_finished(self):
 
@@ -260,22 +270,22 @@ class UserMessageDialog(QDialog):
 
         # evaluate edit fields visibility and position
         ort = self.operator_request.type
-        if ort == cnc.OPRT_USER_MESSAGE_CONTINUE:
+        if ort == cnc.ORQT_USER_MESSAGE_CONTINUE:
             for elem in self.edit_fields:
                 elem["label"].setVisible(False)
                 elem["edit"].setVisible(False)
 
-        elif ort == cnc.OPRT_USER_MESSAGE_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_STOP:
             for elem in self.edit_fields:
                 elem["label"].setVisible(False)
                 elem["edit"].setVisible(False)
 
-        elif ort == cnc.OPRT_USER_MESSAGE_STOP_CONTINUE:
+        elif ort == cnc.ORQT_USER_MESSAGE_STOP_CONTINUE:
             for elem in self.edit_fields:
                 elem["label"].setVisible(False)
                 elem["edit"].setVisible(False)
 
-        elif ort == cnc.OPRT_USER_MESSAGE_VALUE_OR_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_VALUE_OR_STOP:
             for elem in self.edit_fields:
                 elem["label"].setVisible(False)
                 elem["edit"].setVisible(False)
@@ -289,7 +299,7 @@ class UserMessageDialog(QDialog):
                 dialog_height += edit.size().height() + LABEL_EDIT_VERTICAL_SPACE
             dialog_height += (OBJECTS_VERTICAL_SPACE - LABEL_EDIT_VERTICAL_SPACE)
 
-        elif ort == cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_VALUES_OR_STOP:
             for elem in self.edit_fields:
                 elem["label"].setVisible(False)
                 elem["edit"].setVisible(False)
@@ -310,21 +320,21 @@ class UserMessageDialog(QDialog):
 
         # evaluate buttons visibility and position
         ort = self.operator_request.type
-        if ort == cnc.OPRT_USER_MESSAGE_CONTINUE:
+        if ort == cnc.ORQT_USER_MESSAGE_CONTINUE:
             self.ui.stopButton.setVisible(False)
             self.ui.continueButton.setVisible(True)
             left = (dialog_width - self.ui.continueButton.size().width()) // 2
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
-        elif ort == cnc.OPRT_USER_MESSAGE_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(False)
             left = (dialog_width - self.ui.continueButton.size().width()) // 2
             self.ui.stopButton.move(left, dialog_height)
             self.ui.stopButton.setFocus()
 
-        elif ort == cnc.OPRT_USER_MESSAGE_STOP_CONTINUE:
+        elif ort == cnc.ORQT_USER_MESSAGE_STOP_CONTINUE:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
             left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
@@ -333,7 +343,7 @@ class UserMessageDialog(QDialog):
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
-        elif ort == cnc.OPRT_USER_MESSAGE_VALUE_OR_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_VALUE_OR_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
             left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
@@ -342,7 +352,7 @@ class UserMessageDialog(QDialog):
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
-        elif ort == cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP:
+        elif ort == cnc.ORQT_USER_MESSAGE_VALUES_OR_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
             left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
