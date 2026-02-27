@@ -22,7 +22,9 @@
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0915 -> too-many-statements
 #-------------------------------------------------------------------------------
-from PySide6.QtCore import Qt
+import math
+
+from PySide6.QtCore import Qt, QEvent, QObject, QTimer
 from PySide6.QtWidgets import QDialog, QLineEdit, QPushButton
 
 from ui_user_media_dialog import Ui_UserMediaDialog
@@ -54,6 +56,14 @@ LABEL_EDIT_HORIZONTAL_SPACE         = 10
 BUTTON_HORIZONTAL_SPACE             = 10
 
 
+class QLineEditSelectAllOnFocusFilter(QObject):
+    """Adds automatic select all when a QLineEdit get focus."""
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.FocusIn:
+            QTimer.singleShot(0, obj.selectAll)
+        return super().eventFilter(obj, event)
+
+
 class UserMediaDialog(QDialog):
     """Implements User Message Dialog for Operator Request from M120 command."""
 
@@ -68,36 +78,10 @@ class UserMediaDialog(QDialog):
         self.ui = Ui_UserMediaDialog()
         self.ui.setupUi(self)
 
-        self._allow_close = False
-        self.operator_request = operator_request
+        # TODO : I will implement later when I will have specifications
 
-        # set caption and modal mode
-        self.setWindowTitle('Media to Operator')
+        # set modal mode
         self.setModal(True)
-
-
-    # == BEG: relink of native events from inherited Qt PySide6 UI design
-    #
-    def reject(self):
-        if self._allow_close:
-            super().reject()
-
-    def closeEvent(self, event):
-        if self._allow_close:
-            event.accept()
-        else:
-            event.ignore()
-    #
-    # == END: relink of native events from inherited Qt PySide6 UI design
-
-
-    # == BEG: public attributes
-    #
-    def force_close(self):
-        self._allow_close = True
-        self.close()
-    #
-    # == END: public attributes
 
 
 class UserMessageDialog(QDialog):
@@ -135,9 +119,9 @@ class UserMessageDialog(QDialog):
             {"label" : self.ui.requestLabel10, "edit" : self.ui.requestEdit10},
         ]
 
-        # define attribute to allow close/reject activity
+        # define non-public attributes
         self.__allow_close = True
-        self.in_update = False
+        self.__in_update = False
 
         # link actions to all buttons
         for obj in self.findChildren(QPushButton):
@@ -147,7 +131,12 @@ class UserMessageDialog(QDialog):
         for obj in self.findChildren(QLineEdit):
             obj.editingFinished.connect(self.__on_editing_finished)
 
-        # apply
+        # add select all on focus filter to all edits
+        self.__edit_select_all_filter = QLineEditSelectAllOnFocusFilter()
+        for obj in self.findChildren(QLineEdit):
+            obj.installEventFilter(self.__edit_select_all_filter)
+
+        # apply geometry
         self.__apply_geometry()
 
         # set modal mode
@@ -184,30 +173,38 @@ class UserMessageDialog(QDialog):
 
     def __on_editing_finished(self):
 
-        def str_2_float_with_none_as_nan(value: str) -> float | None:
-            try:
-                return float(value)
-            except Exception:
+        def str_2_float_with_none_as_nan(value: str, default: float | None) -> float | None:
+            txt = value.strip()
+            if txt.upper() == "NAN":
                 return None
+            try:
+                num = float(txt)
+                if math.isnan(num):
+                    return None
+                return num
+            except Exception:
+                return default
 
         sender = self.sender()
         if sender is None:
             return
+
         value = sender.text().strip()
 
         # evaluate editable field
         for idx in range(self.operator_request.data_elements):
             edit = self.edit_fields[idx]["edit"]
             if sender == edit:
-                val = str_2_float_with_none_as_nan(value)
-                setattr(self.operator_request, f'data_d{(idx + 1):02}', val)
+                act_val = getattr(self.operator_request, f'data_d{(idx + 1):02}')
+                new_val = str_2_float_with_none_as_nan(value, act_val)
+                setattr(self.operator_request, f'data_d{(idx + 1):02}', new_val)
                 break
 
         # updated editable fields
         self.__update_editable_fields()
 
     def __on_form_show(self):
-        self.in_update = False
+        self.__in_update = False
 
         # update editable fields
         self.__update_editable_fields()
@@ -285,11 +282,9 @@ class UserMessageDialog(QDialog):
             for i in range(1):
                 label = self.edit_fields[i]["label"]
                 edit = self.edit_fields[i]["edit"]
-                label.setVisible(True)
+                label.setVisible(False)
                 edit.setVisible(True)
-                left = (dialog_width - (label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE + edit.size().width())) // 2
-                label.move(left, dialog_height)
-                left = left + label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE
+                left = (dialog_width - edit.size().width()) // 2
                 edit.move(left, dialog_height)
                 dialog_height += edit.size().height() + LABEL_EDIT_VERTICAL_SPACE
             dialog_height += (OBJECTS_VERTICAL_SPACE - LABEL_EDIT_VERTICAL_SPACE)
@@ -365,9 +360,9 @@ class UserMessageDialog(QDialog):
 
     def __update_editable_fields(self):
         """Updates editable fields with related data."""
-        if self.in_update:
+        if self.__in_update:
             return
-        self.in_update = True
+        self.__in_update = True
         try:
             for i in range(self.operator_request.data_elements):
                 edit = self.edit_fields[i]["edit"]
@@ -377,6 +372,6 @@ class UserMessageDialog(QDialog):
                 else:
                     edit.setText(format_float(value, FLOAT_USE_DIGITS, DecimalsTrimMode.FULL))
         finally:
-            self.in_update = False
+            self.__in_update = False
     #
     # == END: non-public attributes
