@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'user_message_dialogVSQFPS.ui'
+## Form generated from reading UI file 'user_message_dialogMFQgul.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -15,20 +15,22 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QDialog, QLabel, QLineEdit,
-    QPushButton, QSizePolicy, QWidget)
+from PySide6.QtWidgets import (QApplication, QDialog, QFrame, QLabel,
+    QLineEdit, QPushButton, QSizePolicy, QWidget)
 
 class Ui_UserMessageDialog(object):
     def setupUi(self, UserMessageDialog):
         if not UserMessageDialog.objectName():
             UserMessageDialog.setObjectName(u"UserMessageDialog")
-        UserMessageDialog.resize(450, 469)
+        UserMessageDialog.resize(450, 460)
         self.stopButton = QPushButton(UserMessageDialog)
         self.stopButton.setObjectName(u"stopButton")
         self.stopButton.setGeometry(QRect(110, 410, 101, 41))
+        self.stopButton.setAutoDefault(False)
         self.continueButton = QPushButton(UserMessageDialog)
         self.continueButton.setObjectName(u"continueButton")
         self.continueButton.setGeometry(QRect(220, 410, 101, 41))
+        self.continueButton.setAutoDefault(False)
         self.requestLabel = QLabel(UserMessageDialog)
         self.requestLabel.setObjectName(u"requestLabel")
         self.requestLabel.setGeometry(QRect(0, 0, 450, 100))
@@ -135,6 +137,36 @@ class Ui_UserMessageDialog(object):
         self.requestLabel10.setGeometry(QRect(20, 375, 31, 26))
         self.requestLabel10.setFont(font)
         self.requestLabel10.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.dialogFrame = QFrame(UserMessageDialog)
+        self.dialogFrame.setObjectName(u"dialogFrame")
+        self.dialogFrame.setGeometry(QRect(0, 0, 450, 460))
+        self.dialogFrame.setFrameShape(QFrame.Shape.Box)
+        self.dialogFrame.setFrameShadow(QFrame.Shadow.Plain)
+        self.dialogFrame.setLineWidth(2)
+        self.dialogFrame.raise_()
+        self.requestLabel.raise_()
+        self.stopButton.raise_()
+        self.continueButton.raise_()
+        self.requestEdit01.raise_()
+        self.requestEdit02.raise_()
+        self.requestEdit03.raise_()
+        self.requestEdit04.raise_()
+        self.requestEdit05.raise_()
+        self.requestEdit06.raise_()
+        self.requestEdit07.raise_()
+        self.requestEdit08.raise_()
+        self.requestEdit09.raise_()
+        self.requestEdit10.raise_()
+        self.requestLabel01.raise_()
+        self.requestLabel02.raise_()
+        self.requestLabel03.raise_()
+        self.requestLabel04.raise_()
+        self.requestLabel05.raise_()
+        self.requestLabel06.raise_()
+        self.requestLabel07.raise_()
+        self.requestLabel08.raise_()
+        self.requestLabel09.raise_()
+        self.requestLabel10.raise_()
 
         self.retranslateUi(UserMessageDialog)
 

@@ -943,6 +943,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # event from tab ui dialogs
         # event from tab system info
 
+        # updated editable fields
         self.__update_editable_fields()
 
     def __on_form_close(self):

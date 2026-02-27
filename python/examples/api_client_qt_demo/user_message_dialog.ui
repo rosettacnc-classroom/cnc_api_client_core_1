@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>469</height>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,9 @@
    <property name="text">
     <string>STOP</string>
    </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="continueButton">
    <property name="geometry">
@@ -37,6 +40,9 @@
    </property>
    <property name="text">
     <string>CONTINUE</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QLabel" name="requestLabel">
@@ -492,6 +498,49 @@
     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
    </property>
   </widget>
+  <widget class="QFrame" name="dialogFrame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>450</width>
+     <height>460</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Shape::Box</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Shadow::Plain</enum>
+   </property>
+   <property name="lineWidth">
+    <number>2</number>
+   </property>
+  </widget>
+  <zorder>dialogFrame</zorder>
+  <zorder>requestLabel</zorder>
+  <zorder>stopButton</zorder>
+  <zorder>continueButton</zorder>
+  <zorder>requestEdit01</zorder>
+  <zorder>requestEdit02</zorder>
+  <zorder>requestEdit03</zorder>
+  <zorder>requestEdit04</zorder>
+  <zorder>requestEdit05</zorder>
+  <zorder>requestEdit06</zorder>
+  <zorder>requestEdit07</zorder>
+  <zorder>requestEdit08</zorder>
+  <zorder>requestEdit09</zorder>
+  <zorder>requestEdit10</zorder>
+  <zorder>requestLabel01</zorder>
+  <zorder>requestLabel02</zorder>
+  <zorder>requestLabel03</zorder>
+  <zorder>requestLabel04</zorder>
+  <zorder>requestLabel05</zorder>
+  <zorder>requestLabel06</zorder>
+  <zorder>requestLabel07</zorder>
+  <zorder>requestLabel08</zorder>
+  <zorder>requestLabel09</zorder>
+  <zorder>requestLabel10</zorder>
  </widget>
  <resources/>
  <connections/>

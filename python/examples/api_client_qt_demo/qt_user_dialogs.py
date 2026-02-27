@@ -13,26 +13,49 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      26/02/2026
+# Created:      27/02/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
+# pylint: disable=C0116 -> missing-function-docstring
+# pylint: disable=R0912 -> too-many-branches
+# pylint: disable=R0915 -> too-many-statements
+#-------------------------------------------------------------------------------
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialog, QLineEdit, QPushButton
 
 from ui_user_media_dialog import Ui_UserMediaDialog
 from ui_user_message_dialog import Ui_UserMessageDialog
 
 import cnc_api_client_core as cnc
+from utils import DecimalsTrimMode, format_float
 
-V_SPACE                 = 10
-BUTTON_SPACE            = 10
-VERTICAL_BORDER         = 21
-VERTICAL_HTML_BORDER    = 8
+# == digits in float
+FLOAT_USE_DIGITS                    = 6
+
+# define ui geometry constants
+DIALOG_FRAME_WIDTH                  = 2
+DIALOG_FRAME_COLOR                  = [120, 120, 120]
+
+DIALOG_WIDTH_MIN                    = 450
+DIALOG_BOTTOM_BORDER                = 16
+
+HTML_BORDER_LEFT                    = 20
+HTML_BORDER_TOP                     = DIALOG_BOTTOM_BORDER
+HTML_BORDER_RIGHT                   = 20
+HTML_BORDER_BOTTOM                  = 16
+
+OBJECTS_VERTICAL_SPACE              = 8
+
+LABEL_EDIT_VERTICAL_SPACE           = 4
+LABEL_EDIT_HORIZONTAL_SPACE         = 10
+
+BUTTON_HORIZONTAL_SPACE             = 10
 
 
 class UserMediaDialog(QDialog):
+    """Implements User Message Dialog for Operator Request from M120 command."""
 
     def __init__(
         self, parent=None,
@@ -52,6 +75,9 @@ class UserMediaDialog(QDialog):
         self.setWindowTitle('Media to Operator')
         self.setModal(True)
 
+
+    # == BEG: relink of native events from inherited Qt PySide6 UI design
+    #
     def reject(self):
         if self._allow_close:
             super().reject()
@@ -61,18 +87,27 @@ class UserMediaDialog(QDialog):
             event.accept()
         else:
             event.ignore()
+    #
+    # == END: relink of native events from inherited Qt PySide6 UI design
 
+
+    # == BEG: public attributes
+    #
     def force_close(self):
         self._allow_close = True
         self.close()
+    #
+    # == END: public attributes
 
 
 class UserMessageDialog(QDialog):
+    """Implements User Message Dialog for Operator Request from M109 command."""
 
     def __init__(
         self, parent=None,
         operator_request : cnc.APIOperatorRequest = None
         ):
+
         # call qt inherited dialog constructor
         super().__init__(parent)
 
@@ -100,32 +135,104 @@ class UserMessageDialog(QDialog):
             {"label" : self.ui.requestLabel10, "edit" : self.ui.requestEdit10},
         ]
 
-
         # define attribute to allow close/reject activity
-        self._allow_close = True
+        self.__allow_close = True
+        self.in_update = False
 
-        self._apply_geometry()
+        # link actions to all buttons
+        for obj in self.findChildren(QPushButton):
+            obj.clicked.connect(self.__on_action_main_execute)
+
+        # link actions to all edits
+        for obj in self.findChildren(QLineEdit):
+            obj.editingFinished.connect(self.__on_editing_finished)
+
+        # apply
+        self.__apply_geometry()
 
         # set modal mode
         self.setModal(True)
 
-    def reject(self):
-        if self._allow_close:
-            super().reject()
 
+    # == BEG: relink of native events from inherited Qt PySide6 UI design
+    #
+    def reject(self):
+        if self.__allow_close:
+            super().reject()
     def closeEvent(self, event):
-        if self._allow_close:
+        if self.__allow_close:
             event.accept()
         else:
             event.ignore()
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.__on_form_show()
+    #
+    # == END: relink of native events from inherited Qt PySide6 UI design
 
+
+    # == BEG: events implementation
+    #
+    def __on_action_main_execute(self):
+        sender = self.sender()
+
+        if sender == self.ui.continueButton:
+            pass
+
+        if sender == self.ui.stopButton:
+            pass
+
+    def __on_editing_finished(self):
+
+        def str_2_float_with_none_as_nan(value: str) -> float | None:
+            try:
+                return float(value)
+            except Exception:
+                return None
+
+        sender = self.sender()
+        if sender is None:
+            return
+        value = sender.text().strip()
+
+        # evaluate editable field
+        for idx in range(self.operator_request.data_elements):
+            edit = self.edit_fields[idx]["edit"]
+            if sender == edit:
+                val = str_2_float_with_none_as_nan(value)
+                setattr(self.operator_request, f'data_d{(idx + 1):02}', val)
+                break
+
+        # updated editable fields
+        self.__update_editable_fields()
+
+    def __on_form_show(self):
+        self.in_update = False
+
+        # update editable fields
+        self.__update_editable_fields()
+    #
+    # == END: events implementation
+
+    # == BEG: public attributes
+    #
     def force_close(self):
-        self._allow_close = True
+        self.__allow_close = True
         self.close()
+    #
+    # == END: public attributes
+
 
     # == BEG: non-public attributes
     #
-    def _apply_geometry(self):
+    def __apply_geometry(self):
+
+        # set frame to be transparent to events and ser border size and color
+        self.ui.dialogFrame.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.ui.dialogFrame.setLineWidth(DIALOG_FRAME_WIDTH)
+        self.ui.dialogFrame.setStyleSheet(
+            f"color:rgb({DIALOG_FRAME_COLOR[0]},{DIALOG_FRAME_COLOR[1]},{DIALOG_FRAME_COLOR[2]})"
+        )
 
         # create html content
         html = (
@@ -140,14 +247,19 @@ class UserMessageDialog(QDialog):
         label = self.ui.requestLabel
         label.setTextFormat(Qt.RichText)
         label.setAlignment(Qt.AlignCenter)
-        label.setMargin(VERTICAL_HTML_BORDER)
+        label.setContentsMargins(
+            HTML_BORDER_LEFT,
+            HTML_BORDER_TOP,
+            HTML_BORDER_RIGHT,
+            HTML_BORDER_BOTTOM
+        )
         label.setWordWrap(False)
         label.setText(html)
         label_size_hint = label.sizeHint()
-        dialog_width = max(450, label_size_hint.width())
+        dialog_width = max(DIALOG_WIDTH_MIN, label_size_hint.width())
         label.setGeometry(0, 0, dialog_width, label_size_hint.height())
         label_size = label.size()
-        dialog_height = label_size.height() + VERTICAL_HTML_BORDER
+        dialog_height = label_size.height()
 
         # evaluate edit fields visibility and position
         ort = self.operator_request.type
@@ -175,12 +287,12 @@ class UserMessageDialog(QDialog):
                 edit = self.edit_fields[i]["edit"]
                 label.setVisible(True)
                 edit.setVisible(True)
-                left = (dialog_width - (label.size().width() + 10 + edit.size().width())) // 2
+                left = (dialog_width - (label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE + edit.size().width())) // 2
                 label.move(left, dialog_height)
-                left = left + label.size().width() + 10
+                left = left + label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE
                 edit.move(left, dialog_height)
-                dialog_height += edit.size().height() + 4
-            dialog_height += (VERTICAL_HTML_BORDER - 4)
+                dialog_height += edit.size().height() + LABEL_EDIT_VERTICAL_SPACE
+            dialog_height += (OBJECTS_VERTICAL_SPACE - LABEL_EDIT_VERTICAL_SPACE)
 
         elif ort == cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP:
             for elem in self.edit_fields:
@@ -191,12 +303,12 @@ class UserMessageDialog(QDialog):
                 edit = self.edit_fields[i]["edit"]
                 label.setVisible(True)
                 edit.setVisible(True)
-                left = (dialog_width - (label.size().width() + 10 + edit.size().width())) // 2
+                left = (dialog_width - (label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE + edit.size().width())) // 2
                 label.move(left, dialog_height)
-                left = left + label.size().width() + 10
+                left = left + label.size().width() + LABEL_EDIT_HORIZONTAL_SPACE
                 edit.move(left, dialog_height)
-                dialog_height += edit.size().height() + 4
-            dialog_height += (VERTICAL_HTML_BORDER - 4)
+                dialog_height += edit.size().height() + LABEL_EDIT_VERTICAL_SPACE
+            dialog_height += (OBJECTS_VERTICAL_SPACE - LABEL_EDIT_VERTICAL_SPACE)
 
         else:
             pass # should never happen
@@ -206,48 +318,65 @@ class UserMessageDialog(QDialog):
         if ort == cnc.OPRT_USER_MESSAGE_CONTINUE:
             self.ui.stopButton.setVisible(False)
             self.ui.continueButton.setVisible(True)
-            left = (dialog_width - self.ui.continueButton.size().width()) / 2
+            left = (dialog_width - self.ui.continueButton.size().width()) // 2
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
         elif ort == cnc.OPRT_USER_MESSAGE_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(False)
-            left = (dialog_width - self.ui.continueButton.size().width()) / 2
+            left = (dialog_width - self.ui.continueButton.size().width()) // 2
             self.ui.stopButton.move(left, dialog_height)
             self.ui.stopButton.setFocus()
 
         elif ort == cnc.OPRT_USER_MESSAGE_STOP_CONTINUE:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
-            left = (dialog_width / 2) - BUTTON_SPACE - self.ui.stopButton.size().width()
+            left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
             self.ui.stopButton.move(left, dialog_height)
-            left = (dialog_width / 2) + BUTTON_SPACE
+            left = (dialog_width / 2) + BUTTON_HORIZONTAL_SPACE
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
         elif ort == cnc.OPRT_USER_MESSAGE_VALUE_OR_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
-            left = (dialog_width / 2) - BUTTON_SPACE - self.ui.stopButton.size().width()
+            left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
             self.ui.stopButton.move(left, dialog_height)
-            left = (dialog_width / 2) + BUTTON_SPACE
+            left = (dialog_width / 2) + BUTTON_HORIZONTAL_SPACE
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
         elif ort == cnc.OPRT_USER_MESSAGE_VALUES_OR_STOP:
             self.ui.stopButton.setVisible(True)
             self.ui.continueButton.setVisible(True)
-            left = (dialog_width / 2) - BUTTON_SPACE - self.ui.stopButton.size().width()
+            left = (dialog_width / 2) - BUTTON_HORIZONTAL_SPACE - self.ui.stopButton.size().width()
             self.ui.stopButton.move(left, dialog_height)
-            left = (dialog_width / 2) + BUTTON_SPACE
+            left = (dialog_width / 2) + BUTTON_HORIZONTAL_SPACE
             self.ui.continueButton.move(left, dialog_height)
             self.ui.continueButton.setFocus()
 
         else:
             pass # should never happen
 
-        dialog_height = dialog_height + self.ui.continueButton.size().height() + V_SPACE
+        dialog_height += self.ui.continueButton.size().height() + DIALOG_BOTTOM_BORDER
+        self.ui.dialogFrame.resize(dialog_width, dialog_height)
         self.resize(dialog_width, dialog_height)
+
+    def __update_editable_fields(self):
+        """Updates editable fields with related data."""
+        if self.in_update:
+            return
+        self.in_update = True
+        try:
+            for i in range(self.operator_request.data_elements):
+                edit = self.edit_fields[i]["edit"]
+                value = getattr(self.operator_request, f'data_d{(i+1):02}')
+                if value is None or not isinstance(value, (int, float)):
+                    edit.setText('NAN')
+                else:
+                    edit.setText(format_float(value, FLOAT_USE_DIGITS, DecimalsTrimMode.FULL))
+        finally:
+            self.in_update = False
     #
     # == END: non-public attributes
