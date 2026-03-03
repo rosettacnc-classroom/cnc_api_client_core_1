@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      26/02/2026
+# Created:      03/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -57,7 +57,7 @@ from PySide6.QtWidgets import (
 )
 
 from qt_gcode_highlighter import GCodeHighlighter
-from qt_user_dialogs import UserMessageDialog
+from qt_user_dialogs import UserMediaDialog, UserMessageDialog
 from qt_realtime_scope import QRealTimeScope
 from qt_utils import QLedWidget
 
@@ -1763,7 +1763,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
     def __operator_request_show_user_media_dialog(self, operator_request: cnc.APIOperatorRequest):
         self.active_operator_request = operator_request
-        self.active_operator_request_dialog = UserMessageDialog(
+        self.active_operator_request_dialog = UserMediaDialog(
             parent=self,
             api_client_core=self.api,
             operator_request=operator_request

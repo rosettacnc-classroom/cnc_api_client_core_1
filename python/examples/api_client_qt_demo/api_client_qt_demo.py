@@ -14,8 +14,8 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      07/12/2024
-# Copyright:    RosettaCNC (c) 2016-2024
+# Created:      03/03/2026
+# Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #               With cnc_vision_vcl/fmx objects is used Delphi coding style
@@ -26,7 +26,6 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QGuiApplication, Qt, QIcon
 
-from qt_utils import QThemeManager
 from api_client_qt_demo_desktop_view import ApiClientQtDemoDesktopView
 
 def main():
@@ -36,8 +35,6 @@ def main():
     application = QApplication(sys.argv)
     application.setStyle('Fusion')
     QGuiApplication.styleHints().setColorScheme(Qt.ColorScheme.Light)
-    #theme = QThemeManager("styles")
-    #theme.load("Light")
 
     # set global application icon
     base_dir = Path(__file__).resolve().parent
