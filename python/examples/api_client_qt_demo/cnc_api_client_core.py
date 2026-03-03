@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      27/02/2026
+# Created:      03/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -529,7 +529,7 @@ class APICncInfo(APIComparableMixin):
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
-        self.operator_request_pending           = False
+        self.operator_request_id_pending        = ''
         self.current_alarm_datetime             = datetime.min
         self.current_alarm_code                 = 0
         self.current_alarm_info1                = 0
@@ -1988,7 +1988,7 @@ class CncAPIClientCore:
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
-                data.operator_request_pending           = j['res']['operator.request.pending']
+                data.operator_request_id_pending        = j['res']['operator.request.id.pending']
                 data.current_alarm_datetime             = self.__d(j['res']['current.alarm']['datetime'])
                 data.current_alarm_code                 = j['res']['current.alarm']['code']
                 data.current_alarm_info1                = j['res']['current.alarm']['info1']

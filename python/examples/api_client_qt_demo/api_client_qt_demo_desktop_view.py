@@ -1724,22 +1724,24 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             kill_active_operator_request()
             return
 
-        # check if we do not have a pending operator request
-        if not cnc_info.operator_request_pending:
+        # check if we do not have a pending operator request id (empty string or None)
+        if not cnc_info.operator_request_id_pending:
             kill_active_operator_request()
             return
+
+        # check if operator request id is already managed by a dialog
+        if (
+            self.active_operator_request is not None and
+            self.active_operator_request.id == cnc_info.operator_request_id_pending
+        ):
+            return
+
+        # new request: close any previous dialog and download the payload
+        kill_active_operator_request()
 
         # get operator request
         operator_request = self.api.get_operator_request()
         if not operator_request.has_data:
-            kill_active_operator_request()
-            return
-
-        # check if we are yet in a operator request dialog
-        if self.active_operator_request is not None:
-            if self.active_operator_request.id != operator_request.id:
-                kill_active_operator_request()
-                return
             return
 
         if operator_request.type in [

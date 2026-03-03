@@ -200,8 +200,14 @@ match_video = re.match(r"data:video/([^;]+);base64,(.*)", media)
 ## Requirements
 
 - Python 3.11+
-- PySide6
-- PySide6-WebEngine (for Lottie animation support)
+- PySide6=6.8.3
+
+# Note about PySide6
+Actually the available version is the 6.10.2.0, but PySide6 >= 6.10.x causes a native crash (Access Violation 0xC0000005)<br>
+in Qt6WebEngineCore.dll after ~150 seconds of QWebEngineView usage on Windows.<br>
+No official Qt bug report found at time of writing (2026-03-03).<br>
+Workaround: pin to PySide6 6.8.x (LTS).
+
 
 ```bash
 pip install PySide6 PySide6-WebEngine
