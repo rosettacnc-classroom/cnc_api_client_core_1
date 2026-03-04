@@ -2456,18 +2456,18 @@ History</string>
      <rect>
       <x>336</x>
       <y>714</y>
-      <width>97</width>
+      <width>71</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Use TLS 1.2</string>
+     <string>Use TLS</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="stayOnTopCheckBox">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>416</x>
       <y>714</y>
       <width>89</width>
       <height>22</height>

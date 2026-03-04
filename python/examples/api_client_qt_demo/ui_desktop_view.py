@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewfhxKkR.ui'
+## Form generated from reading UI file 'desktop_viewYuCDSV.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.10.2
 ##
@@ -697,10 +697,10 @@ class Ui_DesktopView(object):
         self.apiServerPortEdit.setGeometry(QRect(248, 714, 80, 22))
         self.useTLSCheckBox = QCheckBox(self.centralwidget)
         self.useTLSCheckBox.setObjectName(u"useTLSCheckBox")
-        self.useTLSCheckBox.setGeometry(QRect(336, 714, 97, 22))
+        self.useTLSCheckBox.setGeometry(QRect(336, 714, 71, 22))
         self.stayOnTopCheckBox = QCheckBox(self.centralwidget)
         self.stayOnTopCheckBox.setObjectName(u"stayOnTopCheckBox")
-        self.stayOnTopCheckBox.setGeometry(QRect(440, 714, 89, 22))
+        self.stayOnTopCheckBox.setGeometry(QRect(416, 714, 89, 22))
         self.tabWidgetMain = QTabWidget(self.centralwidget)
         self.tabWidgetMain.setObjectName(u"tabWidgetMain")
         self.tabWidgetMain.setGeometry(QRect(8, 8, 921, 298))
@@ -1474,7 +1474,7 @@ class Ui_DesktopView(object):
 "History", None))
         self.ServerConnectDisconnectButton.setText(QCoreApplication.translate("DesktopView", u"Connect", None))
         self.apiServerHostPortLabel.setText(QCoreApplication.translate("DesktopView", u"API Server Host & Port", None))
-        self.useTLSCheckBox.setText(QCoreApplication.translate("DesktopView", u"Use TLS 1.2", None))
+        self.useTLSCheckBox.setText(QCoreApplication.translate("DesktopView", u"Use TLS", None))
         self.stayOnTopCheckBox.setText(QCoreApplication.translate("DesktopView", u"Stay on Top", None))
         self.jopZValue_2.setText(QCoreApplication.translate("DesktopView", u"OFF", None))
         self.jopZLabel.setText(QCoreApplication.translate("DesktopView", u"Z", None))

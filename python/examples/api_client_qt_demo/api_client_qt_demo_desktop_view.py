@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      03/03/2026
+# Created:      04/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -228,8 +228,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # create labels for status bar
         self.StateMachineLabel = QLabel("")
-        self.StateMachineLabel.setMinimumWidth(629)
-        self.StateMachineLabel.setMaximumWidth(629)
+        self.StateMachineLabel.setMinimumWidth(429)
+        self.StateMachineLabel.setMaximumWidth(429)
         self.APIServerConnectionStateLabel = QLabel("")
         self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.APIServerConnectionStateLed = QLedWidget(
@@ -1565,7 +1565,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if not self.api_server_use_tls:
             self.APIServerConnectionStateLabel.setText('Connection with Server : ' + text)
         else:
-            self.APIServerConnectionStateLabel.setText('Connection with Server [TLS] : ' + text)
+            if self.api.socket_ssl_info:
+                text = f'Connection with Server [ {self.api.socket_ssl_info} ] : {text}'
+            else:
+                text = f'Connection with Server [ TLS ] : {text}'
+            self.APIServerConnectionStateLabel.setText(text)
         if self.api_server_connection_state in [None, ASCS_DISCONNECTED]:
             self.APIServerConnectionStateLed.setColors(ASCL_CONNECTED, ASCL_DISCONNECTED)
             self.APIServerConnectionStateLed.setState(False)

@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      03/03/2026
+# Created:      04/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -1193,6 +1193,7 @@ class CncAPIClientCore:
         self.ipc = None
         self.socket = None
         self.socket_ssl = None
+        self.socket_ssl_info = ''
         self.i = 0
 
     # == BEG: public attributes
@@ -1204,13 +1205,13 @@ class CncAPIClientCore:
 
         host        The server host address to connect to (eg.'192.168.0.220').
         port        The server host port to connect to (valid range 0..65535).
-        use_ssl     The server is using the safety policy over SSL with TLS v1.2.
+        use_ssl     The server is using the transport layer securty (TLSv1_2 and TLSv1_3).
         return      True if the connection with the API server is or has been established.
         """
 
         def create_ssl_context(server_cert: str = None, server_key: str = None, ca_cert: str = None) -> ssl.SSLContext:
             """
-            Creates an SSL context for TLS 1.2 and only safe Server Ciphers.
+            Creates an SSL context for TLS and only safe Server Ciphers.
 
             server_cert     Full path and file name of server certificate (optional)
             server_key      Full path and file name of server key (optional)
@@ -1218,28 +1219,10 @@ class CncAPIClientCore:
             return          The SSL Context
             """
 
-            # creates SSL context with TLS 1.2
+            # creates SSL context with support of TLSv1_2 and TLSv1_3
             context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.minimum_version = ssl.TLSVersion.TLSv1_2
-            context.maximum_version = ssl.TLSVersion.TLSv1_2
-            ciphers = (
-                'AES'                           + ':' +
-                'ALL'                           + ':' +
-                '!EXPORT'                       + ':' +
-                '!LOW'                          + ':' +
-                '!aNULL'                        + ':' +
-                '!eNULL'                        + ':' +
-                '!RC4'                          + ':' +
-                '!ADK'                          + ':' +
-                '!3DES'                         + ':' +
-                '!DES'                          + ':' +
-                '!MD5'                          + ':' +
-                '!PSK'                          + ':' +
-                '!SRP'                          + ':' +
-                '!CAMELLIA'                     + ':' +
-                '@STRENGTH'
-            )
-            context.set_ciphers(ciphers)
+            context.maximum_version = ssl.TLSVersion.TLSv1_3
 
             # checks if present and upload server certificate and private key
             if server_cert and server_key:
@@ -1264,7 +1247,7 @@ class CncAPIClientCore:
 
             # evaluates if enabled use_ssl
             if use_ssl:
-                # creates SSL context with TLS v1.2
+                # creates SSL context
                 server_cert = None
                 server_key = None
                 ca_cert = None
@@ -1276,6 +1259,8 @@ class CncAPIClientCore:
                 # establishes an SSL connection to the server
                 self.socket_ssl.connect((host, port))
                 self.ipc = self.socket_ssl
+                cipher = self.socket_ssl.cipher()
+                self.socket_ssl_info = f'{cipher[1]} | {cipher[0]} | {cipher[2]}'
             else:
                 self.socket.connect(ipc_server_address)
                 self.ipc = self.socket
@@ -1286,6 +1271,7 @@ class CncAPIClientCore:
             self.ipc = None
             self.socket = None
             self.socket_ssl = None
+            self.socket_ssl_info = ''
             self.i = 0
             return False
         return True
@@ -1315,6 +1301,7 @@ class CncAPIClientCore:
                 self.ipc = None
                 self.socket = None
                 self.socket_ssl = None
+                self.socket_ssl_info = ''
                 self.i = 0
                 return True
             except Exception:
@@ -1323,6 +1310,7 @@ class CncAPIClientCore:
                 self.ipc = None
                 self.socket = None
                 self.socket_ssl = None
+                self.socket_ssl_info = ''
                 self.i = 0
                 return False
         return True
