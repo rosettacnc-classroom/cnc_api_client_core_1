@@ -23,7 +23,7 @@
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="centralWidget">
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
@@ -954,7 +954,7 @@
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncStartButton_2">
+     <widget class="QPushButton" name="cncStartButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -967,7 +967,7 @@
        <string>Start</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncStopButton_2">
+     <widget class="QPushButton" name="cncStopButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -980,7 +980,7 @@
        <string>Stop</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncPauseButton_2">
+     <widget class="QPushButton" name="cncPauseButton">
       <property name="geometry">
        <rect>
         <x>208</x>
@@ -993,7 +993,7 @@
        <string>Pause</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncContinueButton_2">
+     <widget class="QPushButton" name="cncContinueButton">
       <property name="geometry">
        <rect>
         <x>296</x>
@@ -1055,7 +1055,7 @@
        <string>Start from Line</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncResumeAfterStopButton_2">
+     <widget class="QPushButton" name="cncResumeAfterStopButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -2193,7 +2193,7 @@
      </widget>
     </widget>
    </widget>
-   <widget class="QFrame" name="CommandsFrame">
+   <widget class="QFrame" name="commandsFrame">
     <property name="geometry">
      <rect>
       <x>936</x>
@@ -2208,7 +2208,7 @@
     <property name="frameShadow">
      <enum>QFrame::Shadow::Plain</enum>
     </property>
-    <widget class="QLabel" name="CommandsLabel">
+    <widget class="QLabel" name="cmdsTitleLabel">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2237,7 +2237,7 @@
       <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="CNCConnectionOpenButton">
+    <widget class="QPushButton" name="cmdsConnectionOpenButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2251,7 +2251,7 @@
 Connection</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="CNCConnectionCloseButton">
+    <widget class="QPushButton" name="cmdsConnectionCloseButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2265,7 +2265,7 @@ Connection</string>
 Connection</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="cncStartButton">
+    <widget class="QPushButton" name="cmdsStartButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2278,7 +2278,7 @@ Connection</string>
       <string>Start</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="cncStopButton">
+    <widget class="QPushButton" name="cmdsStopButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2291,7 +2291,7 @@ Connection</string>
       <string>Stop</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="cncPauseButton">
+    <widget class="QPushButton" name="cmdsPauseButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2304,7 +2304,7 @@ Connection</string>
       <string>Pause</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="cncContinueButton">
+    <widget class="QPushButton" name="cmdsContinueButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2317,7 +2317,7 @@ Connection</string>
       <string>Continue</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="cncResumeAfterStopButton">
+    <widget class="QPushButton" name="cmdsResumeAfterStopButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2331,7 +2331,7 @@ Connection</string>
 after STOP</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="resetAlarmsButton">
+    <widget class="QPushButton" name="cmdsResetAlarmsButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2345,7 +2345,7 @@ after STOP</string>
 Alarms</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="resetAlarmsHistoryButton">
+    <widget class="QPushButton" name="cmdsResetAlarmsHistoryButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2360,7 +2360,7 @@ Alarms
 History</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="resetWarningsButton">
+    <widget class="QPushButton" name="cmdsResetWarningsButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2374,7 +2374,7 @@ History</string>
 Warnings</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="resetWarningsHistoryButton">
+    <widget class="QPushButton" name="cmdsResetWarningsHistoryButton">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -2390,7 +2390,7 @@ History</string>
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="ServerConnectDisconnectButton">
+   <widget class="QPushButton" name="apiServerConnectionButton">
     <property name="geometry">
      <rect>
       <x>767</x>
@@ -2451,7 +2451,7 @@ History</string>
      </rect>
     </property>
    </widget>
-   <widget class="QCheckBox" name="useTLSCheckBox">
+   <widget class="QCheckBox" name="apiServerUseTLSCheckBox">
     <property name="geometry">
      <rect>
       <x>336</x>
@@ -2496,7 +2496,7 @@ History</string>
      <attribute name="title">
       <string>General</string>
      </attribute>
-     <widget class="QLabel" name="jopZValue_2">
+     <widget class="QLabel" name="coolantFloodValue">
       <property name="geometry">
        <rect>
         <x>596</x>
@@ -3163,7 +3163,7 @@ History</string>
        <string>Y</string>
       </property>
      </widget>
-     <widget class="QLabel" name="jopZLabel_2">
+     <widget class="QLabel" name="coolantFloodLabel">
       <property name="geometry">
        <rect>
         <x>512</x>
@@ -4770,7 +4770,7 @@ History</string>
     </widget>
    </widget>
   </widget>
-  <widget class="QStatusBar" name="StatusBar"/>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <customwidgets>
   <customwidget>
@@ -4801,12 +4801,12 @@ History</string>
   <tabstop>uidParametersLibraryButton</tabstop>
   <tabstop>uidMacrosManagementButton</tabstop>
   <tabstop>systemInfoEdit</tabstop>
-  <tabstop>cncPauseButton</tabstop>
+  <tabstop>cmdsPauseButton</tabstop>
   <tabstop>uidAboutButton</tabstop>
-  <tabstop>cncResumeAfterStopButton</tabstop>
-  <tabstop>CNCConnectionOpenButton</tabstop>
-  <tabstop>resetWarningsButton</tabstop>
-  <tabstop>cncContinueButton</tabstop>
+  <tabstop>cmdsResumeAfterStopButton</tabstop>
+  <tabstop>cmdsConnectionOpenButton</tabstop>
+  <tabstop>cmdsResetWarningsButton</tabstop>
+  <tabstop>cmdsContinueButton</tabstop>
   <tabstop>uidWorkCoordinatesButton</tabstop>
   <tabstop>uidProgramSettingsButton</tabstop>
   <tabstop>uidBoardFirmwareManagerButton</tabstop>
@@ -4817,16 +4817,16 @@ History</string>
   <tabstop>uidBoardEtherCATMonitorButton</tabstop>
   <tabstop>apiServerHostEdit</tabstop>
   <tabstop>apiServerPortEdit</tabstop>
-  <tabstop>useTLSCheckBox</tabstop>
+  <tabstop>apiServerUseTLSCheckBox</tabstop>
   <tabstop>stayOnTopCheckBox</tabstop>
-  <tabstop>ServerConnectDisconnectButton</tabstop>
-  <tabstop>cncStartButton</tabstop>
-  <tabstop>resetAlarmsButton</tabstop>
-  <tabstop>resetAlarmsHistoryButton</tabstop>
-  <tabstop>resetWarningsHistoryButton</tabstop>
+  <tabstop>apiServerConnectionButton</tabstop>
+  <tabstop>cmdsStartButton</tabstop>
+  <tabstop>cmdsResetAlarmsButton</tabstop>
+  <tabstop>cmdsResetAlarmsHistoryButton</tabstop>
+  <tabstop>cmdsResetWarningsHistoryButton</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>CNCConnectionCloseButton</tabstop>
-  <tabstop>cncStopButton</tabstop>
+  <tabstop>cmdsConnectionCloseButton</tabstop>
+  <tabstop>cmdsStopButton</tabstop>
   <tabstop>programNewButton</tabstop>
   <tabstop>programLoadFileNameEdit</tabstop>
   <tabstop>programLoadSelectFileButton</tabstop>

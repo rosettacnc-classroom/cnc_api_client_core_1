@@ -1,188 +1,257 @@
-tabWidget
+DesktopView -> QMainWindow
 
-    tabProgram
-        programNewLabel
-        programNewLine
-        programNewButton                            -> program_new
-        programLoadLabel
-        programLoadLine
-        programLoadFileNameEdit
-        programLoadButton                           -> program_load                 self.program_load_file_name
-        programSaveLabel
-        programSaveLine
-        programSaveButton                           -> program_save
-        programSaveAsLabel
-        programSaveAsLine
-        programSaveFileAsFileNameEdit
-        programSaveAsButton                         -> program_save_as              self.program_save_file_name
+    statusBar -> QStatusBar
 
-    tabGCode
-        gcodeProgramEdit
-        gcodeGetProgramTextButton                   -> get_program_info
-        gcodeSetProgramTextButton                   -> program_gcode_set_text
-        gcodeAddProgramTextEdit
-        gcodeAddProgramTextButton                   -> program_gcode_add_text
-        gcodeClearProgramButton                     -> program_new
+    centralWidget -> QWidget
 
-    tabWCS
-        csWorkingWCS
-        csOffsetsTable
-        csActivateWCSOnlyRadioButton
-        csSetWCSOffsetOnlyRadioButton
-        csSetWCSOffsetAndActivateRadioButton
-        csSetWCSLabel
-        csSetWCSEdit
-        csSetWCSXCheckBox
-        csSetWCSXEdit
-        csSetWCSYCheckBox
-        csSetWCSYEdit
-        csSetWCSZCheckBox
-        csSetWCSZEdit
-        csSetWCSACheckBox
-        csSetWCSAEdit
-        csSetWCSBCheckBox
-        csSetWCSBEdit
-        csSetWCSCCheckBox
-        csSetWCSCEdit
-        csApplyWCSChangesButton
+        apiServerHostPortLabel -> QLabel
+        apiServerHostEdit -> QLineEdit
+        apiServerPortEdit -> QLineEdit
+        apiServerUseTLSCheckBox -> QCheckBox
+        apiServerConnectionButton -> QPushButton
 
-    tabCNC
-        cncProgramAnalysisLabel
-        cncProgramAnalysisLine
-        cncCNCCommandsLabel
-        cncCNCCommandsLine
-        cncCNCCommandsSpecialLabel
-        cncCNCCommandsSpecialLine
-        cncProgramAnalysisMTButton
-        cncProgramAnalysisRTButton
-        cncProgramAnalysisRFButton
-        cncProgramAnalysisRVButton
-        cncProgramAnalysisRZButton
-        cncProgramAnalysisAbortButton
-        cncProgramAnalysisStateLabel
-        cncProgramAnalysisMessageLabel
-        cncStartButton
-        cncStopButton
-        cncPauseButton
-        cncContinueButton
-        cncStartFromLineButton
-        cncResumeAfterStopButton
-        cncStartFromLineEdit
-        cncResumeAfterStopFromLineButton
-        cncResumeAfterStopFromLineEdit
+        commandsFrame -> QFrame
+            cmdsTitleLabel -> QLabel
+            cmdsConnectionOpenButton -> QPushButon
+            cmdsConnectionCloseButton -> QPushButton
+            cmdsStartButton -> QPushButton
+            cmdsStopButton -> QPushButton
+            cmdsPauseButton -> QPushButton
+            cmdsContinueButton -> QPushButton
+            cmdsResumeAfterStopButton -> QPushButton
+            cmdsResetAlarmsButton -> QPushButton
+            cmdsResetAlarmsHistoryButton -> QPushButton
+            cmdsResetWarningsButton -> QPushButton
+            cmdsResetWarningsHistoryButton -> QPushButton
 
-    tabJOG
-        cncJogCommandXMButton
-        cncJogCommandXPButton       
-        cncJogCommandYMButton
-        cncJogCommandYPButton       
-        cncJogCommandZMButton
-        cncJogCommandZPButton       
-        cncJogCommandAMButton
-        cncJogCommandAPButton       
-        cncJogCommandBMButton
-        cncJogCommandBPButton       
-        cncJogCommandCMButton
-        cncJogCommandCPButton
-        jogSetSeparatorLine
-        textAxisPositionText
-        setProgramPositionXEdit
-        setProgramPositionXButton
-        setProgramPositionYEdit
-        setProgramPositionYButton
-        setProgramPositionZEdit
-        setProgramPositionZButton
-        setProgramPositionAEdit
-        setProgramPositionAButton
-        setProgramPositionBEdit
-        setProgramPositionBButton
-        setProgramPositionCEdit
-        setProgramPositionCButton
-        jogSTOPButton
+        tabWidgetMain -> QTabWidget
 
-    tabOverrides
-        ovrJogLabel
-        ovrJogSlider
-        ovrJogValue
-        ovrSpindleLabel
-        ovrSpindleSlider
-        ovrSpindleValue
-        ovrFastLabel
-        ovrFastSlider
-        ovrFastValue
-        ovrFeedLabel
-        ovrFeedSlider
-        ovrFeedValue
-        ovrFeedCSM1Label
-        ovrFeedCSM1Slider
-        ovrFeedCSM1Value
-        ovrFeedCSM2Label
-        ovrFeedCSM2Slider
-        ovrFeedCSM2Value
-        ovrPlasmaPowerLabel
-        ovrPlasmaPowerSlider
-        ovrPlasmaPowerValue
-        ovrPlasmaVoltageLabel
-        ovrPlasmaVoltageSlider
-        ovrPlasmaVoltageValue
-        ovrNoteLabel
+            tabGeneral -> QWidget
+                mcsTitleLabel -> QLabel
+                mcs<AXIS>Label -> QLabel
+                mcs<AXIS>Value -> QLabel
+                prpTitleLabel -> QLabel
+                prp<AXIS>Label -> QLabel
+                prp<AXIS>Value -> QLabel
+                avlTitleLabel -> QLabel
+                avl<AXIS>Label -> QLabel
+                avl<AXIS>Value -> QLabel
+                wofTitleLabel -> QLabel
+                wof<AXIS>Label -> QLabel
+                wof<AXIS>Value -> QLabel
+                mtpTitleLabel -> QLabel
+                mtp<AXIS>Label -> QLabel
+                mtp<AXIS>Value -> QLabel
+                ptpTitleLabel -> QLabel
+                ptp<AXIS>Label -> QLabel
+                ptp<AXIS>Value -> QLabel
+                jopTitleLabel -> QLabel
+                jop<AXIS>Label -> QLabel
+                jop<AXIS>Value -> QLabel
+                machineInfoLabel -> QLabel
+                spindleStatusLabel -> QLabel
+                spindleStatusValue -> QLabel
+                coolantMistLabel -> QLabel
+                coolantMistValue -> QLabel
+                coolantFloodLabel -> QLabel
+                coolantFloodValue -> QLabel
+                gcodeLineLabel -> QLabel
+                gcodeLineValue -> QLabel
+                workedTimeLabel -> QLabel
+                workedTimeValue -> QLabel
+                plannedTimeLabel -> QLabel
+                plannedTimeValue -> QLabel
+                toolInfoPanel -> QFrame
+                    toolInfoLabel -> QLabel
+           
+            tabAxesPositionScope -> QWidget
+        
 
-    tabHoming
+        tabWidget
 
-    tabMDI
-        mdiCommandEdit
-        mdiCommandExecuteButton
+            tabProgram
+                programNewLabel
+                programNewLine
+                programNewButton                            -> program_new
+                programLoadLabel
+                programLoadLine
+                programLoadFileNameEdit
+                programLoadButton                           -> program_load                 self.program_load_file_name
+                programSaveLabel
+                programSaveLine
+                programSaveButton                           -> program_save
+                programSaveAsLabel
+                programSaveAsLine
+                programSaveFileAsFileNameEdit
+                programSaveAsButton                         -> program_save_as              self.program_save_file_name
 
-    tabDIO
+            tabGCode
+                gcodeProgramEdit
+                gcodeGetProgramTextButton                   -> get_program_info
+                gcodeSetProgramTextButton                   -> program_gcode_set_text
+                gcodeAddProgramTextEdit
+                gcodeAddProgramTextButton                   -> program_gcode_add_text
+                gcodeClearProgramButton                     -> program_new
 
-    tabAIO
+            tabWCS
+                csWorkingWCS
+                csOffsetsTable
+                csActivateWCSOnlyRadioButton
+                csSetWCSOffsetOnlyRadioButton
+                csSetWCSOffsetAndActivateRadioButton
+                csSetWCSLabel
+                csSetWCSEdit
+                csSetWCSXCheckBox
+                csSetWCSXEdit
+                csSetWCSYCheckBox
+                csSetWCSYEdit
+                csSetWCSZCheckBox
+                csSetWCSZEdit
+                csSetWCSACheckBox
+                csSetWCSAEdit
+                csSetWCSBCheckBox
+                csSetWCSBEdit
+                csSetWCSCCheckBox
+                csSetWCSCEdit
+                csApplyWCSChangesButton
 
-    tabScanningLaser
+            tabCNC
+                cncProgramAnalysisLabel
+                cncProgramAnalysisLine
+                cncCNCCommandsLabel
+                cncCNCCommandsLine
+                cncCNCCommandsSpecialLabel
+                cncCNCCommandsSpecialLine
+                cncProgramAnalysisMTButton
+                cncProgramAnalysisRTButton
+                cncProgramAnalysisRFButton
+                cncProgramAnalysisRVButton
+                cncProgramAnalysisRZButton
+                cncProgramAnalysisAbortButton
+                cncProgramAnalysisStateLabel
+                cncProgramAnalysisMessageLabel
+                cncStartButton
+                cncStopButton
+                cncPauseButton
+                cncContinueButton
+                cncStartFromLineButton
+                cncResumeAfterStopButton
+                cncStartFromLineEdit
+                cncResumeAfterStopFromLineButton
+                cncResumeAfterStopFromLineEdit
 
-    tabMachiningInfo
+            tabJOG
+                cncJogCommandXMButton
+                cncJogCommandXPButton       
+                cncJogCommandYMButton
+                cncJogCommandYPButton       
+                cncJogCommandZMButton
+                cncJogCommandZPButton       
+                cncJogCommandAMButton
+                cncJogCommandAPButton       
+                cncJogCommandBMButton
+                cncJogCommandBPButton       
+                cncJogCommandCMButton
+                cncJogCommandCPButton
+                jogSetSeparatorLine
+                textAxisPositionText
+                setProgramPositionXEdit
+                setProgramPositionXButton
+                setProgramPositionYEdit
+                setProgramPositionYButton
+                setProgramPositionZEdit
+                setProgramPositionZButton
+                setProgramPositionAEdit
+                setProgramPositionAButton
+                setProgramPositionBEdit
+                setProgramPositionBButton
+                setProgramPositionCEdit
+                setProgramPositionCButton
+                jogSTOPButton
 
-    tabUIDialogs
-        uidProgramSettingsButton
-        uidWorkCoordinatesButton
-        uidParametersLibraryButton
-        uidToolsLibraryButton
-        uidBoardMonitorButton
-        uidBoardSettingsButton
-        uidBoardEtherCATMonitorButton
-        uidChangeBoardIPButton
-        uidBoardFirmwareManagerButton
-        uidMacrosManagementButton
-        uidATCManagementButton
-        uidAboutButton
+            tabOverrides
+                ovrJogLabel
+                ovrJogSlider
+                ovrJogValue
+                ovrSpindleLabel
+                ovrSpindleSlider
+                ovrSpindleValue
+                ovrFastLabel
+                ovrFastSlider
+                ovrFastValue
+                ovrFeedLabel
+                ovrFeedSlider
+                ovrFeedValue
+                ovrFeedCSM1Label
+                ovrFeedCSM1Slider
+                ovrFeedCSM1Value
+                ovrFeedCSM2Label
+                ovrFeedCSM2Slider
+                ovrFeedCSM2Value
+                ovrPlasmaPowerLabel
+                ovrPlasmaPowerSlider
+                ovrPlasmaPowerValue
+                ovrPlasmaVoltageLabel
+                ovrPlasmaVoltageSlider
+                ovrPlasmaVoltageValue
+                ovrNoteLabel
 
-    tabSystemInfo
-        systemInfoEdit
-        
-    
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+            tabHoming
+
+            tabMDI
+                mdiCommandEdit
+                mdiCommandExecuteButton
+
+            tabDIO
+
+            tabAIO
+
+            tabScanningLaser
+
+            tabMachiningInfo
+
+            tabUIDialogs
+                uidProgramSettingsButton
+                uidWorkCoordinatesButton
+                uidParametersLibraryButton
+                uidToolsLibraryButton
+                uidBoardMonitorButton
+                uidBoardSettingsButton
+                uidBoardEtherCATMonitorButton
+                uidChangeBoardIPButton
+                uidBoardFirmwareManagerButton
+                uidMacrosManagementButton
+                uidATCManagementButton
+                uidAboutButton
+
+            tabSystemInfo
+                systemInfoEdit
+                
+            
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                

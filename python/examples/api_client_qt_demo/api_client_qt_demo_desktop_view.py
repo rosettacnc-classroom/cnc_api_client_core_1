@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      04/03/2026
+# Created:      06/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -233,16 +233,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.APIServerConnectionStateLabel = QLabel("")
         self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.APIServerConnectionStateLed = QLedWidget(
-            self.ui.StatusBar,
-            self.ui.StatusBar.contentsRect().height() - 16,
+            self.ui.statusBar,
+            self.ui.statusBar.contentsRect().height() - 16,
             ':/images/images/circular-led.svg',
             color_on=ASCL_CONNECTED,
             color_off=ASCL_DISCONNECTED
         )
-        self.ui.StatusBar.setContentsMargins(6, 0, 0, 0)
-        self.ui.StatusBar.addPermanentWidget(self.StateMachineLabel)
-        self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
-        self.ui.StatusBar.addPermanentWidget(self.APIServerConnectionStateLed)
+        self.ui.statusBar.setContentsMargins(6, 0, 0, 0)
+        self.ui.statusBar.addPermanentWidget(self.StateMachineLabel)
+        self.ui.statusBar.addPermanentWidget(self.APIServerConnectionStateLabel, 1)
+        self.ui.statusBar.addPermanentWidget(self.APIServerConnectionStateLed)
 
         # lock tables header resize
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
@@ -406,7 +406,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         sender = self.sender()
 
         # event main view
-        if sender == self.ui.ServerConnectDisconnectButton:
+        if sender == self.ui.apiServerConnectionButton:
             if self.api_server_connection_state == ASCS_DISCONNECTED:
                 if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
                     self.api_server_connection_state = ASCS_CONNECTED
@@ -427,29 +427,29 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     self.api_server_connection_state = ASCS_ERROR
 
         # event commands
-        if sender == self.ui.CNCConnectionOpenButton:
+        if sender == self.ui.cmdsConnectionOpenButton:
             self.api.cnc_connection_open(use_ui=False, use_fast_mode=False, skip_firmware_check=True, overwrite_cnc_settings=True)
-        if sender == self.ui.CNCConnectionCloseButton:
+        if sender == self.ui.cmdsConnectionCloseButton:
             self.api.cnc_connection_close()
 
-        if sender == self.ui.cncStartButton:
+        if sender == self.ui.cmdsStartButton:
             self.api.cnc_start()
-        if sender == self.ui.cncStopButton:
+        if sender == self.ui.cmdsStopButton:
             self.api.cnc_stop()
-        if sender == self.ui.cncPauseButton:
+        if sender == self.ui.cmdsPauseButton:
             self.api.cnc_pause()
-        if sender == self.ui.cncContinueButton:
+        if sender == self.ui.cmdsContinueButton:
             self.api.cnc_continue()
-        if sender == self.ui.cncResumeAfterStopButton:
+        if sender == self.ui.cmdsResumeAfterStopButton:
             self.api.cnc_resume(0)
 
-        if sender == self.ui.resetAlarmsButton:
+        if sender == self.ui.cmdsResetAlarmsButton:
             self.api.reset_alarms()
-        if sender == self.ui.resetAlarmsHistoryButton:
+        if sender == self.ui.cmdsResetAlarmsHistoryButton:
             self.api.reset_alarms_history()
-        if sender == self.ui.resetWarningsButton:
+        if sender == self.ui.cmdsResetWarningsButton:
             self.api.reset_warnings()
-        if sender == self.ui.resetWarningsHistoryButton:
+        if sender == self.ui.cmdsResetWarningsHistoryButton:
             self.api.reset_warnings_history()
 
         # event tab program
@@ -519,19 +519,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             pass
         if sender == self.ui.cncProgramAnalysisAbortButton:
             pass
-        if sender == self.ui.cncStartButton:
+        if sender == self.ui.cncStartButton: # ???
             pass
-        if sender == self.ui.cncStopButton:
+        if sender == self.ui.cncStopButton: # ???
             pass
-        if sender == self.ui.cncPauseButton:
+        if sender == self.ui.cncPauseButton: # ???
             pass
-        if sender == self.ui.cncContinueButton:
+        if sender == self.ui.cncContinueButton: # ???
             pass
-        if sender == self.ui.cncStartFromLineButton:
+        if sender == self.ui.cncStartFromLineButton: # ???
             pass
-        if sender == self.ui.cncResumeAfterStopButton:
+        if sender == self.ui.cncResumeAfterStopButton: # ???
             pass
-        if sender == self.ui.cncResumeAfterStopFromLineButton:
+        if sender == self.ui.cncResumeAfterStopFromLineButton: # ???
             pass
 
         # event tab jog
@@ -596,19 +596,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
 
             # update commands
-            self.ui.CNCConnectionCloseButton.setEnabled(False)
-            self.ui.CNCConnectionOpenButton.setEnabled(False)
+            self.ui.cmdsConnectionOpenButton.setEnabled(False)
+            self.ui.cmdsConnectionCloseButton.setEnabled(False)
 
-            self.ui.cncStartButton.setEnabled(False)
-            self.ui.cncStopButton.setEnabled(False)
-            self.ui.cncPauseButton.setEnabled(False)
-            self.ui.cncContinueButton.setEnabled(False)
-            self.ui.cncResumeAfterStopButton.setEnabled(False)
+            self.ui.cmdsStartButton.setEnabled(False)
+            self.ui.cmdsStopButton.setEnabled(False)
+            self.ui.cmdsPauseButton.setEnabled(False)
+            self.ui.cmdsContinueButton.setEnabled(False)
+            self.ui.cmdsResumeAfterStopButton.setEnabled(False)
 
-            self.ui.resetAlarmsButton.setEnabled(False)
-            self.ui.resetAlarmsHistoryButton.setEnabled(False)
-            self.ui.resetWarningsButton.setEnabled(False)
-            self.ui.resetWarningsHistoryButton.setEnabled(False)
+            self.ui.cmdsResetAlarmsButton.setEnabled(False)
+            self.ui.cmdsResetAlarmsHistoryButton.setEnabled(False)
+            self.ui.cmdsResetWarningsButton.setEnabled(False)
+            self.ui.cmdsResetWarningsHistoryButton.setEnabled(False)
 
             # update tab program
             self.ui.programNewButton.setEnabled(False)
@@ -677,19 +677,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             enabled_commands = self.ctx.enabled_commands
 
             # update commands
-            self.ui.CNCConnectionCloseButton.setEnabled(enabled_commands.cnc_connection_close)
-            self.ui.CNCConnectionOpenButton.setEnabled(enabled_commands.cnc_connection_open)
+            self.ui.cmdsConnectionOpenButton.setEnabled(enabled_commands.cnc_connection_open)
+            self.ui.cmdsConnectionCloseButton.setEnabled(enabled_commands.cnc_connection_close)
 
-            self.ui.cncStartButton.setEnabled(enabled_commands.cnc_start)
-            self.ui.cncStopButton.setEnabled(enabled_commands.cnc_stop)
-            self.ui.cncPauseButton.setEnabled(enabled_commands.cnc_pause)
-            self.ui.cncContinueButton.setEnabled(enabled_commands.cnc_continue)
-            self.ui.cncResumeAfterStopButton.setEnabled(enabled_commands.cnc_resume)
+            self.ui.cmdsStartButton.setEnabled(enabled_commands.cnc_start)
+            self.ui.cmdsStopButton.setEnabled(enabled_commands.cnc_stop)
+            self.ui.cmdsPauseButton.setEnabled(enabled_commands.cnc_pause)
+            self.ui.cmdsContinueButton.setEnabled(enabled_commands.cnc_continue)
+            self.ui.cmdsResumeAfterStopButton.setEnabled(enabled_commands.cnc_resume)
 
-            self.ui.resetAlarmsButton.setEnabled(enabled_commands.reset_alarms)
-            self.ui.resetAlarmsHistoryButton.setEnabled(enabled_commands.reset_alarms_history)
-            self.ui.resetWarningsButton.setEnabled(enabled_commands.reset_warnings)
-            self.ui.resetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
+            self.ui.cmdsResetAlarmsButton.setEnabled(enabled_commands.reset_alarms)
+            self.ui.cmdsResetAlarmsHistoryButton.setEnabled(enabled_commands.reset_alarms_history)
+            self.ui.cmdsResetWarningsButton.setEnabled(enabled_commands.reset_warnings)
+            self.ui.cmdsResetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
 
             # update tab program
             self.ui.programNewButton.setEnabled(enabled_commands.program_new)
@@ -778,12 +778,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
             # update tab system info
 
-        # update server connect/disconnect button
-        self.ui.ServerConnectDisconnectButton.setEnabled(True)
+        # update server connection button
+        self.ui.apiServerConnectionButton.setEnabled(True)
         if self.api_server_connection_state == ASCS_CONNECTED:
-            self.ui.ServerConnectDisconnectButton.setText('Disconnect')
+            self.ui.apiServerConnectionButton.setText('Disconnect')
         else:
-            self.ui.ServerConnectDisconnectButton.setText('Connect')
+            self.ui.apiServerConnectionButton.setText('Connect')
 
     def __on_button_group_clicked(self, button_id: int):
         sender = self.sender()
@@ -799,7 +799,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         sender = self.sender()
         value = sender.isChecked()
 
-        if sender == self.ui.useTLSCheckBox:
+        if sender == self.ui.apiServerUseTLSCheckBox:
             self.api_server_use_tls = value
 
         if sender == self.ui.stayOnTopCheckBox:
@@ -1237,7 +1237,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # update main view
             self.ui.apiServerHostEdit.setText(self.api_server_host)
             self.ui.apiServerPortEdit.setText(str(self.api_server_port))
-            self.ui.useTLSCheckBox.setChecked(self.api_server_use_tls)
+            self.ui.apiServerUseTLSCheckBox.setChecked(self.api_server_use_tls)
             self.ui.stayOnTopCheckBox.setChecked(self.stay_on_top)
 
             # update tab program
@@ -1338,7 +1338,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         um_vel_rf = '{:7.0f} dg/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} dg/min'
         um_decimals = 3 if self.units_mode == cnc.UM_METRIC else 4
 
-        # update tab genera
+        # update tab general
         if self.ui.tabWidgetMain.currentWidget() == self.ui.tabGeneral:
             # update axes info
             for axis_group, attr_name, is_velocity in self.axis_data_mapping:
@@ -1347,6 +1347,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     fmt = (um_vel_lf if i < 3 else um_vel_rf) if is_velocity else (um_spc_lf if i < 3 else um_spc_rf)
                     axis.value.setText(fmt.format(data[i]))
             self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
+
+            # update machine info
+            # spindleStatusValue -> QLabel
+            self.ui.coolantMistValue.setText('ON' if cnc_info.coolant_mist else 'OFF')
+            self.ui.coolantFloodValue.setText('ON' if cnc_info.coolant_flood else 'OFF')
+            # gcodeLineValue -> QLabel
+            self.ui.workedTimeValue.setText(cnc_info.worked_time)
+            self.ui.plannedTimeValue.setText(cnc_info.planned_time)
 
             # update tool info
             text = ''
@@ -1599,7 +1607,29 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings main view
             self.ui.apiServerHostEdit.setEnabled(True)
             self.ui.apiServerPortEdit.setEnabled(True)
-            self.ui.useTLSCheckBox.setEnabled(True)
+            self.ui.apiServerUseTLSCheckBox.setEnabled(True)
+
+            # enablings tab general
+            self.ui.mcsTitleLabel.setEnabled(False)
+            self.ui.prpTitleLabel.setEnabled(False)
+            self.ui.avlTitleLabel.setEnabled(False)
+            self.ui.wofTitleLabel.setEnabled(False)
+            self.ui.mtpTitleLabel.setEnabled(False)
+            self.ui.ptpTitleLabel.setEnabled(False)
+            self.ui.jopTitleLabel.setEnabled(False)
+            self.ui.machineInfoLabel.setEnabled(False)
+            self.ui.spindleStatusLabel.setEnabled(False)
+            self.ui.spindleStatusValue.setEnabled(False)
+            self.ui.coolantMistLabel.setEnabled(False)
+            self.ui.coolantMistValue.setEnabled(False)
+            self.ui.coolantFloodLabel.setEnabled(False)
+            self.ui.coolantFloodValue.setEnabled(False)
+            self.ui.gcodeLineLabel.setEnabled(False)
+            self.ui.gcodeLineValue.setEnabled(False)
+            self.ui.workedTimeLabel.setEnabled(False)
+            self.ui.workedTimeValue.setEnabled(False)
+            self.ui.plannedTimeLabel.setEnabled(False)
+            self.ui.plannedTimeValue.setEnabled(False)
 
             # enablings tab program
             # enablings tab g-code
@@ -1638,6 +1668,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.ovrPlasmaVoltageLabel.setEnabled(False)
             self.ui.ovrPlasmaVoltageSlider.setEnabled(False)
             self.ui.ovrPlasmaVoltageValue.setEnabled(False)
+            self.ui.toolInfoLabel.setEnabled(False)
 
             # enablings tab homing
             # enablings tab mdi
@@ -1651,7 +1682,30 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings main view
             self.ui.apiServerHostEdit.setEnabled(False)
             self.ui.apiServerPortEdit.setEnabled(False)
-            self.ui.useTLSCheckBox.setEnabled(False)
+            self.ui.apiServerUseTLSCheckBox.setEnabled(False)
+
+            # enablings tab general
+            self.ui.mcsTitleLabel.setEnabled(True)
+            self.ui.prpTitleLabel.setEnabled(True)
+            self.ui.avlTitleLabel.setEnabled(True)
+            self.ui.wofTitleLabel.setEnabled(True)
+            self.ui.mtpTitleLabel.setEnabled(True)
+            self.ui.ptpTitleLabel.setEnabled(True)
+            self.ui.jopTitleLabel.setEnabled(True)
+            self.ui.machineInfoLabel.setEnabled(True)
+            self.ui.spindleStatusLabel.setEnabled(True)
+            self.ui.spindleStatusValue.setEnabled(True)
+            self.ui.coolantMistLabel.setEnabled(True)
+            self.ui.coolantMistValue.setEnabled(True)
+            self.ui.coolantFloodLabel.setEnabled(True)
+            self.ui.coolantFloodValue.setEnabled(True)
+            self.ui.gcodeLineLabel.setEnabled(True)
+            self.ui.gcodeLineValue.setEnabled(True)
+            self.ui.workedTimeLabel.setEnabled(True)
+            self.ui.workedTimeValue.setEnabled(True)
+            self.ui.plannedTimeLabel.setEnabled(True)
+            self.ui.plannedTimeValue.setEnabled(True)
+            self.ui.toolInfoLabel.setEnabled(True)
 
             # enablings tab program
             # enablings tab g-code
@@ -1711,7 +1765,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     #
     # == END: update methods
 
-    # == BEG: user dialogs
+    # == BEG: user dialogs methods
     #
     def __operator_request_check(self):
 
@@ -1785,4 +1839,4 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         )
         self.active_operator_request_dialog.open()
     #
-    # == END: user dialogs
+    # == END: user dialogs methods
