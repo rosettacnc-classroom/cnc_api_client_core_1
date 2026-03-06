@@ -323,10 +323,6 @@ class QStatusPushButton(QPushButton):
 
     def __init__(
         self,
-        icon_disabled: str,
-        icon_off: str,
-        icon_on: str,
-        icon_size: QSize | None = None,
         parent=None
     ):
         super().__init__(parent)
@@ -334,6 +330,36 @@ class QStatusPushButton(QPushButton):
         self._status = False
         self._current_visual_state = None
 
+        self._icon_inizialized = False
+        self._icon_disabled = None
+        self._icon_off = None
+        self._icon_on = None
+
+
+    # == BEG: Qt attributes overrides
+    #
+    def setEnabled(self, enabled: bool) -> None:
+        enabled = bool(enabled)
+
+        if self.isEnabled() == enabled:
+            return
+
+        super().setEnabled(enabled)
+        self._update_icon()
+    #
+    # == BEG: Qt attributes overrides
+
+
+    # == END: public attributes
+    #
+    def setButtonIcon(
+        self,
+        icon_disabled: str,
+        icon_off: str,
+        icon_on: str,
+        icon_size: QSize | None = None,
+    ):
+        self._icon_inizialized = True
         self._icon_disabled = QIcon(icon_disabled)
         self._icon_off = QIcon(icon_off)
         self._icon_on = QIcon(icon_on)
@@ -354,17 +380,15 @@ class QStatusPushButton(QPushButton):
 
     def status(self) -> bool:
         return self._status
+    #
+    # == END: public attributes
 
-    def setEnabled(self, enabled: bool) -> None:
-        enabled = bool(enabled)
 
-        if self.isEnabled() == enabled:
-            return
-
-        super().setEnabled(enabled)
-        self._update_icon()
-
+    # == BEG: non-public attributes
+    #
     def _update_icon(self) -> None:
+        if not self._icon_inizialized:
+            return
         if not self.isEnabled():
             new_state = self.STATE_DISABLED
         else:
@@ -381,3 +405,5 @@ class QStatusPushButton(QPushButton):
             self.setIcon(self._icon_on)
         else:
             self.setIcon(self._icon_off)
+    #
+    # == END: non-public attributes

@@ -39,7 +39,7 @@ from pathlib import Path
 from statistics import median
 from collections import namedtuple
 
-from PySide6.QtCore import Qt, QEvent, QTimer
+from PySide6.QtCore import Qt, QEvent, QTimer, QSize
 from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QAbstractSlider,
@@ -247,6 +247,43 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # lock tables header resize
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.ui.csOffsetsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
+
+        #
+        status_buttons_stylesheet = (
+        """
+            QStatusPushButton {
+                border: 2px solid #B9B9B9;
+                border-radius: 6px;
+                background-color: white;
+            }
+
+            QStatusPushButton:pressed {
+                border: 2px solid #54B7FF;
+                background-color: #e0e0e0;
+            }
+        """
+        )
+        self.setStyleSheet(status_buttons_stylesheet)
+
+        self.ui.cfsmCoolantMistButton.setButtonIcon(
+            icon_disabled="images\\cooler_mist_disabled.svg",
+            icon_off="images\\cooler_mist_off.svg",
+            icon_on="images\\cooler_mist_on.svg",
+            icon_size=QSize(50, 50)
+        )
+        self.ui.cfsmCoolantFloodButton.setButtonIcon(
+            icon_disabled="images\\cooler_flood_disabled.svg",
+            icon_off="images\\cooler_flood_off.svg",
+            icon_on="images\\cooler_flood_on.svg",
+            icon_size=QSize(50, 50)
+        )
+
+
+
+
+
+
+
 
         # declare class public attributes (for pylint check)
         self.api = None
@@ -1389,6 +1426,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     fmt = (um_vel_lf if i < 3 else um_vel_rf) if is_velocity else (um_spc_lf if i < 3 else um_spc_rf)
                     axis.value.setText(fmt.format(data[i]))
             self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
+
+            # update spindles states buttons status
+            self.ui.cfsmCoolantMistButton.setStatus(cnc_info.coolant_mist)
+            self.ui.cfsmCoolantFloodButton.setStatus(cnc_info.coolant_flood)
 
             # update machine info
             # spindleStatusValue -> QLabel

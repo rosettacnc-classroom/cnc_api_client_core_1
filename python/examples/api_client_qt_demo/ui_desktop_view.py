@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewKmVEnp.ui'
+## Form generated from reading UI file 'desktop_viewbtIVPg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QTableWidget, QTableWidgetItem, QTextEdit, QWidget)
 
 from pyqtgraph import PlotWidget
+from qt_extra_widgets import QStatusPushButton
 import resources_rc
 
 class Ui_DesktopView(object):
@@ -1219,138 +1220,66 @@ class Ui_DesktopView(object):
         self.toolInfoLabel.setSizePolicy(sizePolicy)
         self.toolInfoLabel.setFont(font8)
         self.toolInfoLabel.setTextFormat(Qt.TextFormat.PlainText)
-        self.cfsmCoolantMistButton = QPushButton(self.tabGeneral)
+        self.cfsmCoolantMistButton = QStatusPushButton(self.tabGeneral)
         self.cfsmCoolantMistButton.setObjectName(u"cfsmCoolantMistButton")
         self.cfsmCoolantMistButton.setGeometry(QRect(713, 126, 60, 60))
-        self.cfsmCoolantMistButton.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
-        self.cfsmCoolantFloodButton = QPushButton(self.tabGeneral)
+        self.cfsmCoolantMistButton.setStyleSheet(u"")
+        self.cfsmCoolantFloodButton = QStatusPushButton(self.tabGeneral)
         self.cfsmCoolantFloodButton.setObjectName(u"cfsmCoolantFloodButton")
         self.cfsmCoolantFloodButton.setGeometry(QRect(783, 126, 60, 60))
-        self.cfsmCoolantFloodButton.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
+        self.cfsmCoolantFloodButton.setStyleSheet(u"")
         self.cfsmSpindleStatesLabel = QLabel(self.tabGeneral)
         self.cfsmSpindleStatesLabel.setObjectName(u"cfsmSpindleStatesLabel")
         self.cfsmSpindleStatesLabel.setGeometry(QRect(665, 4, 226, 17))
         sizePolicy.setHeightForWidth(self.cfsmSpindleStatesLabel.sizePolicy().hasHeightForWidth())
         self.cfsmSpindleStatesLabel.setSizePolicy(sizePolicy)
         self.cfsmSpindleStatesLabel.setFont(font9)
-        self.cfsmSpindleStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmSpindleStatesLabel.setStyleSheet(u"background-color: rgb(35, 207, 255);")
         self.cfsmSpindleStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cfsmSpindleCCWButton = QPushButton(self.tabGeneral)
+        self.cfsmSpindleCCWButton = QStatusPushButton(self.tabGeneral)
         self.cfsmSpindleCCWButton.setObjectName(u"cfsmSpindleCCWButton")
         self.cfsmSpindleCCWButton.setGeometry(QRect(783, 29, 60, 60))
-        self.cfsmSpindleCCWButton.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
-        self.cfsmSpindleCWButton = QPushButton(self.tabGeneral)
+        self.cfsmSpindleCCWButton.setStyleSheet(u"")
+        self.cfsmSpindleCWButton = QStatusPushButton(self.tabGeneral)
         self.cfsmSpindleCWButton.setObjectName(u"cfsmSpindleCWButton")
         self.cfsmSpindleCWButton.setGeometry(QRect(713, 29, 60, 60))
-        self.cfsmSpindleCWButton.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
+        self.cfsmSpindleCWButton.setStyleSheet(u"")
         self.cfsmCoolersStatesLabel = QLabel(self.tabGeneral)
         self.cfsmCoolersStatesLabel.setObjectName(u"cfsmCoolersStatesLabel")
         self.cfsmCoolersStatesLabel.setGeometry(QRect(665, 101, 226, 17))
         sizePolicy.setHeightForWidth(self.cfsmCoolersStatesLabel.sizePolicy().hasHeightForWidth())
         self.cfsmCoolersStatesLabel.setSizePolicy(sizePolicy)
         self.cfsmCoolersStatesLabel.setFont(font9)
-        self.cfsmCoolersStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmCoolersStatesLabel.setStyleSheet(u"background-color: rgb(35, 207, 255);")
         self.cfsmCoolersStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cfsmAUX01Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX01Button = QStatusPushButton(self.tabGeneral)
         self.cfsmAUX01Button.setObjectName(u"cfsmAUX01Button")
         self.cfsmAUX01Button.setGeometry(QRect(672, 223, 36, 36))
-        self.cfsmAUX01Button.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
-        self.cfsmAUX02Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX01Button.setStyleSheet(u"")
+        self.cfsmAUX02Button = QStatusPushButton(self.tabGeneral)
         self.cfsmAUX02Button.setObjectName(u"cfsmAUX02Button")
         self.cfsmAUX02Button.setGeometry(QRect(716, 223, 36, 36))
-        self.cfsmAUX02Button.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
-        self.cfsmAUX03Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX02Button.setStyleSheet(u"")
+        self.cfsmAUX03Button = QStatusPushButton(self.tabGeneral)
         self.cfsmAUX03Button.setObjectName(u"cfsmAUX03Button")
         self.cfsmAUX03Button.setGeometry(QRect(760, 223, 36, 36))
-        self.cfsmAUX03Button.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
-        self.cfsmAUX04Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX03Button.setStyleSheet(u"")
+        self.cfsmAUX04Button = QStatusPushButton(self.tabGeneral)
         self.cfsmAUX04Button.setObjectName(u"cfsmAUX04Button")
         self.cfsmAUX04Button.setGeometry(QRect(804, 223, 36, 36))
-        self.cfsmAUX04Button.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
+        self.cfsmAUX04Button.setStyleSheet(u"")
         self.cfsmAuxiliariesStatesLabel = QLabel(self.tabGeneral)
         self.cfsmAuxiliariesStatesLabel.setObjectName(u"cfsmAuxiliariesStatesLabel")
         self.cfsmAuxiliariesStatesLabel.setGeometry(QRect(665, 198, 226, 17))
         sizePolicy.setHeightForWidth(self.cfsmAuxiliariesStatesLabel.sizePolicy().hasHeightForWidth())
         self.cfsmAuxiliariesStatesLabel.setSizePolicy(sizePolicy)
         self.cfsmAuxiliariesStatesLabel.setFont(font9)
-        self.cfsmAuxiliariesStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmAuxiliariesStatesLabel.setStyleSheet(u"background-color: rgb(35, 207, 255);")
         self.cfsmAuxiliariesStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.cfsmAUX05Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX05Button = QStatusPushButton(self.tabGeneral)
         self.cfsmAUX05Button.setObjectName(u"cfsmAUX05Button")
         self.cfsmAUX05Button.setGeometry(QRect(848, 223, 36, 36))
-        self.cfsmAUX05Button.setStyleSheet(u"QPushButton {\n"
-"    border: 2px solid #808080;\n"
-"    border-radius: 4px;\n"
-"    background-color: white;\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: #e0e0e0;\n"
-"}")
+        self.cfsmAUX05Button.setStyleSheet(u"")
         self.tabWidgetMain.addTab(self.tabGeneral, "")
         self.tabAxesPositionScope = QWidget()
         self.tabAxesPositionScope.setObjectName(u"tabAxesPositionScope")

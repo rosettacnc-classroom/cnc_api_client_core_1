@@ -4746,7 +4746,7 @@ History</string>
        </property>
       </widget>
      </widget>
-     <widget class="QPushButton" name="cfsmCoolantMistButton">
+     <widget class="QStatusPushButton" name="cfsmCoolantMistButton">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -4759,21 +4759,13 @@ History</string>
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmCoolantFloodButton">
+     <widget class="QStatusPushButton" name="cfsmCoolantFloodButton">
       <property name="geometry">
        <rect>
         <x>783</x>
@@ -4786,15 +4778,7 @@ QPushButton:pressed {
        <string>Flood</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
@@ -4823,7 +4807,7 @@ QPushButton:pressed {
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 170, 0);</string>
+       <string notr="true">background-color: rgb(35, 207, 255);</string>
       </property>
       <property name="text">
        <string>SPINDLE STATES</string>
@@ -4832,7 +4816,7 @@ QPushButton:pressed {
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmSpindleCCWButton">
+     <widget class="QStatusPushButton" name="cfsmSpindleCCWButton">
       <property name="geometry">
        <rect>
         <x>783</x>
@@ -4845,21 +4829,13 @@ QPushButton:pressed {
        <string>Flood</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmSpindleCWButton">
+     <widget class="QStatusPushButton" name="cfsmSpindleCWButton">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -4872,15 +4848,7 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
@@ -4909,7 +4877,7 @@ QPushButton:pressed {
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 170, 0);</string>
+       <string notr="true">background-color: rgb(35, 207, 255);</string>
       </property>
       <property name="text">
        <string>COOLERS STATES</string>
@@ -4918,7 +4886,7 @@ QPushButton:pressed {
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmAUX01Button">
+     <widget class="QStatusPushButton" name="cfsmAUX01Button">
       <property name="geometry">
        <rect>
         <x>672</x>
@@ -4931,21 +4899,13 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmAUX02Button">
+     <widget class="QStatusPushButton" name="cfsmAUX02Button">
       <property name="geometry">
        <rect>
         <x>716</x>
@@ -4958,21 +4918,13 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmAUX03Button">
+     <widget class="QStatusPushButton" name="cfsmAUX03Button">
       <property name="geometry">
        <rect>
         <x>760</x>
@@ -4985,21 +4937,13 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmAUX04Button">
+     <widget class="QStatusPushButton" name="cfsmAUX04Button">
       <property name="geometry">
        <rect>
         <x>804</x>
@@ -5012,15 +4956,7 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
@@ -5049,7 +4985,7 @@ QPushButton:pressed {
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(0, 170, 0);</string>
+       <string notr="true">background-color: rgb(35, 207, 255);</string>
       </property>
       <property name="text">
        <string>AUXILIARIES STATES</string>
@@ -5058,7 +4994,7 @@ QPushButton:pressed {
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="cfsmAUX05Button">
+     <widget class="QStatusPushButton" name="cfsmAUX05Button">
       <property name="geometry">
        <rect>
         <x>848</x>
@@ -5071,15 +5007,7 @@ QPushButton:pressed {
        <string>Mist</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QPushButton {
-    border: 2px solid #808080;
-    border-radius: 4px;
-    background-color: white;
-}
-
-QPushButton:pressed {
-    background-color: #e0e0e0;
-}</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string/>
@@ -5117,6 +5045,11 @@ QPushButton:pressed {
    <extends>QFrame</extends>
    <header location="global">pyqtgraph</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QStatusPushButton</class>
+   <extends>QPushButton</extends>
+   <header>qt_extra_widgets</header>
   </customwidget>
  </customwidgets>
  <tabstops>
