@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewUHafoS.ui'
+## Form generated from reading UI file 'desktop_viewKmVEnp.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -1219,6 +1219,138 @@ class Ui_DesktopView(object):
         self.toolInfoLabel.setSizePolicy(sizePolicy)
         self.toolInfoLabel.setFont(font8)
         self.toolInfoLabel.setTextFormat(Qt.TextFormat.PlainText)
+        self.cfsmCoolantMistButton = QPushButton(self.tabGeneral)
+        self.cfsmCoolantMistButton.setObjectName(u"cfsmCoolantMistButton")
+        self.cfsmCoolantMistButton.setGeometry(QRect(713, 126, 60, 60))
+        self.cfsmCoolantMistButton.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmCoolantFloodButton = QPushButton(self.tabGeneral)
+        self.cfsmCoolantFloodButton.setObjectName(u"cfsmCoolantFloodButton")
+        self.cfsmCoolantFloodButton.setGeometry(QRect(783, 126, 60, 60))
+        self.cfsmCoolantFloodButton.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmSpindleStatesLabel = QLabel(self.tabGeneral)
+        self.cfsmSpindleStatesLabel.setObjectName(u"cfsmSpindleStatesLabel")
+        self.cfsmSpindleStatesLabel.setGeometry(QRect(665, 4, 226, 17))
+        sizePolicy.setHeightForWidth(self.cfsmSpindleStatesLabel.sizePolicy().hasHeightForWidth())
+        self.cfsmSpindleStatesLabel.setSizePolicy(sizePolicy)
+        self.cfsmSpindleStatesLabel.setFont(font9)
+        self.cfsmSpindleStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmSpindleStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.cfsmSpindleCCWButton = QPushButton(self.tabGeneral)
+        self.cfsmSpindleCCWButton.setObjectName(u"cfsmSpindleCCWButton")
+        self.cfsmSpindleCCWButton.setGeometry(QRect(783, 29, 60, 60))
+        self.cfsmSpindleCCWButton.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmSpindleCWButton = QPushButton(self.tabGeneral)
+        self.cfsmSpindleCWButton.setObjectName(u"cfsmSpindleCWButton")
+        self.cfsmSpindleCWButton.setGeometry(QRect(713, 29, 60, 60))
+        self.cfsmSpindleCWButton.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmCoolersStatesLabel = QLabel(self.tabGeneral)
+        self.cfsmCoolersStatesLabel.setObjectName(u"cfsmCoolersStatesLabel")
+        self.cfsmCoolersStatesLabel.setGeometry(QRect(665, 101, 226, 17))
+        sizePolicy.setHeightForWidth(self.cfsmCoolersStatesLabel.sizePolicy().hasHeightForWidth())
+        self.cfsmCoolersStatesLabel.setSizePolicy(sizePolicy)
+        self.cfsmCoolersStatesLabel.setFont(font9)
+        self.cfsmCoolersStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmCoolersStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.cfsmAUX01Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX01Button.setObjectName(u"cfsmAUX01Button")
+        self.cfsmAUX01Button.setGeometry(QRect(672, 223, 36, 36))
+        self.cfsmAUX01Button.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmAUX02Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX02Button.setObjectName(u"cfsmAUX02Button")
+        self.cfsmAUX02Button.setGeometry(QRect(716, 223, 36, 36))
+        self.cfsmAUX02Button.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmAUX03Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX03Button.setObjectName(u"cfsmAUX03Button")
+        self.cfsmAUX03Button.setGeometry(QRect(760, 223, 36, 36))
+        self.cfsmAUX03Button.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmAUX04Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX04Button.setObjectName(u"cfsmAUX04Button")
+        self.cfsmAUX04Button.setGeometry(QRect(804, 223, 36, 36))
+        self.cfsmAUX04Button.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
+        self.cfsmAuxiliariesStatesLabel = QLabel(self.tabGeneral)
+        self.cfsmAuxiliariesStatesLabel.setObjectName(u"cfsmAuxiliariesStatesLabel")
+        self.cfsmAuxiliariesStatesLabel.setGeometry(QRect(665, 198, 226, 17))
+        sizePolicy.setHeightForWidth(self.cfsmAuxiliariesStatesLabel.sizePolicy().hasHeightForWidth())
+        self.cfsmAuxiliariesStatesLabel.setSizePolicy(sizePolicy)
+        self.cfsmAuxiliariesStatesLabel.setFont(font9)
+        self.cfsmAuxiliariesStatesLabel.setStyleSheet(u"background-color: rgb(0, 170, 0);")
+        self.cfsmAuxiliariesStatesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.cfsmAUX05Button = QPushButton(self.tabGeneral)
+        self.cfsmAUX05Button.setObjectName(u"cfsmAUX05Button")
+        self.cfsmAUX05Button.setGeometry(QRect(848, 223, 36, 36))
+        self.cfsmAUX05Button.setStyleSheet(u"QPushButton {\n"
+"    border: 2px solid #808080;\n"
+"    border-radius: 4px;\n"
+"    background-color: white;\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #e0e0e0;\n"
+"}")
         self.tabWidgetMain.addTab(self.tabGeneral, "")
         self.tabAxesPositionScope = QWidget()
         self.tabAxesPositionScope.setObjectName(u"tabAxesPositionScope")
@@ -1581,6 +1713,45 @@ class Ui_DesktopView(object):
         self.ptpAValue.setText(QCoreApplication.translate("DesktopView", u"0.0 dg", None))
         self.wcsBLabel.setText(QCoreApplication.translate("DesktopView", u"B", None))
         self.toolInfoLabel.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmCoolantMistButton.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmCoolantMistButton.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmCoolantFloodButton.setToolTip(QCoreApplication.translate("DesktopView", u"Flood", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmCoolantFloodButton.setText("")
+        self.cfsmSpindleStatesLabel.setText(QCoreApplication.translate("DesktopView", u"SPINDLE STATES", None))
+#if QT_CONFIG(tooltip)
+        self.cfsmSpindleCCWButton.setToolTip(QCoreApplication.translate("DesktopView", u"Flood", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmSpindleCCWButton.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmSpindleCWButton.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmSpindleCWButton.setText("")
+        self.cfsmCoolersStatesLabel.setText(QCoreApplication.translate("DesktopView", u"COOLERS STATES", None))
+#if QT_CONFIG(tooltip)
+        self.cfsmAUX01Button.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmAUX01Button.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmAUX02Button.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmAUX02Button.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmAUX03Button.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmAUX03Button.setText("")
+#if QT_CONFIG(tooltip)
+        self.cfsmAUX04Button.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmAUX04Button.setText("")
+        self.cfsmAuxiliariesStatesLabel.setText(QCoreApplication.translate("DesktopView", u"AUXILIARIES STATES", None))
+#if QT_CONFIG(tooltip)
+        self.cfsmAUX05Button.setToolTip(QCoreApplication.translate("DesktopView", u"Mist", None))
+#endif // QT_CONFIG(tooltip)
+        self.cfsmAUX05Button.setText("")
         self.tabWidgetMain.setTabText(self.tabWidgetMain.indexOf(self.tabGeneral), QCoreApplication.translate("DesktopView", u"General", None))
         self.tabWidgetMain.setTabText(self.tabWidgetMain.indexOf(self.tabAxesPositionScope), QCoreApplication.translate("DesktopView", u"Axes Positions Plot", None))
     # retranslateUi

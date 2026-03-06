@@ -59,7 +59,7 @@ from PySide6.QtWidgets import (
 from qt_gcode_highlighter import GCodeHighlighter
 from qt_user_dialogs import UserMediaDialog, UserMessageDialog
 from qt_realtime_scope import QRealTimeScope
-from qt_utils import QLedWidget
+from qt_extra_widgets import QLedWidget
 
 from ui_desktop_view import Ui_DesktopView
 
@@ -452,6 +452,26 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cmdsResetWarningsHistoryButton:
             self.api.reset_warnings_history()
 
+        # event tab general
+        if sender == self.ui.cfsmSpindleCWButton:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_SPINDLE_CW, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmSpindleCCWButton:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_SPINDLE_CCW, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmCoolantMistButton:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_MIST, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmCoolantFloodButton:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_FLOOD, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmAUX01Button:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_01, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmAUX02Button:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_02, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmAUX03Button:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_03, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmAUX04Button:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_04, cnc.FS_MD_TOGGLE)
+        if sender == self.ui.cfsmAUX05Button:
+            self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_05, cnc.FS_MD_TOGGLE)
+
         # event tab program
         if sender == self.ui.programNewButton:
             self.api.program_new()
@@ -610,6 +630,17 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsResetWarningsButton.setEnabled(False)
             self.ui.cmdsResetWarningsHistoryButton.setEnabled(False)
 
+            # update tab general
+            self.ui.cfsmSpindleCWButton.setEnabled(False)
+            self.ui.cfsmSpindleCCWButton.setEnabled(False)
+            self.ui.cfsmCoolantMistButton.setEnabled(False)
+            self.ui.cfsmCoolantFloodButton.setEnabled(False)
+            self.ui.cfsmAUX01Button.setEnabled(False)
+            self.ui.cfsmAUX02Button.setEnabled(False)
+            self.ui.cfsmAUX03Button.setEnabled(False)
+            self.ui.cfsmAUX04Button.setEnabled(False)
+            self.ui.cfsmAUX05Button.setEnabled(False)
+
             # update tab program
             self.ui.programNewButton.setEnabled(False)
             self.ui.programLoadSelectFileButton.setEnabled(False)
@@ -690,6 +721,17 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsResetAlarmsHistoryButton.setEnabled(enabled_commands.reset_alarms_history)
             self.ui.cmdsResetWarningsButton.setEnabled(enabled_commands.reset_warnings)
             self.ui.cmdsResetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
+
+            # update tab general
+            self.ui.cfsmSpindleCWButton.setEnabled(enabled_commands.cnc_csfm_spindle_cw)
+            self.ui.cfsmSpindleCCWButton.setEnabled(enabled_commands.cnc_csfm_spindle_ccw)
+            self.ui.cfsmCoolantMistButton.setEnabled(enabled_commands.cnc_csfm_cooler_flood)
+            self.ui.cfsmCoolantFloodButton.setEnabled(enabled_commands.cnc_csfm_cooler_mist)
+            self.ui.cfsmAUX01Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0001)
+            self.ui.cfsmAUX02Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0002)
+            self.ui.cfsmAUX03Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0004)
+            self.ui.cfsmAUX04Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0008)
+            self.ui.cfsmAUX05Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0010)
 
             # update tab program
             self.ui.programNewButton.setEnabled(enabled_commands.program_new)

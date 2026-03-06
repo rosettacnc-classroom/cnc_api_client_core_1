@@ -61,6 +61,20 @@ DesktopView -> QMainWindow
                 workedTimeValue -> QLabel
                 plannedTimeLabel -> QLabel
                 plannedTimeValue -> QLabel
+
+                cfsmSpindleStatesLabel -> QLabel
+                cfsmSpindleCWButton -> QPushButton
+                cfsmSpindleCCWButton -> QPushButton
+                cfsmCoolersStatesLabel -> QLabel
+                cfsmCoolantMistButton -> QPushButton
+                cfsmCoolantFloodButton -> QPushButton
+                cfsmAuxiliariesStatesLabel -> QLabel
+                cfsmAUX01Button -> QPushButton
+                cfsmAUX02Button -> QPushButton
+                cfsmAUX03Button -> QPushButton
+                cfsmAUX04Button -> QPushButton
+                cfsmAUX05Button -> QPushButton
+                
                 toolInfoPanel -> QFrame
                     toolInfoLabel -> QLabel
            
