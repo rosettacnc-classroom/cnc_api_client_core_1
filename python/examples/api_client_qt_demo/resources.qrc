@@ -1,5 +1,34 @@
 <RCC>
   <qresource prefix="images">
+    <file>images/aux_01_disabled.svg</file>
+    <file>images/aux_01_enabled_1.svg</file>
+    <file>images/aux_01_enabled_2.svg</file>
+    <file>images/aux_02_disabled.svg</file>
+    <file>images/aux_02_enabled_1.svg</file>
+    <file>images/aux_02_enabled_2.svg</file>
+    <file>images/aux_03_disabled.svg</file>
+    <file>images/aux_03_enabled_1.svg</file>
+    <file>images/aux_03_enabled_2.svg</file>
+    <file>images/aux_04_disabled.svg</file>
+    <file>images/aux_04_enabled_1.svg</file>
+    <file>images/aux_04_enabled_2.svg</file>
+    <file>images/aux_05_disabled.svg</file>
+    <file>images/aux_05_enabled_1.svg</file>
+    <file>images/aux_05_enabled_2.svg</file>
+    <file>images/cooler_flood_disabled.svg</file>
+    <file>images/cooler_flood_off.svg</file>
+    <file>images/cooler_flood_on.svg</file>
+    <file>images/cooler_mist_disabled.svg</file>
+    <file>images/cooler_mist_off.svg</file>
+    <file>images/cooler_mist_on.svg</file>
+    <file>images/spindle_ccw_disabled.svg</file>
+    <file>images/spindle_ccw_enabled_1.svg</file>
+    <file>images/spindle_ccw_enabled_2.svg</file>
+    <file>images/spindle_ccw_enabled_3.svg</file>
+    <file>images/spindle_cw_disabled.svg</file>
+    <file>images/spindle_cw_enabled_1.svg</file>
+    <file>images/spindle_cw_enabled_2.svg</file>
+    <file>images/spindle_cw_enabled_3.svg</file>
     <file>images/circular-led.svg</file>
   </qresource>
 </RCC>
