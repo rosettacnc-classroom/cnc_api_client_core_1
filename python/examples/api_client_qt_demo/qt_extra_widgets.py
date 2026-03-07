@@ -352,7 +352,7 @@ class QStatusPushButton(QPushButton):
 
     # == END: public attributes
     #
-    def setButtonIcon(
+    def setStatusIcons(
         self,
         icon_disabled: str,
         icon_off: str,

@@ -4756,13 +4756,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle Mist State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QStatusPushButton" name="cfsmCoolantFloodButton">
@@ -4775,13 +4778,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Flood</string>
+       <string>Toggle Flood State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="cfsmSpindleStatesLabel">
@@ -4816,7 +4822,7 @@ History</string>
        <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QStatusPushButton" name="cfsmSpindleCCWButton">
+     <widget class="QPushButton" name="cfsmSpindleCCWButton">
       <property name="geometry">
        <rect>
         <x>783</x>
@@ -4826,7 +4832,7 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Flood</string>
+       <string>Toggle Spindle CCW State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
@@ -4834,8 +4840,11 @@ History</string>
       <property name="text">
        <string/>
       </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
-     <widget class="QStatusPushButton" name="cfsmSpindleCWButton">
+     <widget class="QPushButton" name="cfsmSpindleCWButton">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -4845,13 +4854,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle Spindle CW State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="cfsmCoolersStatesLabel">
@@ -4896,13 +4908,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle AUX 1 State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QStatusPushButton" name="cfsmAUX02Button">
@@ -4915,13 +4930,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle AUX 2 State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QStatusPushButton" name="cfsmAUX03Button">
@@ -4934,13 +4952,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle AUX 3 State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QStatusPushButton" name="cfsmAUX04Button">
@@ -4953,13 +4974,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle AUX 4 State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="cfsmAuxiliariesStatesLabel">
@@ -5004,13 +5028,16 @@ History</string>
        </rect>
       </property>
       <property name="toolTip">
-       <string>Mist</string>
+       <string>Toggle AUX 5 State</string>
       </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
       <property name="text">
        <string/>
+      </property>
+      <property name="isSpecial" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>

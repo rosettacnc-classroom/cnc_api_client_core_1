@@ -248,16 +248,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.ui.csOffsetsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
 
-        #
+        # create and appy stylesheet to QPushButtons and inherited objects
         status_buttons_stylesheet = (
         """
-            QStatusPushButton {
+            QPushButton[isSpecial="true"] {
                 border: 2px solid #B9B9B9;
                 border-radius: 6px;
                 background-color: white;
             }
 
-            QStatusPushButton:pressed {
+            QPushButton[isSpecial="true"]:pressed {
                 border: 2px solid #54B7FF;
                 background-color: #e0e0e0;
             }
@@ -265,25 +265,49 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         )
         self.setStyleSheet(status_buttons_stylesheet)
 
-        self.ui.cfsmCoolantMistButton.setButtonIcon(
-            icon_disabled="images\\cooler_mist_disabled.svg",
-            icon_off="images\\cooler_mist_off.svg",
-            icon_on="images\\cooler_mist_on.svg",
+        # set cooler states status push buttons
+        self.ui.cfsmCoolantMistButton.setStatusIcons(
+            icon_disabled=":/images/images/cooler_mist_disabled.svg",
+            icon_off=":/images/images/cooler_mist_off.svg",
+            icon_on=":/images/images/cooler_mist_on.svg",
             icon_size=QSize(50, 50)
         )
-        self.ui.cfsmCoolantFloodButton.setButtonIcon(
-            icon_disabled="images\\cooler_flood_disabled.svg",
-            icon_off="images\\cooler_flood_off.svg",
-            icon_on="images\\cooler_flood_on.svg",
+        self.ui.cfsmCoolantFloodButton.setStatusIcons(
+            icon_disabled=":/images/images/cooler_flood_disabled.svg",
+            icon_off=":/images/images/cooler_flood_off.svg",
+            icon_on=":/images/images/cooler_flood_on.svg",
             icon_size=QSize(50, 50)
         )
-
-
-
-
-
-
-
+        self.ui.cfsmAUX01Button.setStatusIcons(
+            icon_disabled="images\\aux_01_disabled.svg",
+            icon_off="images\\aux_01_enabled_1.svg",
+            icon_on="images\\aux_01_enabled_2.svg",
+            icon_size=QSize(28, 28)
+        )
+        self.ui.cfsmAUX02Button.setStatusIcons(
+            icon_disabled="images\\aux_02_disabled.svg",
+            icon_off="images\\aux_02_enabled_1.svg",
+            icon_on="images\\aux_02_enabled_2.svg",
+            icon_size=QSize(28, 28)
+        )
+        self.ui.cfsmAUX03Button.setStatusIcons(
+            icon_disabled="images\\aux_03_disabled.svg",
+            icon_off="images\\aux_03_enabled_1.svg",
+            icon_on="images\\aux_03_enabled_2.svg",
+            icon_size=QSize(28, 28)
+        )
+        self.ui.cfsmAUX04Button.setStatusIcons(
+            icon_disabled="images\\aux_04_disabled.svg",
+            icon_off="images\\aux_04_enabled_1.svg",
+            icon_on="images\\aux_04_enabled_2.svg",
+            icon_size=QSize(28, 28)
+        )
+        self.ui.cfsmAUX05Button.setStatusIcons(
+            icon_disabled="images\\aux_05_disabled.svg",
+            icon_off="images\\aux_05_enabled_1.svg",
+            icon_on="images\\aux_05_enabled_2.svg",
+            icon_size=QSize(28, 28)
+        )
 
         # declare class public attributes (for pylint check)
         self.api = None
@@ -490,9 +514,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.reset_warnings_history()
 
         # event tab general
-        if sender == self.ui.cfsmSpindleCWButton:
+        if sender == self.ui.cfsmSpindleCWButton and not self.ctx.cnc_info.spindle_not_ready:
             self.api.cnc_change_function_state_mode(cnc.FS_NM_SPINDLE_CW, cnc.FS_MD_TOGGLE)
-        if sender == self.ui.cfsmSpindleCCWButton:
+        if sender == self.ui.cfsmSpindleCCWButton and not self.ctx.cnc_info.spindle_not_ready:
             self.api.cnc_change_function_state_mode(cnc.FS_NM_SPINDLE_CCW, cnc.FS_MD_TOGGLE)
         if sender == self.ui.cfsmCoolantMistButton:
             self.api.cnc_change_function_state_mode(cnc.FS_NM_MIST, cnc.FS_MD_TOGGLE)
@@ -760,8 +784,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsResetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
 
             # update tab general
-            self.ui.cfsmSpindleCWButton.setEnabled(enabled_commands.cnc_csfm_spindle_cw)
-            self.ui.cfsmSpindleCCWButton.setEnabled(enabled_commands.cnc_csfm_spindle_ccw)
+            spindle_enabled = enabled_commands.cnc_csfm_spindle_cw or self.ctx.cnc_info.spindle_not_ready # <- to permits colored icon with spindle_not_ready
+            self.ui.cfsmSpindleCWButton.setEnabled(spindle_enabled)
+            self.ui.cfsmSpindleCCWButton.setEnabled(spindle_enabled)
             self.ui.cfsmCoolantMistButton.setEnabled(enabled_commands.cnc_csfm_cooler_flood)
             self.ui.cfsmCoolantFloodButton.setEnabled(enabled_commands.cnc_csfm_cooler_mist)
             self.ui.cfsmAUX01Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0001)
@@ -1427,9 +1452,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     axis.value.setText(fmt.format(data[i]))
             self.ui.wofTitleLabel.setText(f'WORKING OFFSETS {axes_info.working_wcs}')
 
-            # update spindles states buttons status
+            # update spindles buttons
+            self.__update_spindle_buttons()
             self.ui.cfsmCoolantMistButton.setStatus(cnc_info.coolant_mist)
             self.ui.cfsmCoolantFloodButton.setStatus(cnc_info.coolant_flood)
+            self.ui.cfsmAUX01Button.setStatus(cnc_info.aux_outputs & 0x0001)
+            self.ui.cfsmAUX02Button.setStatus(cnc_info.aux_outputs & 0x0002)
+            self.ui.cfsmAUX03Button.setStatus(cnc_info.aux_outputs & 0x0004)
+            self.ui.cfsmAUX04Button.setStatus(cnc_info.aux_outputs & 0x0008)
+            self.ui.cfsmAUX05Button.setStatus(cnc_info.aux_outputs & 0x0010)
 
             # update machine info
             # spindleStatusValue -> QLabel
@@ -1845,6 +1876,68 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings tab machining info
             # enablings tab ui dialogs
             # enablings tab system info
+
+    def __update_spindle_buttons(self):
+
+        from PySide6.QtGui import QIcon
+
+        SPINDLE_CW_DISABLED         = 0
+        SPINDLE_CW_ENABLED_01       = 1
+        SPINDLE_CW_ENABLED_02       = 2
+        SPINDLE_CW_ENABLED_03       = 3
+
+        SPINDLE_CCW_DISABLED        = 4
+        SPINDLE_CCW_ENABLED_01      = 5
+        SPINDLE_CCW_ENABLED_02      = 6
+        SPINDLE_CCW_ENABLED_03      = 7
+
+        icons = [
+            ":/images/images/spindle_cw_disabled.svg",
+            ":/images/images/spindle_cw_enabled_1.svg",
+            ":/images/images/spindle_cw_enabled_2.svg",
+            ":/images/images/spindle_cw_enabled_3.svg",
+            ":/images/images/spindle_ccw_disabled.svg",
+            ":/images/images/spindle_ccw_enabled_1.svg",
+            ":/images/images/spindle_ccw_enabled_2.svg",
+            ":/images/images/spindle_ccw_enabled_3.svg",
+        ]
+
+        def update_button_icon(button: QPushButton, icon_id: int, force_update: bool = False):
+            current_icon_id = button.property("icon_id")
+            if not force_update and current_icon_id == icon_id:
+                return
+            button.setProperty("icon_id", icon_id)
+            icon_name = icons[icon_id]
+            icon = QIcon(icon_name)
+            button.setIcon(icon)
+            size_hint = button.size()
+            icon_size = QSize(size_hint.width() - 10, size_hint.height() - 10)
+            button.setIconSize(icon_size)
+
+        # create shortcuts
+        cnc_info = self.ctx.cnc_info
+        btn_cw = self.ui.cfsmSpindleCWButton
+        btn_ccw = self.ui.cfsmSpindleCCWButton
+
+        #
+        if cnc_info.state_machine in [cnc.SM_DISCONNECTED, cnc.SM_SIMULATOR, cnc.SM_ALARM]:
+            update_button_icon(btn_cw, SPINDLE_CW_DISABLED)
+            update_button_icon(btn_ccw, SPINDLE_CCW_DISABLED)
+        else:
+            if cnc_info.spindle_not_ready:
+                update_button_icon(btn_cw, SPINDLE_CW_ENABLED_03)
+                update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_03)
+            else:
+                blink_state = (int(time.perf_counter() * 1000) % 700) >= 350
+                if cnc_info.spindle_direction == cnc.SD_CW:
+                    update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01)
+                    update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01 if blink_state else SPINDLE_CW_ENABLED_02)
+                elif cnc_info.spindle_direction == cnc.SD_CCW:
+                    update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01)
+                    update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01 if blink_state else SPINDLE_CCW_ENABLED_02)
+                else:
+                    update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01)
+                    update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01)
     #
     # == END: update methods
 
