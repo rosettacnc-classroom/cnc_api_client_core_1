@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      04/03/2026
+# Created:      09/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -474,7 +474,7 @@ def _deep_compare(a: Any, b: Any) -> bool:
     # primitive types (int, str, float, bool, datetime, enum, etc.)
     return a == b
 
-class APIAlarmsWarningsList:
+class APIAlarmsWarningsList(APIComparableMixin):
     """API data structure for alarms and warnings list."""
 
     class AlarmWarningData:
@@ -665,6 +665,14 @@ class APIEnabledCommands:
     """API data structure for enabled commands."""
     def __init__(self):
         self.has_data                           = False
+        self.cnc_csfm_aux                       = 0
+        self.cnc_csfm_cooler_flood              = False
+        self.cnc_csfm_cooler_mist               = False
+        self.cnc_csfm_jog_mode                  = False
+        self.cnc_csfm_spindle_cw                = False
+        self.cnc_csfm_spindle_ccw               = False
+        self.cnc_csfm_thc_disabled              = False
+        self.cnc_csfm_torch                     = False
         self.cnc_connection_close               = False
         self.cnc_connection_open                = False
         self.cnc_continue                       = False
@@ -2177,6 +2185,14 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
+                data.cnc_csfm_aux                       = j['res']['cnc.csfm.aux']
+                data.cnc_csfm_cooler_flood              = j['res']['cnc.csfm.cooler.flood']
+                data.cnc_csfm_cooler_mist               = j['res']['cnc.csfm.cooler.mist']
+                data.cnc_csfm_jog_mode                  = j['res']['cnc.csfm.jog.mode']
+                data.cnc_csfm_spindle_cw                = j['res']['cnc.csfm.spindle.cw']
+                data.cnc_csfm_spindle_ccw               = j['res']['cnc.csfm.spindle.ccw']
+                data.cnc_csfm_thc_disabled              = j['res']['cnc.csfm.thc.disabled']
+                data.cnc_csfm_torch                     = j['res']['cnc.csfm.torch']
                 data.cnc_connection_close               = j['res']['cnc.connection.close']
                 data.cnc_connection_open                = j['res']['cnc.connection.open']
                 data.cnc_continue                       = j['res']['cnc.continue']

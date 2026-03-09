@@ -36,6 +36,10 @@ from ui_alarms_warnings_dialog import Ui_AlarmsWarningsDialog
 
 import cnc_api_client_core as cnc
 
+# define ui geometry constants
+DIALOG_FRAME_WIDTH      = 2
+
+
 class AlarmsWarningsMode(IntEnum):
     ALARMS_CURRENT      = 0
     ALARMS_HISTORY      = 1
@@ -66,6 +70,10 @@ class AlarmsWarningsDialog(QDialog):
         """
             QDialog {
                 background-color: rgb(240, 240, 240);
+            }
+
+            QFrame#dialogFrame {
+                color: #A0A0A4;
             }
 
             QLabel[alarmMode="alarms_current"] {
@@ -119,6 +127,9 @@ class AlarmsWarningsDialog(QDialog):
             self.mode = AlarmsWarningsMode(mode)
         except (ValueError, TypeError):
             self.mode = AlarmsWarningsMode.ALARMS_CURRENT
+
+        # set dialog frame border size
+        self.ui.dialogFrame.setLineWidth(DIALOG_FRAME_WIDTH)
 
         # set mesasge table wiget settings
         self.ui.messagesTableWidget.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
