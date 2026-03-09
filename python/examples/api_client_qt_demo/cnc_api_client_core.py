@@ -474,7 +474,7 @@ def _deep_compare(a: Any, b: Any) -> bool:
     # primitive types (int, str, float, bool, datetime, enum, etc.)
     return a == b
 
-class APIAlarmsWarningsList:
+class APIAlarmsWarningsList(APIComparableMixin):
     """API data structure for alarms and warnings list."""
 
     class AlarmWarningData:

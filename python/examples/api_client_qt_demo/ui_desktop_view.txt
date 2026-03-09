@@ -85,28 +85,29 @@ DesktopView -> QMainWindow
         [Program, G-Code, MDI, CNC, JOG, Overrides, Homing, WCS, D I/O, A I/O, Scanning Laser, Machining Info, UI Dialogs, System Info]
 
             tabProgram -> QWidget
-                programNewLabel
-                programNewLine
-                programNewButton                            -> program_new
-                programLoadLabel
-                programLoadLine
-                programLoadFileNameEdit
-                programLoadButton                           -> program_load                 self.program_load_file_name
-                programSaveLabel
-                programSaveLine
-                programSaveButton                           -> program_save
-                programSaveAsLabel
-                programSaveAsLine
-                programSaveFileAsFileNameEdit
-                programSaveAsButton                         -> program_save_as              self.program_save_file_name
+                programNewLabel -> QLabel
+                programNewLine -> Line
+                programNewButton -> QPushButton
+                programLoadLabel -> QLabel
+                programLoadLine -> Line
+                programLoadFileNameEdit -> QLineEdit
+                programLoadSelectFileButton -> QPushButton
+                programLoadButton -> QPushButton
+                programSaveLabel -> QLabel
+                programSaveLine -> Line
+                programSaveButton -> QPushButton
+                programSaveAsLabel -> QLabel
+                programSaveAsLine -> Line
+                programSaveFileAsFileNameEdit -> QLineEdit
+                programSaveAsButton -> QPushButton
 
             tabGCode -> QWidget
                 gcodeProgramEdit
-                gcodeGetProgramTextButton                   -> get_program_info
-                gcodeSetProgramTextButton                   -> program_gcode_set_text
+                gcodeGetProgramTextButton
+                gcodeSetProgramTextButton
                 gcodeAddProgramTextEdit
-                gcodeAddProgramTextButton                   -> program_gcode_add_text
-                gcodeClearProgramButton                     -> program_new
+                gcodeAddProgramTextButton
+                gcodeClearProgramButton
 
             tabMDI -> QWidget
                 mdiCommandEdit

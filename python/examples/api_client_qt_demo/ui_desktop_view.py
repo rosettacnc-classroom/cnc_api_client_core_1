@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewUkXeDG.ui'
+## Form generated from reading UI file 'desktop_viewRAlNhJ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -68,11 +68,13 @@ class Ui_DesktopView(object):
         self.programNewLine.setGeometry(QRect(16, 33, 889, 2))
         self.programNewLine.setFrameShadow(QFrame.Shadow.Plain)
         self.programNewLine.setFrameShape(QFrame.Shape.HLine)
+        self.programNewLine.setProperty(u"isHLine", True)
         self.programLoadLine = QFrame(self.tabProgram)
         self.programLoadLine.setObjectName(u"programLoadLine")
         self.programLoadLine.setGeometry(QRect(16, 97, 889, 2))
         self.programLoadLine.setFrameShadow(QFrame.Shadow.Plain)
         self.programLoadLine.setFrameShape(QFrame.Shape.HLine)
+        self.programLoadLine.setProperty(u"isHLine", True)
         self.programLoadLabel = QLabel(self.tabProgram)
         self.programLoadLabel.setObjectName(u"programLoadLabel")
         self.programLoadLabel.setGeometry(QRect(16, 80, 137, 16))
@@ -88,6 +90,7 @@ class Ui_DesktopView(object):
         self.programSaveLine.setGeometry(QRect(16, 193, 889, 2))
         self.programSaveLine.setFrameShadow(QFrame.Shadow.Plain)
         self.programSaveLine.setFrameShape(QFrame.Shape.HLine)
+        self.programSaveLine.setProperty(u"isHLine", True)
         self.programSaveLabel = QLabel(self.tabProgram)
         self.programSaveLabel.setObjectName(u"programSaveLabel")
         self.programSaveLabel.setGeometry(QRect(16, 176, 137, 16))
@@ -97,6 +100,7 @@ class Ui_DesktopView(object):
         self.programSaveAsLine.setGeometry(QRect(16, 257, 889, 2))
         self.programSaveAsLine.setFrameShadow(QFrame.Shadow.Plain)
         self.programSaveAsLine.setFrameShape(QFrame.Shape.HLine)
+        self.programSaveAsLine.setProperty(u"isHLine", True)
         self.programSaveAsLabel = QLabel(self.tabProgram)
         self.programSaveAsLabel.setObjectName(u"programSaveAsLabel")
         self.programSaveAsLabel.setGeometry(QRect(16, 240, 137, 16))
@@ -153,6 +157,7 @@ class Ui_DesktopView(object):
         self.cncProgramAnalysisLine.setGeometry(QRect(16, 33, 889, 2))
         self.cncProgramAnalysisLine.setFrameShadow(QFrame.Shadow.Plain)
         self.cncProgramAnalysisLine.setFrameShape(QFrame.Shape.HLine)
+        self.cncProgramAnalysisLine.setProperty(u"isHLine", True)
         self.cncProgramAnalysisRTButton = QPushButton(self.tabCNC)
         self.cncProgramAnalysisRTButton.setObjectName(u"cncProgramAnalysisRTButton")
         self.cncProgramAnalysisRTButton.setGeometry(QRect(146, 48, 120, 24))
@@ -183,6 +188,7 @@ class Ui_DesktopView(object):
         self.cncCNCCommandsLine.setGeometry(QRect(16, 161, 889, 2))
         self.cncCNCCommandsLine.setFrameShadow(QFrame.Shadow.Plain)
         self.cncCNCCommandsLine.setFrameShape(QFrame.Shape.HLine)
+        self.cncCNCCommandsLine.setProperty(u"isHLine", True)
         self.cncStartButton = QPushButton(self.tabCNC)
         self.cncStartButton.setObjectName(u"cncStartButton")
         self.cncStartButton.setGeometry(QRect(16, 176, 80, 24))
@@ -200,6 +206,7 @@ class Ui_DesktopView(object):
         self.cncCNCCommandsSpecialLine.setGeometry(QRect(16, 233, 889, 2))
         self.cncCNCCommandsSpecialLine.setFrameShadow(QFrame.Shadow.Plain)
         self.cncCNCCommandsSpecialLine.setFrameShape(QFrame.Shape.HLine)
+        self.cncCNCCommandsSpecialLine.setProperty(u"isHLine", True)
         self.cncCNCCommandsSpecialLabel = QLabel(self.tabCNC)
         self.cncCNCCommandsSpecialLabel.setObjectName(u"cncCNCCommandsSpecialLabel")
         self.cncCNCCommandsSpecialLabel.setGeometry(QRect(16, 216, 191, 16))

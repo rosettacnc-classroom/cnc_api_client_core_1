@@ -57,6 +57,7 @@ from PySide6.QtWidgets import (
 )
 
 from qt_gcode_highlighter import GCodeHighlighter
+from qt_alarms_warnings_dialog import AlarmsWarningsDialog, AlarmsWarningsMode
 from qt_user_dialogs import UserMediaDialog, UserMessageDialog
 from qt_realtime_scope import QRealTimeScope
 from qt_extra_widgets import QLedWidget
@@ -196,9 +197,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         mono_font.setStyleHint(QFont.Monospace)
         mono_font.setPointSize(9)
 
-        # create style sheet for code editors
-        code_editor_stylesheet = (
+        # create light style sheet
+        self.sytlesheet_light = (
         """
+            /* style for horizontal lines */
+            QFrame[isHLine="true"] {
+                color: #B9B9B9;
+            }
+
+            /* style for g-code editors */
             QPlainTextEdit {
                 background-color: #1E1E1E;
                 color: #F8F8F2;
@@ -207,18 +214,40 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 selection-color: #F8F8F2;
                 padding: 0px;
             }
+
+            /* style for common buttons */
+            QPushButton:pressed {
+                background-color: #C3E3FD;
+            }
+
+            QPushButton:hover {
+                background-color: #DCEFFE;
+            }
+
+            /* style for special buttons */
+            QPushButton[isSpecial="true"] {
+                border: 2px solid #B9B9B9;
+                border-radius: 6px;
+                background-color: white;
+            }
+
+            QPushButton[isSpecial="true"]:pressed {
+                border: 2px solid #54B7FF;
+                background-color: #e0e0e0;
+            }
         """
         )
+
+        # apply light style sheet
+        self.setStyleSheet(self.sytlesheet_light)
 
         # apply and set gcode editor highlighter
         self.highlighter = GCodeHighlighter(self.ui.gcodeProgramEdit.document())
         self.ui.gcodeProgramEdit.setFont(mono_font)
-        self.ui.gcodeProgramEdit.setStyleSheet(code_editor_stylesheet)
 
         # apply and set mdi command editor highlighter
         self.highlighter = GCodeHighlighter(self.ui.mdiCommandEdit.document())
         self.ui.mdiCommandEdit.setFont(mono_font)
-        self.ui.mdiCommandEdit.setStyleSheet(code_editor_stylesheet)
 
         # create and set update timer
         self.tmr_update = QTimer(self)
@@ -228,8 +257,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # create labels for status bar
         self.StateMachineLabel = QLabel("")
-        self.StateMachineLabel.setMinimumWidth(429)
-        self.StateMachineLabel.setMaximumWidth(429)
+        self.StateMachineLabel.setMinimumWidth(500)
+        self.StateMachineLabel.setMaximumWidth(500)
         self.APIServerConnectionStateLabel = QLabel("")
         self.APIServerConnectionStateLabel.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         self.APIServerConnectionStateLed = QLedWidget(
@@ -247,23 +276,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # lock tables header resize
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.ui.csOffsetsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
-
-        # create and appy stylesheet to QPushButtons and inherited objects with isSpecial property
-        status_buttons_stylesheet = (
-        """
-            QPushButton[isSpecial="true"] {
-                border: 2px solid #B9B9B9;
-                border-radius: 6px;
-                background-color: white;
-            }
-
-            QPushButton[isSpecial="true"]:pressed {
-                border: 2px solid #54B7FF;
-                background-color: #e0e0e0;
-            }
-        """
-        )
-        self.setStyleSheet(status_buttons_stylesheet)
 
         # set cooler states status push buttons
         self.ui.cfsmCoolantMistButton.setStatusIcons(
@@ -505,13 +517,17 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.cnc_resume(0)
 
         if sender == self.ui.cmdsResetAlarmsButton:
-            self.api.reset_alarms()
+            self.__alarms_warnings_dialog(AlarmsWarningsMode.ALARMS_CURRENT)
+            #self.api.reset_alarms()
         if sender == self.ui.cmdsResetAlarmsHistoryButton:
-            self.api.reset_alarms_history()
+            self.__alarms_warnings_dialog(AlarmsWarningsMode.ALARMS_HISTORY)
+            #self.api.reset_alarms_history()
         if sender == self.ui.cmdsResetWarningsButton:
-            self.api.reset_warnings()
+            self.__alarms_warnings_dialog(AlarmsWarningsMode.WARNINGS_CURRENT)
+            #self.api.reset_warnings()
         if sender == self.ui.cmdsResetWarningsHistoryButton:
-            self.api.reset_warnings_history()
+            self.__alarms_warnings_dialog(AlarmsWarningsMode.WARNINGS_HISTORY)
+            #self.api.reset_warnings_history()
 
         # events tab general
         if sender == self.ui.cfsmSpindleCWButton and not self.ctx.cnc_info.spindle_not_ready:
@@ -1265,6 +1281,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     #
     # == END: generic methods
 
+
     # == BEG: laser methods
     #
     def __laser_zero_x_axis(self) -> bool:
@@ -1697,6 +1714,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         text = 'UNKNOWN'
         if is_in_str_list_range(SM_TEXTS, cnc_info.state_machine):
             text = SM_TEXTS[cnc_info.state_machine]
+        if cnc_info.state_machine == cnc.SM_ALARM:
+            text = f'<b><font color="#FF0000">{text} - {cnc_info.current_alarm_text}</font></b>'
+            self.StateMachineLabel.setToolTip(cnc_info.current_alarm_text)
+        else:
+            if cnc_info.current_warning_code != 0:
+                text = f'{text} - <b><font color="#FF6A00">{cnc_info.current_warning_text}</font></b>'
+                self.StateMachineLabel.setToolTip(cnc_info.current_warning_text)
+            else:
+                self.StateMachineLabel.setToolTip('')
         self.StateMachineLabel.setText('Machine State : ' + text)
         text = 'UNKNOWN'
         if is_in_str_list_range(ASCS_TEXTS, self.api_server_connection_state):
@@ -1968,6 +1994,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
     # == BEG: user dialogs methods
     #
+    def __alarms_warnings_dialog(self, mode: AlarmsWarningsMode):
+        dialog = AlarmsWarningsDialog(self, self.api, mode)
+        dialog.open()
+
     def __operator_request_check(self):
 
         def kill_active_operator_request():

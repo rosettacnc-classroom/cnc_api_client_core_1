@@ -1,0 +1,17 @@
+AlarmsWarningsDialog -> QDialog
+
+    titleLabel -> QLabel
+    messagesTableWidget -> QTableWidget
+
+    footerLayout -> QHBoxLayout
+        resetButton -> QPushButton
+        leftSpacer -> Spacer
+        
+        centerButtonsLayout -> QHBoxLayout
+            modeAlarmsCurrentButton -> QPushButton
+            modeAlarmsHistoryButton -> QPushButton
+            modeWarningsCurrentButton -> QPushButton
+            modeWarningsHistoryButton -> QPushButton
+
+        rightSpacer -> Spacer
+        exitButton -> QPushButton

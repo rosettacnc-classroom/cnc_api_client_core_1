@@ -130,6 +130,9 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="Line" name="programLoadLine">
       <property name="geometry">
@@ -145,6 +148,9 @@
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="programLoadLabel">
@@ -205,6 +211,9 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QLabel" name="programSaveLabel">
       <property name="geometry">
@@ -240,6 +249,9 @@
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="programSaveAsLabel">
@@ -439,6 +451,9 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPushButton" name="cncProgramAnalysisRTButton">
       <property name="geometry">
@@ -566,6 +581,9 @@
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
       </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QPushButton" name="cncStartButton">
       <property name="geometry">
@@ -633,6 +651,9 @@
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Horizontal</enum>
+      </property>
+      <property name="isHLine" stdset="0">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="cncCNCCommandsSpecialLabel">
