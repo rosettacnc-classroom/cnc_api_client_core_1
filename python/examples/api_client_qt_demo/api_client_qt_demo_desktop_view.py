@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      06/03/2026
+# Created:      09/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -248,7 +248,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.ui.csOffsetsTable.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.ui.csOffsetsTable.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
 
-        # create and appy stylesheet to QPushButtons and inherited objects
+        # create and appy stylesheet to QPushButtons and inherited objects with isSpecial property
         status_buttons_stylesheet = (
         """
             QPushButton[isSpecial="true"] {
@@ -466,7 +466,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     def __on_action_main_execute(self):
         sender = self.sender()
 
-        # event main view
+        # events main view
         if sender == self.ui.apiServerConnectionButton:
             if self.api_server_connection_state == ASCS_DISCONNECTED:
                 if self.api.connect(self.api_server_host, self.api_server_port, self.api_server_use_tls):
@@ -487,7 +487,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     self.api.close()
                     self.api_server_connection_state = ASCS_ERROR
 
-        # event commands
+        # events commands
         if sender == self.ui.cmdsConnectionOpenButton:
             self.api.cnc_connection_open(use_ui=False, use_fast_mode=False, skip_firmware_check=True, overwrite_cnc_settings=True)
         if sender == self.ui.cmdsConnectionCloseButton:
@@ -513,7 +513,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cmdsResetWarningsHistoryButton:
             self.api.reset_warnings_history()
 
-        # event tab general
+        # events tab general
         if sender == self.ui.cfsmSpindleCWButton and not self.ctx.cnc_info.spindle_not_ready:
             self.api.cnc_change_function_state_mode(cnc.FS_NM_SPINDLE_CW, cnc.FS_MD_TOGGLE)
         if sender == self.ui.cfsmSpindleCCWButton and not self.ctx.cnc_info.spindle_not_ready:
@@ -533,7 +533,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cfsmAUX05Button:
             self.api.cnc_change_function_state_mode(cnc.FS_NM_AUX_05, cnc.FS_MD_TOGGLE)
 
-        # event tab program
+        # events tab axes position plot
+
+        # events tab program
         if sender == self.ui.programNewButton:
             self.api.program_new()
         if sender == self.ui.programLoadSelectFileButton:
@@ -553,7 +555,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.programSaveAsButton:
             self.api.program_save_as(self.program_save_file_name)
 
-        # event tab g-code
+        # events tab g-code
         if sender == self.ui.gcodeGetProgramTextButton:
             data = self.api.get_program_info()
             if data.has_data:
@@ -567,27 +569,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.gcodeProgramEdit.setPlainText('')
             self.ui.gcodeAddProgramTextEdit.setText('')
 
-        # event tab wcs
-        if sender == self.ui.csApplyWCSChangesButton:
-            wcs = self.set_wcs
-            offset = [None, None, None, None, None, None]
-            if self.apply_wcs_changes_mode in [AWCM_SET_WCS_OFFSET_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]:
-                if self.ui.csSetWCSXCheckBox.isChecked():
-                    offset[0] = self.set_wcs_x
-                if self.ui.csSetWCSYCheckBox.isChecked():
-                    offset[1] = self.set_wcs_y
-                if self.ui.csSetWCSZCheckBox.isChecked():
-                    offset[2] = self.set_wcs_z
-                if self.ui.csSetWCSACheckBox.isChecked():
-                    offset[3] = self.set_wcs_a
-                if self.ui.csSetWCSBCheckBox.isChecked():
-                    offset[4] = self.set_wcs_b
-                if self.ui.csSetWCSCCheckBox.isChecked():
-                    offset[5] = self.set_wcs_c
-            activate = self.apply_wcs_changes_mode in [AWCM_ACTIVATE_WCS_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]
-            self.api.set_wcs_info(wcs, offset, activate=activate)
+        # events tab mdi
+        if sender == self.ui.mdiCommandExecuteButton:
+            mdi_command = self.ui.mdiCommandEdit.toPlainText()
+            self.api.cnc_mdi_command(mdi_command)
 
-        # event tab cnc
+        # events tab cnc
         if sender == self.ui.cncProgramAnalysisMTButton:
             pass
         if sender == self.ui.cncProgramAnalysisRTButton:
@@ -615,7 +602,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cncResumeAfterStopFromLineButton: # ???
             pass
 
-        # event tab jog
+        # events tab jog
         if sender == self.ui.setProgramPositionXButton:
             self.api.set_program_position_x(self.set_program_position_x)
         if sender == self.ui.setProgramPositionYButton:
@@ -632,20 +619,35 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.jogSTOPButton:
             self.api.cnc_stop()
 
-        # event tab overrides
-        # event tab homing
+        # events tab overrides
+        # events tab homing
 
-        # event tab mdi
-        if sender == self.ui.mdiCommandExecuteButton:
-            mdi_command = self.ui.mdiCommandEdit.toPlainText()
-            self.api.cnc_mdi_command(mdi_command)
+        # events tab wcs
+        if sender == self.ui.csApplyWCSChangesButton:
+            wcs = self.set_wcs
+            offset = [None, None, None, None, None, None]
+            if self.apply_wcs_changes_mode in [AWCM_SET_WCS_OFFSET_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]:
+                if self.ui.csSetWCSXCheckBox.isChecked():
+                    offset[0] = self.set_wcs_x
+                if self.ui.csSetWCSYCheckBox.isChecked():
+                    offset[1] = self.set_wcs_y
+                if self.ui.csSetWCSZCheckBox.isChecked():
+                    offset[2] = self.set_wcs_z
+                if self.ui.csSetWCSACheckBox.isChecked():
+                    offset[3] = self.set_wcs_a
+                if self.ui.csSetWCSBCheckBox.isChecked():
+                    offset[4] = self.set_wcs_b
+                if self.ui.csSetWCSCCheckBox.isChecked():
+                    offset[5] = self.set_wcs_c
+            activate = self.apply_wcs_changes_mode in [AWCM_ACTIVATE_WCS_ONLY, AWCM_SET_WCS_OFFSET_AND_ACTIVATE]
+            self.api.set_wcs_info(wcs, offset, activate=activate)
 
-        # event tab d i/o
-        # event tab a i/o
-        # event tab scanning laser
-        # event tab machining info
+        # events tab d i/o
+        # events tab a i/o
+        # events tab scanning laser
+        # events tab machining info
 
-        # event tab ui dialogs
+        # events tab ui dialogs
         if sender == self.ui.uidAboutButton:
             self.api.show_ui_dialog(cnc.UID_ID_ABOUT)
         if sender == self.ui.uidATCManagementButton:
@@ -671,12 +673,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.uidWorkCoordinatesButton:
             self.api.show_ui_dialog(cnc.UID_ID_WORK_COORDINATES)
 
-        # event system info
+        # events system info
 
     def __on_action_main_update(self):
         if self.api_server_connection_state in [ASCS_DISCONNECTED, ASCS_ERROR]:
 
-            # update commands
+            # updates main view
+
+            # updates commands
             self.ui.cmdsConnectionOpenButton.setEnabled(False)
             self.ui.cmdsConnectionCloseButton.setEnabled(False)
 
@@ -691,7 +695,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsResetWarningsButton.setEnabled(False)
             self.ui.cmdsResetWarningsHistoryButton.setEnabled(False)
 
-            # update tab general
+            # updates tab general
             self.ui.cfsmSpindleCWButton.setEnabled(False)
             self.ui.cfsmSpindleCCWButton.setEnabled(False)
             self.ui.cfsmCoolantMistButton.setEnabled(False)
@@ -702,23 +706,25 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cfsmAUX04Button.setEnabled(False)
             self.ui.cfsmAUX05Button.setEnabled(False)
 
-            # update tab program
+            # updates tab axes position plot
+
+            # updates tab program
             self.ui.programNewButton.setEnabled(False)
             self.ui.programLoadSelectFileButton.setEnabled(False)
             self.ui.programLoadButton.setEnabled(False)
             self.ui.programSaveButton.setEnabled(False)
             self.ui.programSaveAsButton.setEnabled(False)
 
-            # update tab g-code
+            # updates tab g-code
             self.ui.gcodeGetProgramTextButton.setEnabled(False)
             self.ui.gcodeSetProgramTextButton.setEnabled(False)
             self.ui.gcodeAddProgramTextButton.setEnabled(False)
             self.ui.gcodeClearProgramTextButton.setEnabled(False)
 
-            # update tab wcs
-            self.ui.csApplyWCSChangesButton.setEnabled(False)
+            # updates tab mdi
+            # updates tab cnc
 
-            # update tab jog
+            # updates tab jog
             self.ui.cncJogCommandXMButton.setEnabled(False)
             self.ui.cncJogCommandXPButton.setEnabled(False)
             self.ui.cncJogCommandYMButton.setEnabled(False)
@@ -741,15 +747,18 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionBButton.setEnabled(False)
             self.ui.setProgramPositionCButton.setEnabled(False)
 
-            # update tab overrides
-            # update tab homing
-            # update tab mdi
-            # update tab d i/o
-            # update tab a i/o
-            # update tab scanning laser
-            # update tab machining info
+            # updates tab overrides
+            # updates tab homing
 
-            # update tab ui dialogs
+            # updates tab wcs
+            self.ui.csApplyWCSChangesButton.setEnabled(False)
+
+            # updates tab d i/o
+            # updates tab a i/o
+            # updates tab scanning laser
+            # updates tab machining info
+
+            # updates tab ui dialogs
             self.ui.uidAboutButton.setEnabled(False)
             self.ui.uidATCManagementButton.setEnabled(False)
             self.ui.uidBoardEtherCATMonitorButton.setEnabled(False)
@@ -763,12 +772,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.uidToolsLibraryButton.setEnabled(False)
             self.ui.uidWorkCoordinatesButton.setEnabled(False)
 
-            # update tab system info
+            # updates tab system info
         else:
             connected = self.ctx.cnc_info.state_machine != cnc.SM_DISCONNECTED
             enabled_commands = self.ctx.enabled_commands
 
-            # update commands
+            # updates main view
+
+            # updates commands
             self.ui.cmdsConnectionOpenButton.setEnabled(enabled_commands.cnc_connection_open)
             self.ui.cmdsConnectionCloseButton.setEnabled(enabled_commands.cnc_connection_close)
 
@@ -783,53 +794,45 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsResetWarningsButton.setEnabled(enabled_commands.reset_warnings)
             self.ui.cmdsResetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
 
-            # update tab general
-            spindle_enabled = enabled_commands.cnc_csfm_spindle_cw or self.ctx.cnc_info.spindle_not_ready # <- to permits colored icon with spindle_not_ready
-            self.ui.cfsmSpindleCWButton.setEnabled(spindle_enabled)
-            self.ui.cfsmSpindleCCWButton.setEnabled(spindle_enabled)
+            # updates tab general
+            if self.ctx.cnc_info.spindle_not_ready:
+                # keep button enabled to permits colored icon with spindle_not_ready (command will however ignored)
+                spindle_cw_enabled = True
+                spindle_ccw_enabled = True
+            else:
+                spindle_cw_enabled = enabled_commands.cnc_csfm_spindle_cw
+                spindle_ccw_enabled = enabled_commands.cnc_csfm_spindle_ccw
+            self.ui.cfsmSpindleCWButton.setEnabled(spindle_cw_enabled)
+            self.ui.cfsmSpindleCCWButton.setEnabled(spindle_ccw_enabled)
             self.ui.cfsmCoolantMistButton.setEnabled(enabled_commands.cnc_csfm_cooler_flood)
             self.ui.cfsmCoolantFloodButton.setEnabled(enabled_commands.cnc_csfm_cooler_mist)
-            self.ui.cfsmAUX01Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0001)
-            self.ui.cfsmAUX02Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0002)
-            self.ui.cfsmAUX03Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0004)
-            self.ui.cfsmAUX04Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0008)
-            self.ui.cfsmAUX05Button.setEnabled(enabled_commands.cnc_csfm_aux_mask & 0x0010)
+            self.ui.cfsmAUX01Button.setEnabled(enabled_commands.cnc_csfm_aux & 0x0001)
+            self.ui.cfsmAUX02Button.setEnabled(enabled_commands.cnc_csfm_aux & 0x0002)
+            self.ui.cfsmAUX03Button.setEnabled(enabled_commands.cnc_csfm_aux & 0x0004)
+            self.ui.cfsmAUX04Button.setEnabled(enabled_commands.cnc_csfm_aux & 0x0008)
+            self.ui.cfsmAUX05Button.setEnabled(enabled_commands.cnc_csfm_aux & 0x0010)
 
-            # update tab program
+            # updates tab axes position plot
+
+            # updates tab program
             self.ui.programNewButton.setEnabled(enabled_commands.program_new)
             self.ui.programLoadSelectFileButton.setEnabled(enabled_commands.program_load)
             self.ui.programLoadButton.setEnabled(enabled_commands.program_load)
             self.ui.programSaveButton.setEnabled(enabled_commands.program_save)
             self.ui.programSaveAsButton.setEnabled(enabled_commands.program_save_as)
 
-            # update tab g-code
+            # updates tab g-code
             self.ui.gcodeGetProgramTextButton.setEnabled(enabled_commands.has_data)
             self.ui.gcodeSetProgramTextButton.setEnabled(enabled_commands.program_gcode_set_text)
             self.ui.gcodeAddProgramTextButton.setEnabled(enabled_commands.program_gcode_add_text)
             self.ui.gcodeClearProgramTextButton.setEnabled(enabled_commands.program_gcode_set_text)
 
-            # update tab wcs
-            enabled = False
-            has_offset = (
-                self.ui.csSetWCSXCheckBox.isChecked() or
-                self.ui.csSetWCSYCheckBox.isChecked() or
-                self.ui.csSetWCSZCheckBox.isChecked() or
-                self.ui.csSetWCSACheckBox.isChecked() or
-                self.ui.csSetWCSBCheckBox.isChecked() or
-                self.ui.csSetWCSCCheckBox.isChecked()
-            )
-            if enabled_commands.cnc_parameters:
-                if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
-                    enabled = connected
-                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
-                    enabled = has_offset
-                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_AND_ACTIVATE:
-                    enabled = connected and has_offset
-            self.ui.csApplyWCSChangesButton.setEnabled(enabled)
+            # updates tab mdi
+            self.ui.mdiCommandExecuteButton.setEnabled(enabled_commands.cnc_mdi_command)
 
-            # update tab cnc
+            # updates tab cnc
 
-            # update tab jog
+            # updates tab jog
             cnc_jog_command = self.ctx.enabled_commands.cnc_jog_command
             self.ui.cncJogCommandXMButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
             self.ui.cncJogCommandXPButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
@@ -854,18 +857,34 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionBButton.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
             self.ui.setProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
-            # update tab overrides
-            # update tab homing
+            # updates tab overrides
+            # updates tab homing
 
-            # update tab mdi
-            self.ui.mdiCommandExecuteButton.setEnabled(enabled_commands.cnc_mdi_command)
+            # updates tab wcs
+            enabled = False
+            has_offset = (
+                self.ui.csSetWCSXCheckBox.isChecked() or
+                self.ui.csSetWCSYCheckBox.isChecked() or
+                self.ui.csSetWCSZCheckBox.isChecked() or
+                self.ui.csSetWCSACheckBox.isChecked() or
+                self.ui.csSetWCSBCheckBox.isChecked() or
+                self.ui.csSetWCSCCheckBox.isChecked()
+            )
+            if enabled_commands.cnc_parameters:
+                if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
+                    enabled = connected
+                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
+                    enabled = has_offset
+                elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_AND_ACTIVATE:
+                    enabled = connected and has_offset
+            self.ui.csApplyWCSChangesButton.setEnabled(enabled)
 
-            # update tab d i/o
-            # update tab a i/o
-            # update tab scanning laser
-            # update tab machining info
+            # updates tab d i/o
+            # updates tab a i/o
+            # updates tab scanning laser
+            # updates tab machining info
 
-            # update tab ui dialogs
+            # updates tab ui dialogs
             uid_available = self.ctx.enabled_commands.show_ui_dialog
             self.ui.uidAboutButton.setEnabled(uid_available)
             self.ui.uidATCManagementButton.setEnabled(uid_available)
@@ -880,9 +899,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.uidToolsLibraryButton.setEnabled(uid_available)
             self.ui.uidWorkCoordinatesButton.setEnabled(uid_available)
 
-            # update tab system info
+            # updates tab system info
 
-        # update server connection button
+        # updates server connection button
         self.ui.apiServerConnectionButton.setEnabled(True)
         if self.api_server_connection_state == ASCS_CONNECTED:
             self.ui.apiServerConnectionButton.setText('Disconnect')
@@ -996,16 +1015,38 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             return
         value = sender.text().strip()
 
-        # event from main view
+        # events main view
         if sender == self.ui.apiServerHostEdit:
             try_str_2_ipv4('api_server_host')
         if sender == self.ui.apiServerPortEdit:
             try_str_2_int('api_server_port', 1, 65535)
 
-        # event from tab program
-        # event from tab g-code
+        # events commands
+        # events tab general
+        # events tab axes position plot
+        # events tab program
+        # evenst tab g-code
+        # events tab mdi
+        # events tab cnc
 
-        # event from tab wcs
+        # events tab jog
+        if sender == self.ui.setProgramPositionXEdit:
+            try_str_2_float('set_program_position_x')
+        if sender == self.ui.setProgramPositionYEdit:
+            try_str_2_float('set_program_position_y')
+        if sender == self.ui.setProgramPositionZEdit:
+            try_str_2_float('set_program_position_z')
+        if sender == self.ui.setProgramPositionAEdit:
+            try_str_2_float('set_program_position_a')
+        if sender == self.ui.setProgramPositionBEdit:
+            try_str_2_float('set_program_position_b')
+        if sender == self.ui.setProgramPositionCEdit:
+            try_str_2_float('set_program_position_c')
+
+        # events tab overrides
+        # events tab homing
+
+        # events tab wcs
         if sender == self.ui.csSetWCSEdit:
             try_str_2_int('set_wcs', 1, 9)
         if sender == self.ui.csSetWCSXEdit:
@@ -1021,33 +1062,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.csSetWCSCEdit:
             try_str_2_float('set_wcs_c')
 
-        # event from tab cnc
+        # events tab d i/o
+        # events tab a i/o
+        # events tab scanning laser
+        # events tab machining info
+        # events tab ui dialogs
+        # events tab system info
 
-        # event from tab jog
-        if sender == self.ui.setProgramPositionXEdit:
-            try_str_2_float('set_program_position_x')
-        if sender == self.ui.setProgramPositionYEdit:
-            try_str_2_float('set_program_position_y')
-        if sender == self.ui.setProgramPositionZEdit:
-            try_str_2_float('set_program_position_z')
-        if sender == self.ui.setProgramPositionAEdit:
-            try_str_2_float('set_program_position_a')
-        if sender == self.ui.setProgramPositionBEdit:
-            try_str_2_float('set_program_position_b')
-        if sender == self.ui.setProgramPositionCEdit:
-            try_str_2_float('set_program_position_c')
-
-        # event from tab overrides
-        # event from tab homing
-        # event from tab mdi
-        # event from tab d i/o
-        # event from tab a i/o
-        # event from tab scanning laser
-        # event from tab machining info
-        # event from tab ui dialogs
-        # event from tab system info
-
-        # updated editable fields
+        # update editable fields
         self.__update_editable_fields()
 
     def __on_form_close(self):
@@ -1071,16 +1093,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.axes_mask_enablings_in_use = -1
         self.cnc_resume_after_stop_from_line = 0
         self.cnc_start_from_line = 0
-        # FDIOImageBitmap: TBitmap
         self.in_update = False
-        # FMachiningInfoImageBitmap: TBitmap
-        # FOverrideFastWatch: TStopWatch
-        # FOverrideFeedCustom1Watch: TStopWatch
-        # FOverrideFeedCustom2Watch: TStopWatch
-        # FOverrideFeedWatch: TStopWatch
-        # FOverrideJogWatch: TStopWatch
-        # FOverrideSpindleWatch: TStopWatch
-        #FToolInfoLabel: THtmlLabel
 
         # load settings from memento
         self.__memento_load()
@@ -1338,19 +1351,36 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         try:
             pos_um = '{:.3f}' if self.units_mode == cnc.UM_METRIC else '{:.4f}'
 
-            # update main view
+            # updates main view
             self.ui.apiServerHostEdit.setText(self.api_server_host)
             self.ui.apiServerPortEdit.setText(str(self.api_server_port))
             self.ui.apiServerUseTLSCheckBox.setChecked(self.api_server_use_tls)
             self.ui.stayOnTopCheckBox.setChecked(self.stay_on_top)
 
-            # update tab program
+            # updates commands
+            # updates tab general
+            # updates tab axes position plot
+
+            # updates tab program
             self.ui.programLoadFileNameEdit.setText(self.program_load_file_name)
             self.ui.programSaveFileAsFileNameEdit.setText(self.program_save_file_name)
 
-            # update tab g-code
+            # updates tab g-code
+            # updates tab mdi
+            # updates tab cnc
 
-            # update tab wcs
+            # updates tab jog
+            self.ui.setProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
+            self.ui.setProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
+            self.ui.setProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
+            self.ui.setProgramPositionAEdit.setText(pos_um.format(self.set_program_position_a))
+            self.ui.setProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
+            self.ui.setProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
+
+            # updates tab overrides
+            # updates tab homing
+
+            # updates tab wcs
             if self.apply_wcs_changes_mode == AWCM_ACTIVATE_WCS_ONLY:
                 self.ui.csActivateWCSOnlyRadioButton.setChecked(True)
             elif self.apply_wcs_changes_mode == AWCM_SET_WCS_OFFSET_ONLY:
@@ -1369,25 +1399,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.csSetWCSBEdit.setText(format_float(self.set_wcs_b, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
             self.ui.csSetWCSCEdit.setText(format_float(self.set_wcs_c, OFFSET_USE_DIGITS, DecimalsTrimMode.FIT))
 
-            # update tab cnc
-
-            # update tab jog
-            self.ui.setProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
-            self.ui.setProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
-            self.ui.setProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
-            self.ui.setProgramPositionAEdit.setText(pos_um.format(self.set_program_position_a))
-            self.ui.setProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
-            self.ui.setProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
-
-            # update tab overrides
-            # update tab homing
-            # update tab mdi
-            # update tab d i/o
-            # update tab a i/o
-            # update tab scanning laser
-            # update tab machine info
-            # update tab ui dialogs
-            # update tab system info
+            # updates tab d i/o
+            # updates tab a i/o
+            # updates tab scanning laser
+            # updates tab machine info
+            # updates tab ui dialogs
+            # updates tab system info
         finally:
             self.in_update = False
 
@@ -1442,7 +1459,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         um_vel_rf = '{:7.0f} dg/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} dg/min'
         um_decimals = 3 if self.units_mode == cnc.UM_METRIC else 4
 
-        # update tab general
+        # updates tab general
         if self.ui.tabWidgetMain.currentWidget() == self.ui.tabGeneral:
             # update axes info
             for axis_group, attr_name, is_velocity in self.axis_data_mapping:
@@ -1481,22 +1498,73 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
             self.ui.toolInfoLabel.setText(text)
 
-        # update tab axes position scope
-        if self.ui.tabWidgetMain.currentWidget() == self.ui.tabAxesPositionScope:
+        # updates tab axes position plot
+        if self.ui.tabWidgetMain.currentWidget() == self.ui.tabAxesPositionPlot:
             if axes_info.has_data:
                 self.realtime_scope.push(axes_info.program_position)
 
-        # update tab program
+        # updates tab program
         if self.ui.tabWidget.currentWidget() == self.ui.tabProgram:
             self.ui.programLoadFileNameEdit.setEnabled(enabled_commands.program_load)
             self.ui.programSaveFileAsFileNameEdit.setEnabled(enabled_commands.program_load)
 
-        # update tab g-code values
+        # updates tab g-code
         if self.ui.tabWidget.currentWidget() == self.ui.tabGCode:
             self.ui.gcodeProgramEdit.setEnabled(enabled_commands.has_data)
             self.ui.gcodeAddProgramTextEdit.setEnabled(enabled_commands.program_gcode_add_text)
 
-        # update tab coordinate system
+        # updates tab mdi
+        if self.ui.tabWidget.currentWidget() == self.ui.tabMDI:
+            self.ui.mdiCommandEdit.setEnabled(enabled_commands.cnc_mdi_command)
+
+        # updates tab cnc
+        if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:
+            pass
+
+        # updates tab jog
+        if self.ui.tabWidget.currentWidget() == self.ui.tabJOG:
+            pass
+
+        # updates tab overrides
+        if self.ui.tabWidget.currentWidget() == self.ui.tabOverrides:
+
+            # update override sliders limits
+            self.ui.ovrJogSlider.setRange(cnc_info.override_jog_min, cnc_info.override_jog_max)
+            self.ui.ovrSpindleSlider.setRange(cnc_info.override_spindle_min, cnc_info.override_spindle_max)
+            self.ui.ovrFastSlider.setRange(cnc_info.override_fast_min, cnc_info.override_fast_max)
+            self.ui.ovrFeedSlider.setRange(cnc_info.override_feed_min, cnc_info.override_feed_max)
+            self.ui.ovrFeedCSM1Slider.setRange(cnc_info.override_feed_custom_1_min, cnc_info.override_feed_custom_1_max)
+            self.ui.ovrFeedCSM2Slider.setRange(cnc_info.override_feed_custom_2_min, cnc_info.override_feed_custom_2_max)
+            self.ui.ovrPlasmaPowerSlider.setRange(cnc_info.override_plasma_power_min, cnc_info.override_plasma_power_max)
+            self.ui.ovrPlasmaVoltageSlider.setRange(cnc_info.override_plasma_voltage_min, cnc_info.override_plasma_voltage_max)
+
+            # update override sliders values
+            if time.perf_counter() > self.slider_update_inhibition_until:
+                self.slider_update_inhibition_until = 0.0
+                self.ui.ovrJogSlider.setValue(cnc_info.override_jog)
+                self.ui.ovrSpindleSlider.setValue(cnc_info.override_spindle)
+                self.ui.ovrFastSlider.setValue(cnc_info.override_fast)
+                self.ui.ovrFeedSlider.setValue(cnc_info.override_feed)
+                self.ui.ovrFeedCSM1Slider.setValue(cnc_info.override_feed_custom_1)
+                self.ui.ovrFeedCSM2Slider.setValue(cnc_info.override_feed_custom_2)
+                self.ui.ovrPlasmaPowerSlider.setValue(cnc_info.override_plasma_power)
+                self.ui.ovrPlasmaVoltageSlider.setValue(cnc_info.override_plasma_voltage)
+
+            # update override labels value
+            self.ui.ovrJogValue.setText(str(cnc_info.override_jog))
+            self.ui.ovrSpindleValue.setText(str(cnc_info.override_spindle))
+            self.ui.ovrFastValue.setText(str(cnc_info.override_fast))
+            self.ui.ovrFeedValue.setText(str(cnc_info.override_feed))
+            self.ui.ovrFeedCSM1Value.setText(str(cnc_info.override_feed_custom_1))
+            self.ui.ovrFeedCSM2Value.setText(str(cnc_info.override_feed_custom_2))
+            self.ui.ovrPlasmaPowerValue.setText(str(cnc_info.override_plasma_power))
+            self.ui.ovrPlasmaVoltageValue.setText(str(cnc_info.override_plasma_voltage))
+
+        # updates tab homing
+        if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:
+            pass
+
+        # updates tab wcs
         if self.ui.tabWidget.currentWidget() == self.ui.tabWCS:
             csi = self.api.get_coordinate_systems_info()
             if not csi.is_equal(self.coordinates_system_info_in_use):
@@ -1581,78 +1649,27 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.csSetWCSCCheckBox.setEnabled(enabled)
                 self.ui.csSetWCSCEdit.setEnabled(enabled and self.ui.csSetWCSCCheckBox.isChecked())
 
-        # update tab cnc values
-        if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:
-            pass
-
-        # update tab jog values
-        if self.ui.tabWidget.currentWidget() == self.ui.tabJOG:
-            pass
-
-        # update tab overrides values
-        if self.ui.tabWidget.currentWidget() == self.ui.tabOverrides:
-
-            # update override sliders limits
-            self.ui.ovrJogSlider.setRange(cnc_info.override_jog_min, cnc_info.override_jog_max)
-            self.ui.ovrSpindleSlider.setRange(cnc_info.override_spindle_min, cnc_info.override_spindle_max)
-            self.ui.ovrFastSlider.setRange(cnc_info.override_fast_min, cnc_info.override_fast_max)
-            self.ui.ovrFeedSlider.setRange(cnc_info.override_feed_min, cnc_info.override_feed_max)
-            self.ui.ovrFeedCSM1Slider.setRange(cnc_info.override_feed_custom_1_min, cnc_info.override_feed_custom_1_max)
-            self.ui.ovrFeedCSM2Slider.setRange(cnc_info.override_feed_custom_2_min, cnc_info.override_feed_custom_2_max)
-            self.ui.ovrPlasmaPowerSlider.setRange(cnc_info.override_plasma_power_min, cnc_info.override_plasma_power_max)
-            self.ui.ovrPlasmaVoltageSlider.setRange(cnc_info.override_plasma_voltage_min, cnc_info.override_plasma_voltage_max)
-
-            # update override sliders values
-            if time.perf_counter() > self.slider_update_inhibition_until:
-                self.slider_update_inhibition_until = 0.0
-                self.ui.ovrJogSlider.setValue(cnc_info.override_jog)
-                self.ui.ovrSpindleSlider.setValue(cnc_info.override_spindle)
-                self.ui.ovrFastSlider.setValue(cnc_info.override_fast)
-                self.ui.ovrFeedSlider.setValue(cnc_info.override_feed)
-                self.ui.ovrFeedCSM1Slider.setValue(cnc_info.override_feed_custom_1)
-                self.ui.ovrFeedCSM2Slider.setValue(cnc_info.override_feed_custom_2)
-                self.ui.ovrPlasmaPowerSlider.setValue(cnc_info.override_plasma_power)
-                self.ui.ovrPlasmaVoltageSlider.setValue(cnc_info.override_plasma_voltage)
-
-            # update override labels value
-            self.ui.ovrJogValue.setText(str(cnc_info.override_jog))
-            self.ui.ovrSpindleValue.setText(str(cnc_info.override_spindle))
-            self.ui.ovrFastValue.setText(str(cnc_info.override_fast))
-            self.ui.ovrFeedValue.setText(str(cnc_info.override_feed))
-            self.ui.ovrFeedCSM1Value.setText(str(cnc_info.override_feed_custom_1))
-            self.ui.ovrFeedCSM2Value.setText(str(cnc_info.override_feed_custom_2))
-            self.ui.ovrPlasmaPowerValue.setText(str(cnc_info.override_plasma_power))
-            self.ui.ovrPlasmaVoltageValue.setText(str(cnc_info.override_plasma_voltage))
-
-        # update tab homing values
-        if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:
-            pass
-
-        # update tab mdi values
-        if self.ui.tabWidget.currentWidget() == self.ui.tabMDI:
-            self.ui.mdiCommandEdit.setEnabled(enabled_commands.cnc_mdi_command)
-
-        # update tab d(igital) i/o values
+        # updates tab d i/o
         if self.ui.tabWidget.currentWidget() == self.ui.tabDIO:
             pass
 
-        # update tab a(nalog) i/o values
+        # updates tab a i/o
         if self.ui.tabWidget.currentWidget() == self.ui.tabAIO:
             pass
 
-        # update tab scanning laser values
+        # updates tab scanning laser
         if self.ui.tabWidget.currentWidget() == self.ui.tabScanningLaser:
             pass
 
-        # update tab machining info values
+        # updates tab machining info
         if self.ui.tabWidget.currentWidget() == self.ui.tabMachiningInfo:
             pass
 
-        # update tab ui dialogs
+        # updates tab ui dialogs
         if self.ui.tabWidget.currentWidget() == self.ui.tabUIDialogs:
             pass
 
-        # update tab system info values
+        # updates tab system info
         if self.ui.tabWidget.currentWidget() == self.ui.tabSystemInfo:
             system_info = self.api.get_system_info()
             if not cnc.APISystemInfo.are_equal(self.system_info_in_use, system_info):
@@ -1723,6 +1740,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.apiServerPortEdit.setEnabled(True)
             self.ui.apiServerUseTLSCheckBox.setEnabled(True)
 
+            # enablings commands
+
             # enablings tab general
             self.ui.mcsTitleLabel.setEnabled(False)
             self.ui.prpTitleLabel.setEnabled(False)
@@ -1745,9 +1764,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.plannedTimeLabel.setEnabled(False)
             self.ui.plannedTimeValue.setEnabled(False)
 
+            # enablings tab axes position plot
             # enablings tab program
             # enablings tab g-code
-            # enablings tab wcs
+            # enablings tab mdi
+            # enablings tab cnc
 
             # enablings tab jog
             self.ui.setProgramPositionXEdit.setEnabled(False)
@@ -1785,7 +1806,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.toolInfoLabel.setEnabled(False)
 
             # enablings tab homing
-            # enablings tab mdi
+            # enablings tab wcs
             # enablings tab d i/o
             # enablings tab a i/o
             # enablings tab scanning laser
@@ -1797,6 +1818,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.apiServerHostEdit.setEnabled(False)
             self.ui.apiServerPortEdit.setEnabled(False)
             self.ui.apiServerUseTLSCheckBox.setEnabled(False)
+
+            # enablings commands
 
             # enablings tab general
             self.ui.mcsTitleLabel.setEnabled(True)
@@ -1821,9 +1844,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.plannedTimeValue.setEnabled(True)
             self.ui.toolInfoLabel.setEnabled(True)
 
+            # enablings tab axes position plot
             # enablings tab program
             # enablings tab g-code
-            # enablings tab wcs
+            # enablings tab mdi
+            # enablings tab cnc
 
             # enablings tab jog
             set_program_position = enabled_commands.set_program_position
@@ -1869,7 +1894,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.ovrPlasmaVoltageValue.setEnabled(cnc_info.override_plasma_voltage_enabled)
 
             # enablings tab homing
-            # enablings tab mdi
+            # enablings tab wcs
             # enablings tab d i/o
             # enablings tab a i/o
             # enablings tab scanning laser

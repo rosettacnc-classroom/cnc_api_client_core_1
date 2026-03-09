@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      06/03/2026
+# Created:      09/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -665,7 +665,7 @@ class APIEnabledCommands:
     """API data structure for enabled commands."""
     def __init__(self):
         self.has_data                           = False
-        self.cnc_csfm_aux_mask                  = 0
+        self.cnc_csfm_aux                       = 0
         self.cnc_csfm_cooler_flood              = False
         self.cnc_csfm_cooler_mist               = False
         self.cnc_csfm_jog_mode                  = False
@@ -2185,7 +2185,7 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
-                data.cnc_csfm_aux_mask                  = j['res']['cnc.csfm.aux.mask']
+                data.cnc_csfm_aux                       = j['res']['cnc.csfm.aux']
                 data.cnc_csfm_cooler_flood              = j['res']['cnc.csfm.cooler.flood']
                 data.cnc_csfm_cooler_mist               = j['res']['cnc.csfm.cooler.mist']
                 data.cnc_csfm_jog_mode                  = j['res']['cnc.csfm.jog.mode']

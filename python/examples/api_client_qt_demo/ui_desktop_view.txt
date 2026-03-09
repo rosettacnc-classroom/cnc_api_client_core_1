@@ -24,7 +24,8 @@ DesktopView -> QMainWindow
             cmdsResetWarningsButton -> QPushButton
             cmdsResetWarningsHistoryButton -> QPushButton
 
-        tabWidgetMain -> QTabWidget
+        tabWidgetMain -> QTabWidget:
+        [General, Axes Position Plot]
 
             tabGeneral -> QWidget
                 mcsTitleLabel -> QLabel
@@ -63,27 +64,27 @@ DesktopView -> QMainWindow
                 plannedTimeValue -> QLabel
 
                 cfsmSpindleStatesLabel -> QLabel
-                cfsmSpindleCWButton -> QStatusPushButton
-                cfsmSpindleCCWButton -> QStatusPushButton
+                cfsmSpindleCWButton -> QPushButton [P: isSpecial]
+                cfsmSpindleCCWButton -> QPushButton [P: isSpecial]
                 cfsmCoolersStatesLabel -> QLabel
-                cfsmCoolantMistButton -> QStatusPushButton
-                cfsmCoolantFloodButton -> QStatusPushButton
+                cfsmCoolantMistButton -> QStatusPushButton [P: isSpecial]
+                cfsmCoolantFloodButton -> QStatusPushButton [P: isSpecial]
                 cfsmAuxiliariesStatesLabel -> QLabel
-                cfsmAUX01Button -> QStatusPushButton
-                cfsmAUX02Button -> QStatusPushButton
-                cfsmAUX03Button -> QStatusPushButton
-                cfsmAUX04Button -> QStatusPushButton
-                cfsmAUX05Button -> QStatusPushButton
+                cfsmAUX01Button -> QStatusPushButton [P: isSpecial]
+                cfsmAUX02Button -> QStatusPushButton [P: isSpecial]
+                cfsmAUX03Button -> QStatusPushButton [P: isSpecial]
+                cfsmAUX04Button -> QStatusPushButton [P: isSpecial]
+                cfsmAUX05Button -> QStatusPushButton [P: isSpecial]
                 
                 toolInfoPanel -> QFrame
                     toolInfoLabel -> QLabel
            
-            tabAxesPositionScope -> QWidget
-        
+            tabAxesPositionPlot -> QWidget
 
-        tabWidget
+        tabWidget -> QTabWidget:
+        [Program, G-Code, MDI, CNC, JOG, Overrides, Homing, WCS, D I/O, A I/O, Scanning Laser, Machining Info, UI Dialogs, System Info]
 
-            tabProgram
+            tabProgram -> QWidget
                 programNewLabel
                 programNewLine
                 programNewButton                            -> program_new
@@ -99,7 +100,7 @@ DesktopView -> QMainWindow
                 programSaveFileAsFileNameEdit
                 programSaveAsButton                         -> program_save_as              self.program_save_file_name
 
-            tabGCode
+            tabGCode -> QWidget
                 gcodeProgramEdit
                 gcodeGetProgramTextButton                   -> get_program_info
                 gcodeSetProgramTextButton                   -> program_gcode_set_text
@@ -107,29 +108,11 @@ DesktopView -> QMainWindow
                 gcodeAddProgramTextButton                   -> program_gcode_add_text
                 gcodeClearProgramButton                     -> program_new
 
-            tabWCS
-                csWorkingWCS
-                csOffsetsTable
-                csActivateWCSOnlyRadioButton
-                csSetWCSOffsetOnlyRadioButton
-                csSetWCSOffsetAndActivateRadioButton
-                csSetWCSLabel
-                csSetWCSEdit
-                csSetWCSXCheckBox
-                csSetWCSXEdit
-                csSetWCSYCheckBox
-                csSetWCSYEdit
-                csSetWCSZCheckBox
-                csSetWCSZEdit
-                csSetWCSACheckBox
-                csSetWCSAEdit
-                csSetWCSBCheckBox
-                csSetWCSBEdit
-                csSetWCSCCheckBox
-                csSetWCSCEdit
-                csApplyWCSChangesButton
+            tabMDI -> QWidget
+                mdiCommandEdit
+                mdiCommandExecuteButton
 
-            tabCNC
+            tabCNC -> QWidget
                 cncProgramAnalysisLabel
                 cncProgramAnalysisLine
                 cncCNCCommandsLabel
@@ -154,7 +137,7 @@ DesktopView -> QMainWindow
                 cncResumeAfterStopFromLineButton
                 cncResumeAfterStopFromLineEdit
 
-            tabJOG
+            tabJOG -> QWidget
                 cncJogCommandXMButton
                 cncJogCommandXPButton       
                 cncJogCommandYMButton
@@ -183,7 +166,7 @@ DesktopView -> QMainWindow
                 setProgramPositionCButton
                 jogSTOPButton
 
-            tabOverrides
+            tabOverrides -> QWidget
                 ovrJogLabel
                 ovrJogSlider
                 ovrJogValue
@@ -210,21 +193,39 @@ DesktopView -> QMainWindow
                 ovrPlasmaVoltageValue
                 ovrNoteLabel
 
-            tabHoming
+            tabHoming -> QWidget
 
-            tabMDI
-                mdiCommandEdit
-                mdiCommandExecuteButton
+            tabWCS -> QWidget
+                csWorkingWCS
+                csOffsetsTable
+                csActivateWCSOnlyRadioButton
+                csSetWCSOffsetOnlyRadioButton
+                csSetWCSOffsetAndActivateRadioButton
+                csSetWCSLabel
+                csSetWCSEdit
+                csSetWCSXCheckBox
+                csSetWCSXEdit
+                csSetWCSYCheckBox
+                csSetWCSYEdit
+                csSetWCSZCheckBox
+                csSetWCSZEdit
+                csSetWCSACheckBox
+                csSetWCSAEdit
+                csSetWCSBCheckBox
+                csSetWCSBEdit
+                csSetWCSCCheckBox
+                csSetWCSCEdit
+                csApplyWCSChangesButton
 
-            tabDIO
+            tabDIO -> QWidget
 
-            tabAIO
+            tabAIO -> QWidget
 
-            tabScanningLaser
+            tabScanningLaser -> QWidget
 
-            tabMachiningInfo
+            tabMachiningInfo -> QWidget
 
-            tabUIDialogs
+            tabUIDialogs -> QWidget
                 uidProgramSettingsButton
                 uidWorkCoordinatesButton
                 uidParametersLibraryButton
@@ -238,34 +239,5 @@ DesktopView -> QMainWindow
                 uidATCManagementButton
                 uidAboutButton
 
-            tabSystemInfo
+            tabSystemInfo -> QWidget
                 systemInfoEdit
-                
-            
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
