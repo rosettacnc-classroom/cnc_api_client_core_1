@@ -2220,7 +2220,7 @@
       <x>936</x>
       <y>8</y>
       <width>96</width>
-      <height>728</height>
+      <height>465</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -2290,7 +2290,7 @@ Connection</string>
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>176</y>
+       <y>179</y>
        <width>80</width>
        <height>54</height>
       </rect>
@@ -2303,7 +2303,7 @@ Connection</string>
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>232</y>
+       <y>235</y>
        <width>80</width>
        <height>54</height>
       </rect>
@@ -2316,7 +2316,7 @@ Connection</string>
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>288</y>
+       <y>291</y>
        <width>80</width>
        <height>54</height>
       </rect>
@@ -2329,7 +2329,7 @@ Connection</string>
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>344</y>
+       <y>347</y>
        <width>80</width>
        <height>54</height>
       </rect>
@@ -2342,7 +2342,7 @@ Connection</string>
      <property name="geometry">
       <rect>
        <x>8</x>
-       <y>400</y>
+       <y>403</y>
        <width>80</width>
        <height>54</height>
       </rect>
@@ -2350,64 +2350,6 @@ Connection</string>
      <property name="text">
       <string>Resume
 after STOP</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cmdsResetAlarmsButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>498</y>
-       <width>80</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Alarms</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cmdsResetAlarmsHistoryButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>554</y>
-       <width>80</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Alarms
-History</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cmdsResetWarningsButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>610</y>
-       <width>80</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Warnings</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cmdsResetWarningsHistoryButton">
-     <property name="geometry">
-      <rect>
-       <x>8</x>
-       <y>666</y>
-       <width>80</width>
-       <height>54</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Reset
-Warnings
-History</string>
      </property>
     </widget>
    </widget>
@@ -5084,6 +5026,105 @@ History</string>
      </widget>
     </widget>
    </widget>
+   <widget class="QFrame" name="showFrame">
+    <property name="geometry">
+     <rect>
+      <x>936</x>
+      <y>483</y>
+      <width>96</width>
+      <height>252</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Plain</enum>
+    </property>
+    <widget class="QLabel" name="cmdsTitleLabel_2">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>2</y>
+       <width>80</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <family>Tahoma</family>
+       <pointsize>8</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>SHOW</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showWarningsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>134</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Warnings</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showWarningsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>190</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Warnings
+History</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showAlarmsHistoryButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>78</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alarms
+History</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showAlarmsButton">
+     <property name="geometry">
+      <rect>
+       <x>8</x>
+       <y>22</y>
+       <width>80</width>
+       <height>54</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alarms</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
@@ -5125,7 +5166,6 @@ History</string>
   <tabstop>uidAboutButton</tabstop>
   <tabstop>cmdsResumeAfterStopButton</tabstop>
   <tabstop>cmdsConnectionOpenButton</tabstop>
-  <tabstop>cmdsResetWarningsButton</tabstop>
   <tabstop>cmdsContinueButton</tabstop>
   <tabstop>uidWorkCoordinatesButton</tabstop>
   <tabstop>uidProgramSettingsButton</tabstop>
@@ -5141,9 +5181,6 @@ History</string>
   <tabstop>stayOnTopCheckBox</tabstop>
   <tabstop>apiServerConnectionButton</tabstop>
   <tabstop>cmdsStartButton</tabstop>
-  <tabstop>cmdsResetAlarmsButton</tabstop>
-  <tabstop>cmdsResetAlarmsHistoryButton</tabstop>
-  <tabstop>cmdsResetWarningsHistoryButton</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>cmdsConnectionCloseButton</tabstop>
   <tabstop>cmdsStopButton</tabstop>

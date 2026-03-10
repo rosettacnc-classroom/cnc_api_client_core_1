@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewRAlNhJ.ui'
+## Form generated from reading UI file 'desktop_viewjXwFKD.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -641,7 +641,7 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabSystemInfo, "")
         self.commandsFrame = QFrame(self.centralWidget)
         self.commandsFrame.setObjectName(u"commandsFrame")
-        self.commandsFrame.setGeometry(QRect(936, 8, 96, 728))
+        self.commandsFrame.setGeometry(QRect(936, 8, 96, 465))
         self.commandsFrame.setFrameShape(QFrame.Shape.StyledPanel)
         self.commandsFrame.setFrameShadow(QFrame.Shadow.Plain)
         self.cmdsTitleLabel = QLabel(self.commandsFrame)
@@ -659,31 +659,19 @@ class Ui_DesktopView(object):
         self.cmdsConnectionCloseButton.setGeometry(QRect(8, 78, 80, 54))
         self.cmdsStartButton = QPushButton(self.commandsFrame)
         self.cmdsStartButton.setObjectName(u"cmdsStartButton")
-        self.cmdsStartButton.setGeometry(QRect(8, 176, 80, 54))
+        self.cmdsStartButton.setGeometry(QRect(8, 179, 80, 54))
         self.cmdsStopButton = QPushButton(self.commandsFrame)
         self.cmdsStopButton.setObjectName(u"cmdsStopButton")
-        self.cmdsStopButton.setGeometry(QRect(8, 232, 80, 54))
+        self.cmdsStopButton.setGeometry(QRect(8, 235, 80, 54))
         self.cmdsPauseButton = QPushButton(self.commandsFrame)
         self.cmdsPauseButton.setObjectName(u"cmdsPauseButton")
-        self.cmdsPauseButton.setGeometry(QRect(8, 288, 80, 54))
+        self.cmdsPauseButton.setGeometry(QRect(8, 291, 80, 54))
         self.cmdsContinueButton = QPushButton(self.commandsFrame)
         self.cmdsContinueButton.setObjectName(u"cmdsContinueButton")
-        self.cmdsContinueButton.setGeometry(QRect(8, 344, 80, 54))
+        self.cmdsContinueButton.setGeometry(QRect(8, 347, 80, 54))
         self.cmdsResumeAfterStopButton = QPushButton(self.commandsFrame)
         self.cmdsResumeAfterStopButton.setObjectName(u"cmdsResumeAfterStopButton")
-        self.cmdsResumeAfterStopButton.setGeometry(QRect(8, 400, 80, 54))
-        self.cmdsResetAlarmsButton = QPushButton(self.commandsFrame)
-        self.cmdsResetAlarmsButton.setObjectName(u"cmdsResetAlarmsButton")
-        self.cmdsResetAlarmsButton.setGeometry(QRect(8, 498, 80, 54))
-        self.cmdsResetAlarmsHistoryButton = QPushButton(self.commandsFrame)
-        self.cmdsResetAlarmsHistoryButton.setObjectName(u"cmdsResetAlarmsHistoryButton")
-        self.cmdsResetAlarmsHistoryButton.setGeometry(QRect(8, 554, 80, 54))
-        self.cmdsResetWarningsButton = QPushButton(self.commandsFrame)
-        self.cmdsResetWarningsButton.setObjectName(u"cmdsResetWarningsButton")
-        self.cmdsResetWarningsButton.setGeometry(QRect(8, 610, 80, 54))
-        self.cmdsResetWarningsHistoryButton = QPushButton(self.commandsFrame)
-        self.cmdsResetWarningsHistoryButton.setObjectName(u"cmdsResetWarningsHistoryButton")
-        self.cmdsResetWarningsHistoryButton.setGeometry(QRect(8, 666, 80, 54))
+        self.cmdsResumeAfterStopButton.setGeometry(QRect(8, 403, 80, 54))
         self.apiServerConnectionButton = QPushButton(self.centralWidget)
         self.apiServerConnectionButton.setObjectName(u"apiServerConnectionButton")
         self.apiServerConnectionButton.setGeometry(QRect(767, 714, 161, 22))
@@ -1305,6 +1293,30 @@ class Ui_DesktopView(object):
         self.axesPositionsPlot.setFrameShape(QFrame.Shape.StyledPanel)
         self.axesPositionsPlot.setFrameShadow(QFrame.Shadow.Raised)
         self.tabWidgetMain.addTab(self.tabAxesPositionPlot, "")
+        self.showFrame = QFrame(self.centralWidget)
+        self.showFrame.setObjectName(u"showFrame")
+        self.showFrame.setGeometry(QRect(936, 483, 96, 252))
+        self.showFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.showFrame.setFrameShadow(QFrame.Shadow.Plain)
+        self.cmdsTitleLabel_2 = QLabel(self.showFrame)
+        self.cmdsTitleLabel_2.setObjectName(u"cmdsTitleLabel_2")
+        self.cmdsTitleLabel_2.setGeometry(QRect(8, 2, 80, 17))
+        sizePolicy.setHeightForWidth(self.cmdsTitleLabel_2.sizePolicy().hasHeightForWidth())
+        self.cmdsTitleLabel_2.setSizePolicy(sizePolicy)
+        self.cmdsTitleLabel_2.setFont(font1)
+        self.cmdsTitleLabel_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.showWarningsButton = QPushButton(self.showFrame)
+        self.showWarningsButton.setObjectName(u"showWarningsButton")
+        self.showWarningsButton.setGeometry(QRect(8, 134, 80, 54))
+        self.showWarningsHistoryButton = QPushButton(self.showFrame)
+        self.showWarningsHistoryButton.setObjectName(u"showWarningsHistoryButton")
+        self.showWarningsHistoryButton.setGeometry(QRect(8, 190, 80, 54))
+        self.showAlarmsHistoryButton = QPushButton(self.showFrame)
+        self.showAlarmsHistoryButton.setObjectName(u"showAlarmsHistoryButton")
+        self.showAlarmsHistoryButton.setGeometry(QRect(8, 78, 80, 54))
+        self.showAlarmsButton = QPushButton(self.showFrame)
+        self.showAlarmsButton.setObjectName(u"showAlarmsButton")
+        self.showAlarmsButton.setGeometry(QRect(8, 22, 80, 54))
         DesktopView.setCentralWidget(self.centralWidget)
         self.statusBar = QStatusBar(DesktopView)
         self.statusBar.setObjectName(u"statusBar")
@@ -1332,8 +1344,7 @@ class Ui_DesktopView(object):
         QWidget.setTabOrder(self.cmdsPauseButton, self.uidAboutButton)
         QWidget.setTabOrder(self.uidAboutButton, self.cmdsResumeAfterStopButton)
         QWidget.setTabOrder(self.cmdsResumeAfterStopButton, self.cmdsConnectionOpenButton)
-        QWidget.setTabOrder(self.cmdsConnectionOpenButton, self.cmdsResetWarningsButton)
-        QWidget.setTabOrder(self.cmdsResetWarningsButton, self.cmdsContinueButton)
+        QWidget.setTabOrder(self.cmdsConnectionOpenButton, self.cmdsContinueButton)
         QWidget.setTabOrder(self.cmdsContinueButton, self.uidWorkCoordinatesButton)
         QWidget.setTabOrder(self.uidWorkCoordinatesButton, self.uidProgramSettingsButton)
         QWidget.setTabOrder(self.uidProgramSettingsButton, self.uidBoardFirmwareManagerButton)
@@ -1348,10 +1359,7 @@ class Ui_DesktopView(object):
         QWidget.setTabOrder(self.apiServerUseTLSCheckBox, self.stayOnTopCheckBox)
         QWidget.setTabOrder(self.stayOnTopCheckBox, self.apiServerConnectionButton)
         QWidget.setTabOrder(self.apiServerConnectionButton, self.cmdsStartButton)
-        QWidget.setTabOrder(self.cmdsStartButton, self.cmdsResetAlarmsButton)
-        QWidget.setTabOrder(self.cmdsResetAlarmsButton, self.cmdsResetAlarmsHistoryButton)
-        QWidget.setTabOrder(self.cmdsResetAlarmsHistoryButton, self.cmdsResetWarningsHistoryButton)
-        QWidget.setTabOrder(self.cmdsResetWarningsHistoryButton, self.tabWidget)
+        QWidget.setTabOrder(self.cmdsStartButton, self.tabWidget)
         QWidget.setTabOrder(self.tabWidget, self.cmdsConnectionCloseButton)
         QWidget.setTabOrder(self.cmdsConnectionCloseButton, self.cmdsStopButton)
         QWidget.setTabOrder(self.cmdsStopButton, self.programNewButton)
@@ -1539,16 +1547,6 @@ class Ui_DesktopView(object):
         self.cmdsContinueButton.setText(QCoreApplication.translate("DesktopView", u"Continue", None))
         self.cmdsResumeAfterStopButton.setText(QCoreApplication.translate("DesktopView", u"Resume\n"
 "after STOP", None))
-        self.cmdsResetAlarmsButton.setText(QCoreApplication.translate("DesktopView", u"Reset\n"
-"Alarms", None))
-        self.cmdsResetAlarmsHistoryButton.setText(QCoreApplication.translate("DesktopView", u"Reset\n"
-"Alarms\n"
-"History", None))
-        self.cmdsResetWarningsButton.setText(QCoreApplication.translate("DesktopView", u"Reset\n"
-"Warnings", None))
-        self.cmdsResetWarningsHistoryButton.setText(QCoreApplication.translate("DesktopView", u"Reset\n"
-"Warnings\n"
-"History", None))
         self.apiServerConnectionButton.setText(QCoreApplication.translate("DesktopView", u"Connect", None))
         self.apiServerHostPortLabel.setText(QCoreApplication.translate("DesktopView", u"API Server Host & Port", None))
         self.apiServerUseTLSCheckBox.setText(QCoreApplication.translate("DesktopView", u"Use TLS", None))
@@ -1699,5 +1697,12 @@ class Ui_DesktopView(object):
         self.cfsmAUX05Button.setText("")
         self.tabWidgetMain.setTabText(self.tabWidgetMain.indexOf(self.tabGeneral), QCoreApplication.translate("DesktopView", u"General", None))
         self.tabWidgetMain.setTabText(self.tabWidgetMain.indexOf(self.tabAxesPositionPlot), QCoreApplication.translate("DesktopView", u"Axes Positions Plot", None))
+        self.cmdsTitleLabel_2.setText(QCoreApplication.translate("DesktopView", u"SHOW", None))
+        self.showWarningsButton.setText(QCoreApplication.translate("DesktopView", u"Warnings", None))
+        self.showWarningsHistoryButton.setText(QCoreApplication.translate("DesktopView", u"Warnings\n"
+"History", None))
+        self.showAlarmsHistoryButton.setText(QCoreApplication.translate("DesktopView", u"Alarms\n"
+"History", None))
+        self.showAlarmsButton.setText(QCoreApplication.translate("DesktopView", u"Alarms", None))
     # retranslateUi
 

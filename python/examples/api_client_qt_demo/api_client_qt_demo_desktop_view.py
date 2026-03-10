@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      09/03/2026
+# Created:      10/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -40,7 +40,7 @@ from statistics import median
 from collections import namedtuple
 
 from PySide6.QtCore import Qt, QEvent, QTimer, QSize
-from PySide6.QtGui import QAction, QFont
+from PySide6.QtGui import QAction, QFont, QIcon
 from PySide6.QtWidgets import (
     QAbstractSlider,
     QButtonGroup,
@@ -516,18 +516,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cmdsResumeAfterStopButton:
             self.api.cnc_resume(0)
 
-        if sender == self.ui.cmdsResetAlarmsButton:
+        # evensts show
+        if sender == self.ui.showAlarmsButton:
             self.__alarms_warnings_dialog(AlarmsWarningsMode.ALARMS_CURRENT)
-            #self.api.reset_alarms()
-        if sender == self.ui.cmdsResetAlarmsHistoryButton:
+        if sender == self.ui.showAlarmsHistoryButton:
             self.__alarms_warnings_dialog(AlarmsWarningsMode.ALARMS_HISTORY)
-            #self.api.reset_alarms_history()
-        if sender == self.ui.cmdsResetWarningsButton:
+        if sender == self.ui.showWarningsButton:
             self.__alarms_warnings_dialog(AlarmsWarningsMode.WARNINGS_CURRENT)
-            #self.api.reset_warnings()
-        if sender == self.ui.cmdsResetWarningsHistoryButton:
+        if sender == self.ui.showWarningsHistoryButton:
             self.__alarms_warnings_dialog(AlarmsWarningsMode.WARNINGS_HISTORY)
-            #self.api.reset_warnings_history()
 
         # events tab general
         if sender == self.ui.cfsmSpindleCWButton and not self.ctx.cnc_info.spindle_not_ready:
@@ -706,10 +703,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsContinueButton.setEnabled(False)
             self.ui.cmdsResumeAfterStopButton.setEnabled(False)
 
-            self.ui.cmdsResetAlarmsButton.setEnabled(False)
-            self.ui.cmdsResetAlarmsHistoryButton.setEnabled(False)
-            self.ui.cmdsResetWarningsButton.setEnabled(False)
-            self.ui.cmdsResetWarningsHistoryButton.setEnabled(False)
+            # updates show
+            self.ui.showAlarmsButton.setEnabled(False)
+            self.ui.showAlarmsHistoryButton.setEnabled(False)
+            self.ui.showWarningsButton.setEnabled(False)
+            self.ui.showWarningsHistoryButton.setEnabled(False)
 
             # updates tab general
             self.ui.cfsmSpindleCWButton.setEnabled(False)
@@ -805,10 +803,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.cmdsContinueButton.setEnabled(enabled_commands.cnc_continue)
             self.ui.cmdsResumeAfterStopButton.setEnabled(enabled_commands.cnc_resume)
 
-            self.ui.cmdsResetAlarmsButton.setEnabled(enabled_commands.reset_alarms)
-            self.ui.cmdsResetAlarmsHistoryButton.setEnabled(enabled_commands.reset_alarms_history)
-            self.ui.cmdsResetWarningsButton.setEnabled(enabled_commands.reset_warnings)
-            self.ui.cmdsResetWarningsHistoryButton.setEnabled(enabled_commands.reset_warnings_history)
+            # updates show
+            self.ui.showAlarmsButton.setEnabled(True)
+            self.ui.showAlarmsHistoryButton.setEnabled(True)
+            self.ui.showWarningsButton.setEnabled(True)
+            self.ui.showWarningsHistoryButton.setEnabled(True)
 
             # updates tab general
             if self.ctx.cnc_info.spindle_not_ready:
@@ -1709,27 +1708,28 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.systemInfoEdit.append('  Operative System           : ' + system_info.operative_system)
                 self.ui.systemInfoEdit.append('  Operative System CRC       : ' + system_info.operative_system_crc)
                 self.ui.systemInfoEdit.append('  PLD Version                : ' + system_info.pld_version)
+                if not system_info.has_data:
+                    self.ui.systemInfoEdit.append('  Licensed Features          : ')
+                else:
+                    lf_01 = '*' if system_info.licensed_feature_panel_pc else ' '
+                    lf_02 = '*' if system_info.licensed_feature_panel_pc_demo else ' '
+                    lf_03 = '*' if system_info.licensed_feature_work_orders else ' '
+                    lf_04 = '*' if system_info.licensed_feature_opc_ua_server else ' '
+                    lf_05 = '*' if system_info.licensed_feature_probe_sdk_g1 else ' '
+                    lf_06 = '*' if system_info.licensed_feature_probe_sdk_g2 else ' '
+                    lf_07 = '*' if system_info.licensed_feature_probe_sdk_g3 else ' '
+                    lf_08 = '*' if system_info.licensed_feature_probe_sdk_g4 else ' '
+                    lf_09 = '*' if system_info.licensed_feature_probe_sdk_g5 else ' '
 
-                lf_01 = '*' if system_info.licensed_feature_panel_pc else ' '
-                lf_02 = '*' if system_info.licensed_feature_panel_pc_demo else ' '
-                lf_03 = '*' if system_info.licensed_feature_work_orders else ' '
-                lf_04 = '*' if system_info.licensed_feature_opc_ua_server else ' '
-                lf_05 = '*' if system_info.licensed_feature_probe_sdk_g1 else ' '
-                lf_06 = '*' if system_info.licensed_feature_probe_sdk_g2 else ' '
-                lf_07 = '*' if system_info.licensed_feature_probe_sdk_g3 else ' '
-                lf_08 = '*' if system_info.licensed_feature_probe_sdk_g4 else ' '
-                lf_09 = '*' if system_info.licensed_feature_probe_sdk_g5 else ' '
-
-                self.ui.systemInfoEdit.append('')
-                self.ui.systemInfoEdit.append(f'  Licensed Features          : [ {lf_01} ] PanelPC')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_02} ] PanelPC Demo')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_03} ] Work Orders')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_04} ] OPC UA Server')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_05} ] Probe SDK Group 1')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_06} ] Probe SDK Group 2')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_07} ] Probe SDK Group 3')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_08} ] Probe SDK Group 4')
-                self.ui.systemInfoEdit.append(f'                               [ {lf_09} ] Probe SDK Group 5')
+                    self.ui.systemInfoEdit.append(f'  Licensed Features          : [ {lf_01} ] PanelPC')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_02} ] PanelPC Demo')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_03} ] Work Orders')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_04} ] OPC UA Server')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_05} ] Probe SDK Group 1')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_06} ] Probe SDK Group 2')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_07} ] Probe SDK Group 3')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_08} ] Probe SDK Group 4')
+                    self.ui.systemInfoEdit.append(f'                               [ {lf_09} ] Probe SDK Group 5')
 
         # update status bar
         text = 'UNKNOWN'
@@ -1950,8 +1950,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings tab system info
 
     def __update_spindle_buttons(self):
-
-        from PySide6.QtGui import QIcon
 
         SPINDLE_CW_DISABLED         = 0
         SPINDLE_CW_ENABLED_01       = 1
