@@ -13,18 +13,19 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      18/02/2026
+# Created:      10/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
+# pylint: disable=C0301 -> line-too-long
 # pylint: disable=R0903 -> too-few-public-methods
 #-------------------------------------------------------------------------------
 from pathlib import Path
 
 from PySide6.QtCore import QByteArray, QFile, QIODevice
-from PySide6.QtWidgets import QApplication
-
+from PySide6.QtGui import QGuiApplication
+from PySide6.QtWidgets import QApplication, QDialog
 
 # constants
 DEFAULT_STYLES_BASE_DIR = "styles"
@@ -33,6 +34,20 @@ DEFAULT_STYLES_BASE_DIR = "styles"
 #===
 #   Helper functions
 #=
+def move_dialog_to_screen_center(dialog: QDialog) -> None:
+    """Moves dialog widget to screen center."""
+    if not isinstance(dialog, QDialog):
+        return
+    screen = dialog.screen()
+    if screen is None:
+        screen = QGuiApplication.primaryScreen()
+    if screen is None:
+        return
+
+    dialog_rect = dialog.frameGeometry()
+    dialog_rect.moveCenter(screen.availableGeometry().center())
+    dialog.move(dialog_rect.topLeft())
+
 def read_text_resource(path: str, encoding: str = "utf-8") -> str:
     """
     Reads the contents of a text file from the file system **or** from a Qt resource.

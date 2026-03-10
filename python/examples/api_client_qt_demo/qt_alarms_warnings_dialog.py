@@ -18,29 +18,27 @@
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
-# #pylint: disable=C0116 -> missing-function-docstring
-# #pylint: disable=C0301 -> line-too-long
-# #pylint: disable=R0902 -> too-many-instance-attributes
-# #pylint: disable=R0912 -> too-many-branches
-# #pylint: disable=R0914 -> too-many-locals
-# #pylint: disable=R0915 -> too-many-statements
-# #pylint: disable=W0718 -> broad-exception-caught           ## take care when you use that ##
+# pylint: disable=C0301 -> line-too-long
+# pylint: disable=R0902 -> too-many-instance-attributes
+# pylint: disable=R0912 -> too-many-branches
 #-------------------------------------------------------------------------------
 from enum import IntEnum
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QDialog, QHeaderView, QPushButton, QTableWidgetItem
+from PySide6.QtWidgets import QButtonGroup, QDialog, QHeaderView, QPushButton, QTableWidgetItem
 
 from ui_alarms_warnings_dialog import Ui_AlarmsWarningsDialog
 
 import cnc_api_client_core as cnc
+from qt_utils import move_dialog_to_screen_center
 
 # define ui geometry constants
 DIALOG_FRAME_WIDTH      = 2
 
 
 class AlarmsWarningsMode(IntEnum):
+    """Alarms and warnings mode enumerations."""
     ALARMS_CURRENT      = 0
     ALARMS_HISTORY      = 1
     WARNINGS_CURRENT    = 2
@@ -48,6 +46,7 @@ class AlarmsWarningsMode(IntEnum):
 
 
 class AlarmsWarningsDialog(QDialog):
+    """Alarms and warnings dialog widget."""
 
     def __init__(
         self,
@@ -140,6 +139,10 @@ class AlarmsWarningsDialog(QDialog):
             }
             */
 
+            QPushButton:checked {
+                background-color: rgb(215, 215, 215);
+                border: 2px solid rgb(120, 120, 120);
+            }
         """
         )
 
@@ -167,11 +170,26 @@ class AlarmsWarningsDialog(QDialog):
         self.ui.messagesTableWidget.horizontalHeader().setFixedHeight(37)
         self.ui.messagesTableWidget.verticalHeader().setDefaultSectionSize(31)
         self.ui.messagesTableWidget.setFocusPolicy(Qt.NoFocus)
-        self.itemFont = QFont("Roboto", 10)
+        self.item_font = QFont("Roboto", 10)
 
         # sets attributes default values
         self.data = None
         self.data_mode = None
+
+        # create exclusive button group for mode buttons
+        self.mode_button_group = QButtonGroup(self)
+        self.mode_button_group.setExclusive(True)
+
+        self.mode_buttons = {
+            AlarmsWarningsMode.ALARMS_CURRENT: self.ui.modeAlarmsCurrentButton,
+            AlarmsWarningsMode.ALARMS_HISTORY: self.ui.modeAlarmsHistoryButton,
+            AlarmsWarningsMode.WARNINGS_CURRENT: self.ui.modeWarningsCurrentButton,
+            AlarmsWarningsMode.WARNINGS_HISTORY: self.ui.modeWarningsHistoryButtonButton,
+        }
+
+        for mode_key, button in self.mode_buttons.items():
+            button.setCheckable(True)
+            self.mode_button_group.addButton(button, int(mode_key))
 
         # link actions to all buttons
         for obj in self.findChildren(QPushButton):
@@ -188,9 +206,6 @@ class AlarmsWarningsDialog(QDialog):
 
     # == BEG: relink of native events from inherited Qt PySide6 UI design
     #
-    def closeEvent(self, event):
-        self.__on_form_close()
-        super().closeEvent(event)
     def showEvent(self, event):
         super().showEvent(event)
         self.__on_form_show()
@@ -228,21 +243,9 @@ class AlarmsWarningsDialog(QDialog):
     def __on_action_main_update(self):
         pass
 
-    def __on_form_close(self):
-        pass
-
     def __on_form_show(self):
-        # move dialot to screen center
-        from PySide6.QtGui import QGuiApplication
-        screen = self.screen()
-        if screen is None:
-            screen = QGuiApplication.primaryScreen()
-        if screen is None:
-            return
-
-        dialog_rect = self.frameGeometry()
-        dialog_rect.moveCenter(screen.availableGeometry().center())
-        self.move(dialog_rect.topLeft())
+        # move dialog to screen center
+        move_dialog_to_screen_center(self)
 
         # set default attributes values
         self.__set_mode(self.mode)
@@ -256,7 +259,7 @@ class AlarmsWarningsDialog(QDialog):
         self.__updated_objects()
 
         # update action main linked objects enablings
-        # self.__on_action_main_update()
+        self.__on_action_main_update()
     #
     # == END: events implementation
 
@@ -285,6 +288,10 @@ class AlarmsWarningsDialog(QDialog):
 
         self.ui.titleLabel.setProperty("alarmMode", alarm_mode)
         self.ui.titleLabel.setText(text)
+
+        button = self.mode_buttons.get(mode)
+        if button is not None:
+            button.setChecked(True)
 
         # refresh stylesheet owner
         self.setStyleSheet(self.styleSheet())
@@ -353,7 +360,7 @@ class AlarmsWarningsDialog(QDialog):
                 if item is None:
                     item = QTableWidgetItem()
                     self.ui.messagesTableWidget.setItem(r, c, item)
-                item.setFont(self.itemFont)
+                item.setFont(self.item_font)
                 if (r + 1) > data_count:
                     item.setText('')
                     continue
