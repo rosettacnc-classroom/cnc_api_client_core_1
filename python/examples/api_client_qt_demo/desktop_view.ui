@@ -2018,6 +2018,97 @@
      <attribute name="title">
       <string>Machining Info</string>
      </attribute>
+     <widget class="QRadioButton" name="minfoTCPExtentsInfoRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>8</y>
+        <width>137</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>TCP EXENTS INFO</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="minfoJointsInfoRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>8</y>
+        <width>113</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>JOINTS INFO</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="minfoUsedToolInfoRadioButton">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>8</y>
+        <width>160</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>USED TOOL INFO</string>
+      </property>
+     </widget>
+     <widget class="QTextEdit" name="minfoDataEdit">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>30</y>
+        <width>891</width>
+        <height>331</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::NoFrame</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabUIDialogs">
      <attribute name="title">
@@ -4705,7 +4796,7 @@ after STOP</string>
         <string/>
        </property>
        <property name="textFormat">
-        <enum>Qt::TextFormat::PlainText</enum>
+        <enum>Qt::TextFormat::RichText</enum>
        </property>
       </widget>
      </widget>

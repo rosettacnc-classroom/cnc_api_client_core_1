@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QPushButton,
+    QRadioButton,
     QSlider,
     QTableWidgetItem
 )
@@ -361,12 +362,20 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.units_mode = cnc.UM_METRIC
 
         # in use cached variables to reduce UI update time
+        self.machining_info_in_use = None
         self.system_info_in_use = None
         self.coordinates_system_info_in_use = None
 
         # create an action to manage all event executions
         self.on_action_main_execute = QAction("", self)
         self.on_action_main_execute.triggered.connect(self.__on_action_main_execute)
+
+        # create and set apply wcs mode group
+        self.apply_wcs_mode_group = QButtonGroup(self)
+        self.apply_wcs_mode_group.addButton(self.ui.csActivateWCSOnlyRadioButton, 0)
+        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetOnlyRadioButton, 1)
+        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetAndActivateRadioButton, 2)
+        self.apply_wcs_mode_group.idClicked.connect(self.__on_button_group_clicked)
 
         # link actions to all edits
         for obj in self.findChildren(QLineEdit):
@@ -385,12 +394,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         for obj in self.findChildren(QCheckBox):
             obj.clicked.connect(self.__on_check_box_clicked)
 
-        # link actions to all radio buttons
-        self.apply_wcs_mode_group = QButtonGroup(self)
-        self.apply_wcs_mode_group.addButton(self.ui.csActivateWCSOnlyRadioButton, 0)
-        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetOnlyRadioButton, 1)
-        self.apply_wcs_mode_group.addButton(self.ui.csSetWCSOffsetAndActivateRadioButton, 2)
-        self.apply_wcs_mode_group.idClicked.connect(self.__on_button_group_clicked)
+        # link actions to all radio button
+        for obj in self.findChildren(QRadioButton):
+            obj.clicked.connect(self.__on_radio_button_clicked)
 
         # link actions to override value labels enabled to double-click
         self.override_value_labels = {
@@ -1151,6 +1157,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.slider_update_inhibition_until = time.perf_counter() + SETTLE_TIME_SLIDER
                 return
 
+    def __on_radio_button_clicked(self):
+        sender = self.sender()
+        if sender in [
+            self.ui.minfoTCPExtentsInfoRadioButton,
+            self.ui.minfoJointsInfoRadioButton,
+            self.ui.minfoUsedToolInfoRadioButton,
+        ]:
+            self.machining_info_in_use = None
+            self.__updated_objects()
+
     def __on_slider_action(self, action_value: int):
         sender: QSlider = self.sender()
         action =  QAbstractSlider.SliderAction(action_value)
@@ -1509,10 +1525,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 text = f'T{cnc_info.tool_id:d} -'
             else:
                 text = f'T{cnc_info.tool_id:d} Slot:{cnc_info.tool_slot:d} -'
-            text = text + ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
-            text = text + ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
-            text = text + ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
-            self.ui.toolInfoLabel.setText(text)
+            tx = ' X:' + format_float(cnc_info.tool_offset_x, um_decimals, DecimalsTrimMode.FULL)
+            ty = ' Y:' + format_float(cnc_info.tool_offset_y, um_decimals, DecimalsTrimMode.FULL)
+            tz = ' Z:' + format_float(cnc_info.tool_offset_z, um_decimals, DecimalsTrimMode.FULL)
+            if cnc_info.tool_offset_x != 0:
+                tx = f'<b>{tx}</b>'
+            if cnc_info.tool_offset_y != 0:
+                ty = f'<b>{ty}</b>'
+            if cnc_info.tool_offset_z != 0:
+                tz = f'<B>{tz}</B>'
+            description = f'{cnc_info.tool_description}'
+            if description != '':
+                description = f' - {description}'
+            self.ui.toolInfoLabel.setText(f'{text}{tx}{ty}{tz}{description}')
 
         # updates tab axes position plot
         if self.ui.tabWidgetMain.currentWidget() == self.ui.tabAxesPositionPlot:
@@ -1679,7 +1704,134 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # updates tab machining info
         if self.ui.tabWidget.currentWidget() == self.ui.tabMachiningInfo:
-            pass
+            machining_info = self.api.get_machining_info()
+            if not cnc.APIMachiningInfo.are_equal(self.machining_info_in_use, machining_info):
+                self.machining_info_in_use = machining_info
+                m = machining_info
+                lf = um_spc_lf.format
+                rf = um_spc_rf.format
+                if self.ui.minfoTCPExtentsInfoRadioButton.isChecked():
+                    text = (
+                        'TOOL PATH\n'
+                        '=========\n'
+                        'IN FAST    {}\n'
+                        'IN FEED    {}\n'
+                        'TOTAL PATH {}\n'
+                        'PLANNED TIME      {}\n'
+                        '\n'
+                        '\n'
+                        'TCP EXTENTS IN FAST               TCP EXTENTS IN FEED\n'
+                        '===================               ===================\n'
+                        'MIN X      {}        MIN X       {}\n'
+                        'MIN Y      {}        MIN Y       {}\n'
+                        'MIN Z      {}        MIN Z       {}\n'
+                        'MAX X      {}        MAX X       {}\n'
+                        'MAX Y      {}        MAX Y       {}\n'
+                        'MAX Z      {}        MAX Z       {}\n'
+                        'LENGTH X   {}        LENGTH X    {}\n'
+                        'LENGTH Y   {}        LENGTH Y    {}\n'
+                        'LENTGH Z   {}        LENTGH Z    {}\n'
+                    ).format(
+                        lf(m.tool_path_in_fast),
+                        lf(m.tool_path_in_feed),
+                        lf(m.total_path),
+                        m.planned_time,
+                        lf(m.tcp_extents_in_fast_min_x), lf(m.tcp_extents_in_feed_min_x),
+                        lf(m.tcp_extents_in_fast_min_y), lf(m.tcp_extents_in_feed_min_y),
+                        lf(m.tcp_extents_in_fast_min_z), lf(m.tcp_extents_in_feed_min_z),
+                        lf(m.tcp_extents_in_fast_max_x), lf(m.tcp_extents_in_feed_max_x),
+                        lf(m.tcp_extents_in_fast_max_y), lf(m.tcp_extents_in_feed_max_y),
+                        lf(m.tcp_extents_in_fast_max_z), lf(m.tcp_extents_in_feed_max_z),
+                        lf(m.tcp_extents_in_fast_length_x), lf(m.tcp_extents_in_feed_length_x),
+                        lf(m.tcp_extents_in_fast_length_y), lf(m.tcp_extents_in_feed_length_y),
+                        lf(m.tcp_extents_in_fast_length_z), lf(m.tcp_extents_in_feed_length_z),
+                    )
+                elif self.ui.minfoJointsInfoRadioButton.isChecked():
+                    text = (
+                        'JOINTS IN FAST                    JOINTS IN FEED\n'
+                        '==============                    ==============\n'
+                        'MIN X      {}        MIN X       {}\n'
+                        'MIN Y      {}        MIN Y       {}\n'
+                        'MIN Z      {}        MIN Z       {}\n'
+                        'MIN A      {}        MIN A       {}\n'
+                        'MIN B      {}        MIN B       {}\n'
+                        'MIN C      {}        MIN C       {}\n'
+                        'MAX X      {}        MAX X       {}\n'
+                        'MAX Y      {}        MAX Y       {}\n'
+                        'MAX Z      {}        MAX Z       {}\n'
+                        'MAX A      {}        MAX A       {}\n'
+                        'MAX B      {}        MAX B       {}\n'
+                        'MAX C      {}        MAX C       {}\n'
+                        'LENGTH X   {}        LENGTH X    {}\n'
+                        'LENGTH Y   {}        LENGTH Y    {}\n'
+                        'LENGTH Z   {}        LENGTH Z    {}\n'
+                        'LENGTH A   {}        LENGTH A    {}\n'
+                        'LENGTH B   {}        LENGTH B    {}\n'
+                        'LENGTH C   {}        LENGTH C    {}\n'
+                    ).format(
+                        lf(m.joints_in_fast_min_x), lf(m.joints_in_feed_min_x),
+                        lf(m.joints_in_fast_min_y), lf(m.joints_in_feed_min_y),
+                        lf(m.joints_in_fast_min_z), lf(m.joints_in_feed_min_z),
+                        rf(m.joints_in_fast_min_a), rf(m.joints_in_feed_min_a),
+                        rf(m.joints_in_fast_min_b), rf(m.joints_in_feed_min_b),
+                        rf(m.joints_in_fast_min_c), rf(m.joints_in_feed_min_c),
+                        lf(m.joints_in_fast_max_x), lf(m.joints_in_feed_max_x),
+                        lf(m.joints_in_fast_max_y), lf(m.joints_in_feed_max_y),
+                        lf(m.joints_in_fast_max_z), lf(m.joints_in_feed_max_z),
+                        rf(m.joints_in_fast_max_a), rf(m.joints_in_feed_max_a),
+                        rf(m.joints_in_fast_max_b), rf(m.joints_in_feed_max_b),
+                        rf(m.joints_in_fast_max_c), rf(m.joints_in_feed_max_c),
+                        lf(m.joints_in_fast_length_x), lf(m.joints_in_feed_length_x),
+                        lf(m.joints_in_fast_length_y), lf(m.joints_in_feed_length_y),
+                        lf(m.joints_in_fast_length_z), lf(m.joints_in_feed_length_z),
+                        rf(m.joints_in_fast_length_a), rf(m.joints_in_feed_length_a),
+                        rf(m.joints_in_fast_length_b), rf(m.joints_in_feed_length_b),
+                        rf(m.joints_in_fast_length_c), rf(m.joints_in_feed_length_c),
+                    )
+                elif self.ui.minfoUsedToolInfoRadioButton.isChecked():
+                    TEXT_LINES_FOR_USED_TOOL = 5
+                    MAX_VISIBLE_USED_TOOL_COLS = 4
+                    MAX_VISIBLE_USED_TOOL_ROWS = 4
+                    COLUMN_WIDTH = 30
+
+                    tools = len(m.used_tool)
+                    capacity = MAX_VISIBLE_USED_TOOL_COLS * MAX_VISIBLE_USED_TOOL_ROWS
+
+                    if tools == 0:
+                        text = 'USED TOOL INFO EMPTY'
+                    else:
+                        lines = [''] * (MAX_VISIBLE_USED_TOOL_ROWS * TEXT_LINES_FOR_USED_TOOL)
+                        visible_tools = min(tools, capacity)
+
+                        for tool_index in range(visible_tools):
+                            row = tool_index % MAX_VISIBLE_USED_TOOL_ROWS
+                            line_index = row * TEXT_LINES_FOR_USED_TOOL
+                            tool = m.used_tool[tool_index]
+
+                            lines[line_index + 0] += f'TOOL {tool.tool_id:3d}'
+                            lines[line_index + 1] += '========'
+                            lines[line_index + 2] += f'In Fast{lf(tool.in_fast)}'
+                            lines[line_index + 3] += f'In Feed{lf(tool.in_feed)}'
+
+                            is_last_in_column = (
+                                row == MAX_VISIBLE_USED_TOOL_ROWS - 1 or
+                                tool_index == visible_tools - 1
+                            )
+                            if is_last_in_column:
+                                for i, line in enumerate(lines):
+                                    pad = (-len(line)) % COLUMN_WIDTH
+                                    lines[i] += ' ' * pad
+
+                        text = '\n'.join(lines)
+
+                        if tools > capacity:
+                            text += (
+                                f'\nPS: Used tools are {tools}, '
+                                f'but here we have space to view only {capacity} of them'
+                            )
+                else:
+                    text = 'UNKNOWED FEATURE'
+                self.ui.minfoDataEdit.setText(text)
 
         # updates tab ui dialogs
         if self.ui.tabWidget.currentWidget() == self.ui.tabUIDialogs:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewjXwFKD.ui'
+## Form generated from reading UI file 'desktop_viewbPpmpK.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -585,6 +585,30 @@ class Ui_DesktopView(object):
         self.tabWidget.addTab(self.tabScanningLaser, "")
         self.tabMachiningInfo = QWidget()
         self.tabMachiningInfo.setObjectName(u"tabMachiningInfo")
+        self.minfoTCPExtentsInfoRadioButton = QRadioButton(self.tabMachiningInfo)
+        self.minfoTCPExtentsInfoRadioButton.setObjectName(u"minfoTCPExtentsInfoRadioButton")
+        self.minfoTCPExtentsInfoRadioButton.setGeometry(QRect(16, 8, 137, 20))
+        self.minfoTCPExtentsInfoRadioButton.setFont(font1)
+        self.minfoTCPExtentsInfoRadioButton.setChecked(True)
+        self.minfoJointsInfoRadioButton = QRadioButton(self.tabMachiningInfo)
+        self.minfoJointsInfoRadioButton.setObjectName(u"minfoJointsInfoRadioButton")
+        self.minfoJointsInfoRadioButton.setGeometry(QRect(160, 8, 113, 20))
+        self.minfoJointsInfoRadioButton.setFont(font1)
+        self.minfoUsedToolInfoRadioButton = QRadioButton(self.tabMachiningInfo)
+        self.minfoUsedToolInfoRadioButton.setObjectName(u"minfoUsedToolInfoRadioButton")
+        self.minfoUsedToolInfoRadioButton.setGeometry(QRect(280, 8, 160, 20))
+        self.minfoUsedToolInfoRadioButton.setFont(font1)
+        self.minfoDataEdit = QTextEdit(self.tabMachiningInfo)
+        self.minfoDataEdit.setObjectName(u"minfoDataEdit")
+        self.minfoDataEdit.setGeometry(QRect(10, 30, 891, 331))
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.minfoDataEdit.sizePolicy().hasHeightForWidth())
+        self.minfoDataEdit.setSizePolicy(sizePolicy)
+        self.minfoDataEdit.setFont(font2)
+        self.minfoDataEdit.setFrameShape(QFrame.Shape.NoFrame)
+        self.minfoDataEdit.setReadOnly(True)
         self.tabWidget.addTab(self.tabMachiningInfo, "")
         self.tabUIDialogs = QWidget()
         self.tabUIDialogs.setObjectName(u"tabUIDialogs")
@@ -630,9 +654,6 @@ class Ui_DesktopView(object):
         self.systemInfoEdit = QTextEdit(self.tabSystemInfo)
         self.systemInfoEdit.setObjectName(u"systemInfoEdit")
         self.systemInfoEdit.setGeometry(QRect(0, 0, 921, 393))
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.systemInfoEdit.sizePolicy().hasHeightForWidth())
         self.systemInfoEdit.setSizePolicy(sizePolicy)
         self.systemInfoEdit.setFont(font2)
@@ -1214,7 +1235,7 @@ class Ui_DesktopView(object):
         sizePolicy.setHeightForWidth(self.toolInfoLabel.sizePolicy().hasHeightForWidth())
         self.toolInfoLabel.setSizePolicy(sizePolicy)
         self.toolInfoLabel.setFont(font8)
-        self.toolInfoLabel.setTextFormat(Qt.TextFormat.PlainText)
+        self.toolInfoLabel.setTextFormat(Qt.TextFormat.RichText)
         self.cfsmCoolantMistButton = QStatusPushButton(self.tabGeneral)
         self.cfsmCoolantMistButton.setObjectName(u"cfsmCoolantMistButton")
         self.cfsmCoolantMistButton.setGeometry(QRect(713, 126, 60, 60))
@@ -1521,6 +1542,9 @@ class Ui_DesktopView(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabDIO), QCoreApplication.translate("DesktopView", u"D I/O", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabAIO), QCoreApplication.translate("DesktopView", u"A I/O", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabScanningLaser), QCoreApplication.translate("DesktopView", u"Scanning Laser", None))
+        self.minfoTCPExtentsInfoRadioButton.setText(QCoreApplication.translate("DesktopView", u"TCP EXENTS INFO", None))
+        self.minfoJointsInfoRadioButton.setText(QCoreApplication.translate("DesktopView", u"JOINTS INFO", None))
+        self.minfoUsedToolInfoRadioButton.setText(QCoreApplication.translate("DesktopView", u"USED TOOL INFO", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabMachiningInfo), QCoreApplication.translate("DesktopView", u"Machining Info", None))
         self.uidAboutButton.setText(QCoreApplication.translate("DesktopView", u"About...", None))
         self.uidATCManagementButton.setText(QCoreApplication.translate("DesktopView", u"ATC Management", None))

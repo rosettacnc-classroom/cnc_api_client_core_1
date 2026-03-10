@@ -59,26 +59,10 @@ FileName=$[Project-Path]resources_rc.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node12]
 ClassName=TProjectFileNode
-FileName=$[Project-Path]ui_alarms_warnings_dialog.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node13]
-ClassName=TProjectFileNode
-FileName=$[Project-Path]ui_desktop_view.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node14]
-ClassName=TProjectFileNode
-FileName=$[Project-Path]ui_user_media_dialog.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node15]
-ClassName=TProjectFileNode
-FileName=$[Project-Path]ui_user_message_dialog.py
-
-[Project\ChildNodes\Node0\ChildNodes\Node16]
-ClassName=TProjectFileNode
 FileName=$[Project-Path]utils.py
 
 [Project\ChildNodes\Node0\ChildNodes]
-Count=17
+Count=13
 
 [Project\ChildNodes\Node1]
 ClassName=TProjectRunConfiguationsNode

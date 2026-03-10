@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      03/03/2026
+# Created:      10/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -43,6 +43,7 @@ from lottie_widget import LottieWidget
 
 import cnc_api_client_core as cnc
 from utils import DecimalsTrimMode, format_float
+from qt_utils import move_dialog_to_screen_center
 
 # == digits in float
 FLOAT_USE_DIGITS                    = 6
@@ -166,7 +167,7 @@ class UserMediaDialog(QDialog):
         ]
 
         # define non-public attributes
-        self.__allow_close = True
+        self.__allow_close = False
         self.__in_update = False
 
         # define attributes
@@ -261,6 +262,9 @@ class UserMediaDialog(QDialog):
 
     def __on_form_show(self):
         self.__in_update = False
+
+        # move dialog to screen center
+        move_dialog_to_screen_center(self)
 
         # update editable fields
         self.__update_editable_fields()
@@ -548,7 +552,7 @@ class UserMessageDialog(QDialog):
         ]
 
         # define non-public attributes
-        self.__allow_close = True
+        self.__allow_close = False
         self.__in_update = False
 
         # link actions to all buttons
@@ -640,6 +644,9 @@ class UserMessageDialog(QDialog):
 
     def __on_form_show(self):
         self.__in_update = False
+
+        # move dialog to screen center
+        move_dialog_to_screen_center(self)
 
         # update editable fields
         self.__update_editable_fields()
