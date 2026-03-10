@@ -1830,7 +1830,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                                 f'but here we have space to view only {capacity} of them'
                             )
                 else:
-                    text = 'UNKNOWED FEATURE'
+                    text = 'UNKNOWN FEATURE'
                 self.ui.minfoDataEdit.setText(text)
 
         # updates tab ui dialogs
