@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'alarms_warnings_dialogMnYbFh.ui'
+## Form generated from reading UI file 'alarms_warnings_dialoggeiAwL.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -19,12 +19,13 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QDialog, QFrame,
     QHBoxLayout, QHeaderView, QLabel, QPushButton,
     QSizePolicy, QSpacerItem, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget)
+import resources_rc
 
 class Ui_AlarmsWarningsDialog(object):
     def setupUi(self, AlarmsWarningsDialog):
         if not AlarmsWarningsDialog.objectName():
             AlarmsWarningsDialog.setObjectName(u"AlarmsWarningsDialog")
-        AlarmsWarningsDialog.resize(930, 637)
+        AlarmsWarningsDialog.resize(910, 637)
         AlarmsWarningsDialog.setStyleSheet(u"")
         self.mainLayout = QVBoxLayout(AlarmsWarningsDialog)
         self.mainLayout.setSpacing(0)
@@ -38,12 +39,12 @@ class Ui_AlarmsWarningsDialog(object):
         self.dialogFrame.setLineWidth(2)
         self.dialogFrame.setProperty(u"isDialogFrame", True)
         self.contentLayout = QVBoxLayout(self.dialogFrame)
-        self.contentLayout.setSpacing(8)
+        self.contentLayout.setSpacing(6)
         self.contentLayout.setObjectName(u"contentLayout")
-        self.contentLayout.setContentsMargins(8, 8, 8, 8)
+        self.contentLayout.setContentsMargins(6, 6, 6, 6)
         self.titleLabel = QLabel(self.dialogFrame)
         self.titleLabel.setObjectName(u"titleLabel")
-        self.titleLabel.setMinimumSize(QSize(0, 44))
+        self.titleLabel.setMinimumSize(QSize(0, 45))
         self.titleLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.contentLayout.addWidget(self.titleLabel)
@@ -73,7 +74,7 @@ class Ui_AlarmsWarningsDialog(object):
         self.messagesTableWidget.setItem(0, 3, __qtablewidgetitem7)
         self.messagesTableWidget.setObjectName(u"messagesTableWidget")
         self.messagesTableWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.messagesTableWidget.setAlternatingRowColors(False)
+        self.messagesTableWidget.setAlternatingRowColors(True)
         self.messagesTableWidget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.messagesTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.messagesTableWidget.setShowGrid(True)
@@ -91,7 +92,7 @@ class Ui_AlarmsWarningsDialog(object):
         self.footerLayout.setObjectName(u"footerLayout")
         self.resetButton = QPushButton(self.dialogFrame)
         self.resetButton.setObjectName(u"resetButton")
-        self.resetButton.setMinimumSize(QSize(0, 0))
+        self.resetButton.setMinimumSize(QSize(120, 60))
         self.resetButton.setAutoDefault(False)
 
         self.footerLayout.addWidget(self.resetButton)
@@ -105,28 +106,45 @@ class Ui_AlarmsWarningsDialog(object):
         self.centerButtonsLayout.setObjectName(u"centerButtonsLayout")
         self.modeAlarmsCurrentButton = QPushButton(self.dialogFrame)
         self.modeAlarmsCurrentButton.setObjectName(u"modeAlarmsCurrentButton")
-        self.modeAlarmsCurrentButton.setMinimumSize(QSize(146, 74))
+        self.modeAlarmsCurrentButton.setMinimumSize(QSize(130, 50))
+        self.modeAlarmsCurrentButton.setStyleSheet(u"")
+        icon = QIcon()
+        icon.addFile(u":/images/images/alarms.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.modeAlarmsCurrentButton.setIcon(icon)
+        self.modeAlarmsCurrentButton.setIconSize(QSize(32, 32))
         self.modeAlarmsCurrentButton.setAutoDefault(False)
 
         self.centerButtonsLayout.addWidget(self.modeAlarmsCurrentButton)
 
         self.modeAlarmsHistoryButton = QPushButton(self.dialogFrame)
         self.modeAlarmsHistoryButton.setObjectName(u"modeAlarmsHistoryButton")
-        self.modeAlarmsHistoryButton.setMinimumSize(QSize(146, 74))
+        self.modeAlarmsHistoryButton.setMinimumSize(QSize(130, 50))
+        icon1 = QIcon()
+        icon1.addFile(u":/images/images/alarms-history.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.modeAlarmsHistoryButton.setIcon(icon1)
+        self.modeAlarmsHistoryButton.setIconSize(QSize(32, 32))
         self.modeAlarmsHistoryButton.setAutoDefault(False)
 
         self.centerButtonsLayout.addWidget(self.modeAlarmsHistoryButton)
 
         self.modeWarningsCurrentButton = QPushButton(self.dialogFrame)
         self.modeWarningsCurrentButton.setObjectName(u"modeWarningsCurrentButton")
-        self.modeWarningsCurrentButton.setMinimumSize(QSize(146, 74))
+        self.modeWarningsCurrentButton.setMinimumSize(QSize(130, 50))
+        icon2 = QIcon()
+        icon2.addFile(u":/images/images/warnings_dev.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.modeWarningsCurrentButton.setIcon(icon2)
+        self.modeWarningsCurrentButton.setIconSize(QSize(32, 32))
         self.modeWarningsCurrentButton.setAutoDefault(False)
 
         self.centerButtonsLayout.addWidget(self.modeWarningsCurrentButton)
 
         self.modeWarningsHistoryButtonButton = QPushButton(self.dialogFrame)
         self.modeWarningsHistoryButtonButton.setObjectName(u"modeWarningsHistoryButtonButton")
-        self.modeWarningsHistoryButtonButton.setMinimumSize(QSize(146, 74))
+        self.modeWarningsHistoryButtonButton.setMinimumSize(QSize(130, 50))
+        icon3 = QIcon()
+        icon3.addFile(u":/images/images/warnings-history.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.modeWarningsHistoryButtonButton.setIcon(icon3)
+        self.modeWarningsHistoryButtonButton.setIconSize(QSize(32, 32))
         self.modeWarningsHistoryButtonButton.setAutoDefault(False)
 
         self.centerButtonsLayout.addWidget(self.modeWarningsHistoryButtonButton)
@@ -140,7 +158,7 @@ class Ui_AlarmsWarningsDialog(object):
 
         self.exitButton = QPushButton(self.dialogFrame)
         self.exitButton.setObjectName(u"exitButton")
-        self.exitButton.setMinimumSize(QSize(0, 0))
+        self.exitButton.setMinimumSize(QSize(120, 60))
         self.exitButton.setAutoDefault(False)
 
         self.footerLayout.addWidget(self.exitButton)
@@ -175,14 +193,14 @@ class Ui_AlarmsWarningsDialog(object):
         self.messagesTableWidget.setSortingEnabled(__sortingEnabled)
 
         self.resetButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"RESET", None))
-        self.modeAlarmsCurrentButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"Current\n"
-"Alarms", None))
-        self.modeAlarmsHistoryButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"Alarms\n"
-"History", None))
-        self.modeWarningsCurrentButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"Current\n"
-"Warnings", None))
-        self.modeWarningsHistoryButtonButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"Warning\n"
-"History", None))
+        self.modeAlarmsCurrentButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"   Current\n"
+"   Alarms", None))
+        self.modeAlarmsHistoryButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"   Alarms\n"
+"   History", None))
+        self.modeWarningsCurrentButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"   Current\n"
+"   Warnings", None))
+        self.modeWarningsHistoryButtonButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"   Warning\n"
+"   History", None))
         self.exitButton.setText(QCoreApplication.translate("AlarmsWarningsDialog", u"EXIT", None))
     # retranslateUi
 

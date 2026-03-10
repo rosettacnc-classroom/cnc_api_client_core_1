@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="images">
+    <file>images/alarms.svg</file>
+    <file>images/alarms-history.svg</file>
+    <file>images/warnings_dev.svg</file>
+    <file>images/warnings-history.svg</file>
     <file>images/aux_01_disabled.svg</file>
     <file>images/aux_01_enabled_1.svg</file>
     <file>images/aux_01_enabled_2.svg</file>

@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      09/03/2026
+# Created:      10/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -102,9 +102,10 @@ class AlarmsWarningsDialog(QDialog):
             }
 
             QTableWidget {
-                background-color: rgb(232, 232, 232);
+                background-color: #FFFFFF;
+                alternate-background-color: #F6F6F6;
                 gridline-color: rgb(195, 195, 195);
-                selection-background-color: rgb(230, 211, 191);
+                selection-background-color: #F6DCC6;
                 selection-color: rgb(0, 0, 0);
                 border: 1px solid rgb(180, 180, 180);
             }
@@ -115,6 +116,30 @@ class AlarmsWarningsDialog(QDialog):
                 border: 1px solid rgb(90, 90, 90);
                 font: 700 11pt "Roboto Bold";
             }
+
+            /* here you can change the table vertical scrollbar
+            QTableWidget QScrollBar:vertical {
+                width: 18px;
+                margin: 0px;
+                background: #f0f0f0;
+            }
+
+            QTableWidget QScrollBar::handle:vertical {
+                background: #b0b0b0;
+                min-height: 20px;
+            }
+
+            QTableWidget QScrollBar::add-line:vertical,
+            QTableWidget QScrollBar::sub-line:vertical {
+                height: 0px;
+            }
+
+            QTableWidget QScrollBar::add-page:vertical,
+            QTableWidget QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            */
+
         """
         )
 
@@ -134,15 +159,17 @@ class AlarmsWarningsDialog(QDialog):
         # set mesasge table wiget settings
         self.ui.messagesTableWidget.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.ui.messagesTableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
-        self.ui.messagesTableWidget.setColumnWidth(0, 60)
+        self.ui.messagesTableWidget.setColumnWidth(0, 57)
         self.ui.messagesTableWidget.setColumnWidth(1, 140)
         self.ui.messagesTableWidget.setColumnWidth(2, 70)
         self.ui.messagesTableWidget.setColumnWidth(3, 120)
         self.ui.messagesTableWidget.horizontalHeaderItem(3).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        self.ui.messagesTableWidget.horizontalHeader().setFixedHeight(37)
+        self.ui.messagesTableWidget.verticalHeader().setDefaultSectionSize(31)
         self.ui.messagesTableWidget.setFocusPolicy(Qt.NoFocus)
         self.itemFont = QFont("Roboto", 10)
 
-        #
+        # sets attributes default values
         self.data = None
         self.data_mode = None
 
@@ -205,6 +232,18 @@ class AlarmsWarningsDialog(QDialog):
         pass
 
     def __on_form_show(self):
+        # move dialot to screen center
+        from PySide6.QtGui import QGuiApplication
+        screen = self.screen()
+        if screen is None:
+            screen = QGuiApplication.primaryScreen()
+        if screen is None:
+            return
+
+        dialog_rect = self.frameGeometry()
+        dialog_rect.moveCenter(screen.availableGeometry().center())
+        self.move(dialog_rect.topLeft())
+
         # set default attributes values
         self.__set_mode(self.mode)
 
