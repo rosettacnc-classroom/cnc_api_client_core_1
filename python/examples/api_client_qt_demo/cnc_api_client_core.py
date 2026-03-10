@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      09/03/2026
+# Created:      10/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -490,19 +490,19 @@ class APIAlarmsWarningsList(APIComparableMixin):
         self.has_data: bool                     = False
         self.list                               = []
 
-class APIAnalogInputs:
+class APIAnalogInputs(APIComparableMixin):
     """API data structure for analog inputs."""
     def __init__(self):
         self.has_data                           = False
         self.value                              = [0.0] * 16
 
-class APIAnalogOutputs:
+class APIAnalogOutputs(APIComparableMixin):
     """API data structure for analog outputs."""
     def __init__(self):
         self.has_data                           = False
         self.value                              = [0.0] * 16
 
-class APIAxesInfo:
+class APIAxesInfo(APIComparableMixin):
     """API data structure for axes info."""
     def __init__(self):
         self.has_data                           = False
@@ -614,7 +614,7 @@ class APICncInfo(APIComparableMixin):
         self.tool_param_3                       = 0.0
         self.tool_description                   = ''
 
-class APICncParameters:
+class APICncParameters(APIComparableMixin):
     """API data structure for cnc parameters."""
     def __init__(self):
         self.has_data                           = False
@@ -622,7 +622,7 @@ class APICncParameters:
         self.values                             = []
         self.descriptions                       = []
 
-class APICompileInfo:
+class APICompileInfo(APIComparableMixin):
     """API data structure for compile info."""
     def __init__(self):
         self.has_data                           = False
@@ -649,19 +649,19 @@ class APICoordinateSystemsInfo(APIComparableMixin):
         self.wcs_8                              = [0.0] * 6
         self.wcs_9                              = [0.0] * 6
 
-class APIDigitalInputs:
+class APIDigitalInputs(APIComparableMixin):
     """API data structure for digital inputs."""
     def __init__(self):
         self.has_data                           = False
         self.value                              = [0] * 128
 
-class APIDigitalOutputs:
+class APIDigitalOutputs(APIComparableMixin):
     """API data structure for digital outputs."""
     def __init__(self):
         self.has_data                           = False
         self.value                              = [0] * 128
 
-class APIEnabledCommands:
+class APIEnabledCommands(APIComparableMixin):
     """API data structure for enabled commands."""
     def __init__(self):
         self.has_data                           = False
@@ -706,7 +706,7 @@ class APIEnabledCommands:
         self.show_ui_dialog                     = False
         self.tools_lib_write                    = False
 
-class APILocalizationInfo:
+class APILocalizationInfo(APIComparableMixin):
     """API data structure with machine settings."""
 
     class LocalizationData:
@@ -727,7 +727,7 @@ class APILocalizationInfo:
         self.description                        = None
         self.list                               = []
 
-class APIMachineSettings:
+class APIMachineSettings(APIComparableMixin):
     """API data structure with machine settings."""
     def __init__(self):
         self.has_data                           = False
@@ -770,14 +770,14 @@ class APIMachineSettings:
         self.kinematics_j_y                     = 0.0
         self.kinematics_j_z                     = 0.0
 
-class APIMachiningInfoUsedTool:
+class APIMachiningInfoUsedTool(APIComparableMixin):
     """API data structure with used tool info."""
     def __init__(self):
         self.tool_id                            = 0
         self.in_fast                            = 0.0
         self.in_feed                            = 0.0
 
-class APIMachiningInfo:
+class APIMachiningInfo(APIComparableMixin):
     """API data structure for machining info."""
     def __init__(self):
         self.has_data                           = False
@@ -841,7 +841,7 @@ class APIMachiningInfo:
         self.joints_in_feed_length_b            = 0.0
         self.joints_in_feed_length_c            = 0.0
 
-class APIOperatorRequest:
+class APIOperatorRequest(APIComparableMixin):
     """API data structure for operator request."""
     def __init__(self):
         self.has_data                           = False
@@ -862,7 +862,7 @@ class APIOperatorRequest:
         self.data_d10                           = None
         self.external_continue_requested        = False
 
-class APIOperatorResponse:
+class APIOperatorResponse(APIComparableMixin):
     """API data structure for operator response."""
     def __init__(self):
         self.id                                 = ''
@@ -880,6 +880,7 @@ class APIOperatorResponse:
         self.data_d10                           = None
 
     def copy_data_from_request(self, request: APIOperatorRequest = None) -> bool:
+        """Copy data from a request."""
         if not isinstance(request, APIOperatorRequest):
             return False
         self.data_elements                      = request.data_elements
@@ -895,20 +896,20 @@ class APIOperatorResponse:
         self.data_d10                           = request.data_d10
         return True
 
-class APIProgramInfo:
+class APIProgramInfo(APIComparableMixin):
     """API data structure for program info."""
     def __init__(self):
         self.has_data                           = False
         self.file_name                          = ""
         self.code                               = ""
 
-class APIProgrammedPoints:
+class APIProgrammedPoints(APIComparableMixin):
     """API data structure for programmed points."""
     def __init__(self):
         self.has_data                           = False
         self.points                             = []
 
-class APIScanningLaserInfo:
+class APIScanningLaserInfo(APIComparableMixin):
     """API data structure for scanning laser info."""
     def __init__(self):
         self.has_data                           = False
@@ -939,14 +940,23 @@ class APISystemInfo(APIComparableMixin):
         self.operative_system                   = ''
         self.operative_system_crc               = ''
         self.pld_version                        = ''
+        self.licensed_feature_panel_pc          = False
+        self.licensed_feature_panel_pc_demo     = False
+        self.licensed_feature_work_orders       = False
+        self.licensed_feature_opc_ua_server     = False
+        self.licensed_feature_probe_sdk_g1      = False
+        self.licensed_feature_probe_sdk_g2      = False
+        self.licensed_feature_probe_sdk_g3      = False
+        self.licensed_feature_probe_sdk_g4      = False
+        self.licensed_feature_probe_sdk_g5      = False
 
-class APIToolsLibCount:
+class APIToolsLibCount(APIComparableMixin):
     """API data structure for tools library count."""
     def __init__(self):
         self.has_data                           = False
         self.count                              = 0
 
-class APIToolsLibInfoForGet:
+class APIToolsLibInfoForGet(APIComparableMixin):
     """API data structure for tools lib info for get."""
     def __init__(self):
         self.tool_index                         = 0
@@ -979,7 +989,7 @@ class APIToolsLibInfoForGet:
         self.tool_param_60                      = 0.0
         self.tool_description                   = ''
 
-class APIToolsLibInfoForSet:
+class APIToolsLibInfoForSet(APIComparableMixin):
     """API data structure for tools lib info for set."""
     def __init__(self):
         self.tool_index                         = None
@@ -1012,26 +1022,26 @@ class APIToolsLibInfoForSet:
         self.tool_param_60                      = None
         self.tool_description                   = None
 
-class APIToolsLibInfo:
+class APIToolsLibInfo(APIComparableMixin):
     """API data structure for tools library infos."""
     def __init__(self):
         self.has_data                           = False
         self.data: APIToolsLibInfoForGet        = APIToolsLibInfoForGet()
 
-class APIToolsLibInfos:
+class APIToolsLibInfos(APIComparableMixin):
     """API data structure for tools library infos."""
     def __init__(self):
         self.has_data                           = False
         self.slot_enabled                       = False
         self.data: List[APIToolsLibInfoForGet]  = []
 
-class APIToolsLibToolIndexFromId:
+class APIToolsLibToolIndexFromId(APIComparableMixin):
     """API data structure for tools library tool index from Id."""
     def __init__(self):
         self.has_data                           = False
         self.index                              = -1
 
-class APIVMGeometryInfo:
+class APIVMGeometryInfo(APIComparableMixin):
     """API data structure for virtual machine geometry info."""
     def __init__(self):
         self.has_data                           = False
@@ -1045,7 +1055,7 @@ class APIVMGeometryInfo:
         self.edges_angle                        = 0.0
         self.edges_visible                      = False
 
-class APIWorkInfo:
+class APIWorkInfo(APIComparableMixin):
     """API data structure for work info."""
     has_data                                    = False
     work_mode                                   = WM_NORMAL
@@ -1055,13 +1065,13 @@ class APIWorkInfo:
     planned_time                                = '00:00:00'
     worked_time                                 = '00:00:00'
 
-class APIWorkOrderCodeListData:
+class APIWorkOrderCodeListData(APIComparableMixin):
     """API data structure for work order code list data."""
     order_code                                  = ''
     order_state                                 = WO_ST_DRAFT
     revision_number                             = 0
 
-class APIWorkOrderCodeList:
+class APIWorkOrderCodeList(APIComparableMixin):
     """API data structure for work order code list."""
 
     class ListData:
@@ -1073,7 +1083,7 @@ class APIWorkOrderCodeList:
     has_data: bool                              = False
     data: List[ListData]                        = []
 
-class APIWorkOrderDataForAdd:
+class APIWorkOrderDataForAdd(APIComparableMixin):
     """API data structure of work order data for add."""
 
     class FileData:
@@ -1096,7 +1106,7 @@ class APIWorkOrderDataForAdd:
     def __init__(self):
         self.files = [self.FileData() for _ in range(8)]
 
-class APIWorkOrderDataForGet:
+class APIWorkOrderDataForGet(APIComparableMixin):
     """API data structure for work order data for get."""
 
     class FileData:
@@ -1145,7 +1155,7 @@ class APIWorkOrderDataForGet:
     def __init__(self):
         self.files = [self.FileData() for _ in range(8)]
 
-class APIWorkOrderDataForSet:
+class APIWorkOrderDataForSet(APIComparableMixin):
     """API data structure of work order data for set."""
 
     class FileData:
@@ -1169,7 +1179,7 @@ class APIWorkOrderDataForSet:
     def __init__(self):
         self.files = [self.FileData() for _ in range(8)]
 
-class APIWorkOrderFileList:
+class APIWorkOrderFileList(APIComparableMixin):
     """API data structure for work order file list."""
 
     class FileData:
@@ -2513,6 +2523,15 @@ class CncAPIClientCore:
                 data.operative_system                   = j['res']['operative.system']
                 data.operative_system_crc               = j['res']['operative.system.crc']
                 data.pld_version                        = j['res']['pld.version']
+                data.licensed_feature_panel_pc          = j['res']['licensed.feature']['panel.pc']
+                data.licensed_feature_panel_pc_demo     = j['res']['licensed.feature']['panel.pc.demo']
+                data.licensed_feature_work_orders       = j['res']['licensed.feature']['work.orders']
+                data.licensed_feature_opc_ua_server     = j['res']['licensed.feature']['opc.ua.server']
+                data.licensed_feature_probe_sdk_g1      = j['res']['licensed.feature']['probe.sdk.g1']
+                data.licensed_feature_probe_sdk_g2      = j['res']['licensed.feature']['probe.sdk.g2']
+                data.licensed_feature_probe_sdk_g3      = j['res']['licensed.feature']['probe.sdk.g3']
+                data.licensed_feature_probe_sdk_g4      = j['res']['licensed.feature']['probe.sdk.g4']
+                data.licensed_feature_probe_sdk_g5      = j['res']['licensed.feature']['probe.sdk.g5']
                 data.has_data = True
             return data
         except Exception:

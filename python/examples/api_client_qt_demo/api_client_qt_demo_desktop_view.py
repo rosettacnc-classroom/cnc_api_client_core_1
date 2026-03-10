@@ -1710,6 +1710,27 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.systemInfoEdit.append('  Operative System CRC       : ' + system_info.operative_system_crc)
                 self.ui.systemInfoEdit.append('  PLD Version                : ' + system_info.pld_version)
 
+                lf_01 = '*' if system_info.licensed_feature_panel_pc else ' '
+                lf_02 = '*' if system_info.licensed_feature_panel_pc_demo else ' '
+                lf_03 = '*' if system_info.licensed_feature_work_orders else ' '
+                lf_04 = '*' if system_info.licensed_feature_opc_ua_server else ' '
+                lf_05 = '*' if system_info.licensed_feature_probe_sdk_g1 else ' '
+                lf_06 = '*' if system_info.licensed_feature_probe_sdk_g2 else ' '
+                lf_07 = '*' if system_info.licensed_feature_probe_sdk_g3 else ' '
+                lf_08 = '*' if system_info.licensed_feature_probe_sdk_g4 else ' '
+                lf_09 = '*' if system_info.licensed_feature_probe_sdk_g5 else ' '
+
+                self.ui.systemInfoEdit.append('')
+                self.ui.systemInfoEdit.append(f'  Licensed Features          : [ {lf_01} ] PanelPC')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_02} ] PanelPC Demo')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_03} ] Work Orders')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_04} ] OPC UA Server')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_05} ] Probe SDK Group 1')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_06} ] Probe SDK Group 2')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_07} ] Probe SDK Group 3')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_08} ] Probe SDK Group 4')
+                self.ui.systemInfoEdit.append(f'                               [ {lf_09} ] Probe SDK Group 5')
+
         # update status bar
         text = 'UNKNOWN'
         if is_in_str_list_range(SM_TEXTS, cnc_info.state_machine):
