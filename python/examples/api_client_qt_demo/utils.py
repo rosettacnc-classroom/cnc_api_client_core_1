@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      03/02/2026
+# Created:      11/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -25,10 +25,10 @@ from enum import IntEnum
 
 class DecimalsTrimMode(IntEnum):
     """Xxx..."""
-    NONE = 0  # no trimming, so it will keeps all specified decimal places
-    FIT = 1   # removes trailing zeros, but retains at least 1 decimal place
-    DOT = 2   # removes trailing zeros and retains the decimal point if necessary
-    FULL = 3  # removes trailing zeros and the decimal point if they are not needed
+    NONE    = 0     # no trimming, so it will keeps all specified decimal places
+    FIT     = 1     # removes trailing zeros, but retains at least 1 decimal place
+    DOT     = 2     # removes trailing zeros and retains the decimal point if necessary
+    FULL    = 3     # removes trailing zeros and the decimal point if they are not needed
 
 def format_float(value: float, decimals: int, trim_mode: DecimalsTrimMode) -> str:
     """
@@ -44,28 +44,28 @@ def format_float(value: float, decimals: int, trim_mode: DecimalsTrimMode) -> st
 
     Examples:
       Value = 1.234, Decimals = 5 -> internally starting from converted float to value 1.23400:
-        dtmdNone -> "1.23400"
-        dtmdFit  -> "1.234"
-        dtmdDot  -> "1.234"
-        dtmdFull -> "1.234"
+        NONE -> "1.23400"
+        FIT  -> "1.234"
+        DOT  -> "1.234"
+        FULL -> "1.234"
 
       Value = 1.0, Decimals = 5 -> internally starting from converted float to str value 1.00000:
-        dtmdNone -> "1.00000"
-        dtmdFit  -> "1.0"
-        dtmdDot  -> "1."
-        dtmdFull -> "1"
+        NONE -> "1.00000"
+        FIT  -> "1.0"
+        DOT  -> "1."
+        FULL -> "1"
 
       Value = 1.1, Decimals = 5 -> internally starting from converted float to str value 1.10000:
-        dtmdNone -> "1.10000"
-        dtmdFit  -> "1.1"
-        dtmdDot  -> "1.1"
-        dtmdFull -> "1.1"
+        NONE -> "1.10000"
+        FIT  -> "1.1"
+        DOT  -> "1.1"
+        FULL -> "1.1"
 
       Value = 0.0, Decimals = 5 -> internally starting from converted float to str value 0.00000:
-        dtmdNone -> "0.00000"
-        dtmdFit  -> "0.0"
-        dtmdDot  -> "0."
-        dtmdFull -> "0"
+        NONE -> "0.00000"
+        FIT  -> "0.0"
+        DOT  -> "0."
+        FULL -> "0"
     """
     try:
         result = f"{value:.{decimals}f}"
@@ -91,3 +91,4 @@ def is_in_str_list_range(texts, index):
     """Checks if index in range of a list of strings."""
     return 0 <= index <= len(texts)
     #return index >= 0 and index <= len(texts)
+
