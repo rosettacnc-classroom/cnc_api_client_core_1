@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      10/03/2026
+# Created:      12/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -27,6 +27,7 @@
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0914 -> too-many-locals
 # pylint: disable=R0915 -> too-many-statements
+# pylint: disable=R1702 -> too-many-nested-blocks
 # pylint: disable=W0105 -> pointless-string-statement
 # pylint: disable=W0201 -> attribute-defined-outside-init   ## take care when you use that ##
 # pylint: disable=W0238 -> unused-private-member
@@ -36,7 +37,6 @@
 import time
 import ipaddress
 from pathlib import Path
-from statistics import median
 from collections import namedtuple
 
 from PySide6.QtCore import Qt, QEvent, QTimer, QSize
@@ -184,8 +184,14 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # set current persistable save version
         self.__persistable_save_version = 1
 
-        # set axes velocity plot data
+        # set realtime scope to plot axes positions
         self.realtime_scope = QRealTimeScope(self.ui.axesPositionsPlot, 6, 4000)
+
+        # set laser scope to plot laser values
+        self.laser_scope = QRealTimeScope(self.ui.laserPlot, 1, 4000)
+        self.ui.laserPlot.enableAutoRange('y', False)
+        self.ui.laserPlot.setYRange(0, 4095, padding=0.05)
+        self.ui.laserPlot.getPlotItem().getAxis('left').setWidth(30)
 
         # create a mono font object for code editors
         mono_font = QFont("Consolas")               # Windows
@@ -664,6 +670,13 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # events tab d i/o
         # events tab a i/o
         # events tab scanning laser
+        if sender == self.ui.laserZeroXAxisButton:
+            self.api.set_program_position_x_with_laser_reference()
+        if sender == self.ui.laserZeroYAxisButton:
+            self.api.set_program_position_y_with_laser_reference()
+        if sender == self.ui.laserZeroZAxisButton:
+            self.api.set_program_position_z_with_laser_reference()
+
         # events tab machining info
 
         # events tab ui dialogs
@@ -776,6 +789,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # updates tab d i/o
             # updates tab a i/o
             # updates tab scanning laser
+            self.ui.laserZeroXAxisButton.setEnabled(False)
+            self.ui.laserZeroYAxisButton.setEnabled(False)
+            self.ui.laserZeroZAxisButton.setEnabled(False)
+
             # updates tab machining info
 
             # updates tab ui dialogs
@@ -903,6 +920,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # updates tab d i/o
             # updates tab a i/o
             # updates tab scanning laser
+            self.ui.laserZeroXAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
+            self.ui.laserZeroYAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
+            self.ui.laserZeroZAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
+
             # updates tab machining info
 
             # updates tab ui dialogs
@@ -1297,82 +1318,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
     # == END: generic methods
 
 
-    # == BEG: laser methods
-    #
-    def __laser_zero_x_axis(self) -> bool:
-        """X-axis zeroing via MCS position returned by scanning laser info."""
-        try:
-            # get active wcs number
-            axes_info = self.api.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
-            # get scanning laser info
-            scanning_laser_info = self.api.get_scanning_laser_info()
-            if not scanning_laser_info.has_data:
-                return False
-
-            # evaluate new wcs offset
-            wcs_offset = scanning_laser_info.laser_mcs_x_position
-
-            # mdi command to set new wcs offst
-            command = f'G10 L2 P{axes_info.working_wcs} X{wcs_offset}'
-            return self.api.cnc_mdi_command(command)
-        except Exception:
-            return False
-
-    def __laser_zero_y_axis(self) -> bool:
-        """Y-axis zeroing via MCS position returned by scanning laser info."""
-        try:
-            # get active wcs number
-            axes_info = self.api.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
-            # get scanning laser info
-            scanning_laser_info = self.api.get_scanning_laser_info()
-            if not scanning_laser_info.has_data:
-                return False
-
-            # evaluate new wcs offset
-            wcs_offset = scanning_laser_info.laser_mcs_y_position
-
-            # mdi command to set new wcs offst
-            command = f'G10 L2 P{axes_info.working_wcs} Y{wcs_offset}'
-            return self.api.cnc_mdi_command(command)
-        except Exception:
-            return False
-
-    def __laser_zero_z_axis(self) -> bool:
-        """Z-axis zeroing via MCS position returned by scanning laser info applying median filtering."""
-        try:
-            # get active wcs number
-            axes_info = self.api.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
-            # get median laser MCS.Z position value as median of LASER_MEDIAN values
-            LASER_MEDIAN = 3
-            laser_mcs_positions = []
-            for m in range(LASER_MEDIAN):
-                scanning_laser_info = self.api.get_scanning_laser_info()
-                if not scanning_laser_info.has_data:
-                    return False
-                laser_mcs_positions.append(scanning_laser_info.laser_mcs_z_position)
-                time.sleep(0.2)
-
-            # evaluate new wcs offset
-            wcs_offset = median(laser_mcs_positions)
-
-            # mdi command to set new wcs offst
-            command = f'G10 L2 P{axes_info.working_wcs} Z{wcs_offset}'
-            return self.api.cnc_mdi_command(command)
-        except Exception:
-            return False
-    #
-    # == END: laser methods
-
-
     # == BEG: update methods
     #
     def __update_editable_fields(self):
@@ -1700,7 +1645,30 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # updates tab scanning laser
         if self.ui.tabWidget.currentWidget() == self.ui.tabScanningLaser:
-            pass
+            laser_info = self.api.get_scanning_laser_info()
+            if not laser_info.has_data:
+                self.ui.laserOutBitValue.setText('- - -')
+                self.ui.laserOutUmfValue.setText('- - -')
+                self.ui.laserHMeasureValue.setText('- - -')
+                self.ui.laserMCSXPositionValue.setText('- - -')
+                self.ui.laserMCSYPositionValue.setText('- - -')
+                self.ui.laserMCSZPositionValue.setText('- - -')
+                self.laser_scope.clear()
+            else:
+                self.ui.laserOutBitValue.setText(f'{laser_info.laser_out_bit}')
+                self.ui.laserOutUmfValue.setText(f'{laser_info.laser_out_umf}')
+                h_mes = format_float(laser_info.laser_h_measure, um_decimals, DecimalsTrimMode.NONE)
+                mcs_x = format_float(laser_info.laser_mcs_x_position, um_decimals, DecimalsTrimMode.NONE)
+                mcs_y = format_float(laser_info.laser_mcs_y_position, um_decimals, DecimalsTrimMode.NONE)
+                mcs_z = format_float(laser_info.laser_mcs_z_position, um_decimals, DecimalsTrimMode.NONE)
+                self.ui.laserHMeasureValue.setText(h_mes)
+                self.ui.laserMCSXPositionValue.setText(mcs_x)
+                self.ui.laserMCSYPositionValue.setText(mcs_y)
+                self.ui.laserMCSZPositionValue.setText(mcs_z)
+                if self.ui.laserShowOutBitPlotCheckBox.isChecked():
+                    self.laser_scope.push([laser_info.laser_out_bit])
+                else:
+                    self.laser_scope.clear()
 
         # updates tab machining info
         if self.ui.tabWidget.currentWidget() == self.ui.tabMachiningInfo:
