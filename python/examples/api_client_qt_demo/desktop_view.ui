@@ -2121,7 +2121,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Zero X-Axis</string>
+       <string>Zero X-Axis to Actual Laser Position</string>
       </property>
      </widget>
      <widget class="QPushButton" name="laserZeroYAxisButton">
@@ -2134,7 +2134,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Zero Y-Axis</string>
+       <string>Zero Y-Axis to Actual Laser Position</string>
       </property>
      </widget>
      <widget class="QPushButton" name="laserZeroZAxisButton">
@@ -2147,7 +2147,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Zero Z-Axis (with Laser Value)</string>
+       <string>Zero Z-Axis to Actual Laser Position</string>
       </property>
      </widget>
      <widget class="QLabel" name="laserOutBitValue">

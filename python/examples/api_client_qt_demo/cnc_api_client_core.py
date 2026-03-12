@@ -3153,13 +3153,7 @@ class CncAPIClientCore:
         return self.__execute_request('{"set":"program.position", "data":{"x":' + str(value) + '}}')
 
     def set_program_position_x_with_laser_reference(self, value: float = 0.0) -> bool:
-        """
-        Set X-axis program position value using MCS.X position returned by scanning laser info.
-
-        TAKE CARE
-        =========
-        Currently, this function is discrete code here but will be moved into the API code "set":"program.position.x".
-        """
+        """Set X-axis program position value using MCS.X position returned by scanning laser info."""
         if not self.is_connected:
             return False
         try:
@@ -3167,35 +3161,13 @@ class CncAPIClientCore:
             if type(value) not in (int, float) or not math.isfinite(value):
                 return False
 
-            # get cnc info for UI units mode
-            cnc_info = self.get_cnc_info()
-            if not cnc_info.has_data:
-                return False
-
-            # get axes info for active wcs number
-            axes_info = self.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
             # get scanning laser info
             scanning_laser_info = self.get_scanning_laser_info()
             if not scanning_laser_info.has_data:
                 return False
 
-            # evaluate UI units mode
-            ui_units_mode = '21' if cnc_info.units_mode == UM_METRIC else '20'
-
-            # evaluate new wcs offset (in UI units mode)
-            wcs_offset = scanning_laser_info.laser_mcs_x_position - value
-
-            # MDI command to set new wcs offst (UI units mode could be different than NC units mode)
-            command = (
-                 '#<nc_units_mode> = #5106\n'
-                f'G{ui_units_mode}\n'
-                f'G10 L2 P{axes_info.working_wcs} X{wcs_offset}\n'
-                 'G#<nc_units_mode>'
-            )
-            return self.cnc_mdi_command(command)
+            # set x-axis program position
+            return self.set_program_position_x(value - scanning_laser_info.laser_mcs_x_position)
         except Exception:
             return False
 
@@ -3206,13 +3178,7 @@ class CncAPIClientCore:
         return self.__execute_request('{"set":"program.position", "data":{"y":' + str(value) + '}}')
 
     def set_program_position_y_with_laser_reference(self, value: float = 0.0) -> bool:
-        """
-        Set Y-axis program position value using MCS.Y position returned by scanning laser info.
-
-        TAKE CARE
-        =========
-        Currently, this function is discrete code here but will be moved into the API code "set":"program.position.y".
-        """
+        """Set Y-axis program position value using MCS.Y position returned by scanning laser info."""
         if not self.is_connected:
             return False
         try:
@@ -3220,35 +3186,13 @@ class CncAPIClientCore:
             if type(value) not in (int, float) or not math.isfinite(value):
                 return False
 
-            # get cnc info for UI units mode
-            cnc_info = self.get_cnc_info()
-            if not cnc_info.has_data:
-                return False
-
-            # get axes info for active wcs number
-            axes_info = self.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
             # get scanning laser info
             scanning_laser_info = self.get_scanning_laser_info()
             if not scanning_laser_info.has_data:
                 return False
 
-            # evaluate UI units mode
-            ui_units_mode = '21' if cnc_info.units_mode == UM_METRIC else '20'
-
-            # evaluate new wcs offset (in UI units mode)
-            wcs_offset = scanning_laser_info.laser_mcs_x_position - value
-
-            # MDI command to set new wcs offst (UI units mode could be different than NC units mode)
-            command = (
-                 '#<nc_units_mode> = #5106\n'
-                f'G{ui_units_mode}\n'
-                f'G10 L2 P{axes_info.working_wcs} Y{wcs_offset}\n'
-                 'G#<nc_units_mode>'
-            )
-            return self.cnc_mdi_command(command)
+            # set y-axis program position
+            return self.set_program_position_y(value - scanning_laser_info.laser_mcs_y_position)
         except Exception:
             return False
 
@@ -3258,56 +3202,29 @@ class CncAPIClientCore:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"z":' + str(value) + '}}')
 
-    def set_program_position_z_with_laser_reference(self, value: float = 0.0, sample_count: int = 1) -> bool:
-        """
-        Set Z-axis program position value using MCS.Z position returned by scanning laser info.
-
-        TAKE CARE
-        =========
-        Currently, this function is discrete code here but will be moved into the API code "set":"program.position.y".
-        """
+    def set_program_position_z_with_laser_reference(self, value: float = 0.0, sample_count: int = 3) -> bool:
+        """Set Z-axis program position value using MCS.Z position returned by scanning laser info."""
         if not self.is_connected:
             return False
         try:
-            # check value s
+            # check value and sample count
             if type(value) not in (int, float) or not math.isfinite(value):
                 return False
             if type(sample_count) is not int or not 1 <= sample_count <= 10:
                 return False
 
-            # get cnc info for UI units mode
-            cnc_info = self.get_cnc_info()
-            if not cnc_info.has_data:
-                return False
-
-            # get axes info for active wcs number
-            axes_info = self.get_axes_info()
-            if not axes_info.has_data:
-                return False
-
-            # acquire sample_count laser MCS.Z values at 0.2 s intervals and use their median
-            laser_mcs_positions = []
+            # acquire laser mcs z position samples, at 0.2 s intervals, to evaluate the median value
+            laser_mcs_z_positions = []
             for _ in range(sample_count):
                 scanning_laser_info = self.get_scanning_laser_info()
                 if not scanning_laser_info.has_data:
                     return False
-                laser_mcs_positions.append(scanning_laser_info.laser_mcs_z_position)
+                laser_mcs_z_positions.append(scanning_laser_info.laser_mcs_z_position)
                 time.sleep(0.2)
+            laser_mcs_z_position = median(laser_mcs_z_positions)
 
-            # evaluate UI units mode
-            ui_units_mode = '21' if cnc_info.units_mode == UM_METRIC else '20'
-
-            # evaluate new wcs offset (in UI units mode)
-            wcs_offset = median(laser_mcs_positions) - value
-
-            # MDI command to set new wcs offst (UI units mode could be different than NC units mode)
-            command = (
-                 '#<nc_units_mode> = #5106\n'
-                f'G{ui_units_mode}\n'
-                f'G10 L2 P{axes_info.working_wcs} Z{wcs_offset}\n'
-                 'G#<nc_units_mode>'
-            )
-            return self.cnc_mdi_command(command)
+            # set z-axis program position
+            return self.set_program_position_z(-laser_mcs_z_position - value)
         except Exception:
             return False
 

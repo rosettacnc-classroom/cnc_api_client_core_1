@@ -1,10 +1,85 @@
+"""QT Realtime Scope."""
+#-------------------------------------------------------------------------------
+# Name:         qt_real_time_scope
+#
+# Purpose:      QT Realtime Scope
+#
+# Note          Checked with Python 3.11.9
+#
+# Author:       rosettacnc-classroom@gmail.com
+#
+# Created:      11/03/2026
+# Copyright:    RosettaCNC (c) 2016-2026
+# Licence:      RosettaCNC License 1.0 (RCNC-1.0)
+# Coding Style  https://www.python.org/dev/peps/pep-0008/
+#-------------------------------------------------------------------------------
 import time
 import numpy as np
 import pyqtgraph as pg
 
 
+def _build_channel_names(channels: int, channel_names=None):
+    """Return validated channel names."""
+    if channel_names is None:
+        return [f"CH{ch + 1}" for ch in range(channels)]
+
+    try:
+        names = list(channel_names)
+    except TypeError as exc:
+        raise TypeError("channel_names must be a sequence or None") from exc
+
+    if len(names) != channels:
+        raise ValueError(f"channel_names length must be {channels}, got {len(names)}")
+
+    return [str(name) for name in names]
+
+
+def _ensure_legend(
+    widget: pg.PlotWidget,
+    legend_anchor=(1, 0),
+    legend_offset=(-10, 10),
+    legend_bg=(20, 20, 20, 180),
+    legend_border=(200, 200, 200, 120),
+    legend_text_color="white",
+):
+    """Create and configure the legend only once for the target PlotWidget."""
+    plot_item = widget.getPlotItem()
+
+    if plot_item.legend is None:
+        plot_item.addLegend()
+
+    legend = plot_item.legend
+
+    if legend is not None:
+        legend.anchor(
+            itemPos=legend_anchor,
+            parentPos=legend_anchor,
+            offset=legend_offset,
+        )
+        legend.setBrush(pg.mkBrush(*legend_bg))
+        legend.setPen(pg.mkPen(*legend_border))
+
+        for sample, label in legend.items:
+            label.setText(label.text, color=legend_text_color)
+
+    return plot_item
+
+
 class QRealTimeScope:
-    def __init__(self, widget: pg.PlotWidget, channels: int, samples: int):
+    """Xxx..."""
+
+    def __init__(
+        self,
+        widget: pg.PlotWidget,
+        channels: int,
+        samples: int,
+        channel_names=None,
+        legend_anchor=(1, 0),
+        legend_offset=(-10, 10),
+        legend_bg=(20, 20, 20, 180),
+        legend_border=(200, 200, 200, 120),
+        legend_text_color="white",
+    ):
         if not isinstance(widget, pg.PlotWidget):
             raise TypeError(f"widget must be PlotWidget, got {type(widget).__name__}")
 
@@ -23,6 +98,7 @@ class QRealTimeScope:
         self.widget = widget
         self.channels = channels
         self.samples = samples
+        self.channel_names = _build_channel_names(channels, channel_names)
 
         # enable antialiasing and OpenGL support
         pg.setConfigOptions(antialias=True)
@@ -35,25 +111,19 @@ class QRealTimeScope:
 
         # set channels color
         self.colors = [
-            pg.mkPen(color=(0, 255, 0)),
-            pg.mkPen(color=(255, 255, 0)),
-            pg.mkPen(color=(0, 200, 255)),
-            pg.mkPen(color=(255, 0, 255)),
-            pg.mkPen(color=(255, 128, 0)),
-            pg.mkPen(color=(255, 255, 255)),
+            pg.mkPen(color=(0, 255, 0), width=1),
+            pg.mkPen(color=(255, 255, 0), width=1),
+            pg.mkPen(color=(0, 200, 255), width=1),
+            pg.mkPen(color=(255, 0, 255), width=1),
+            pg.mkPen(color=(255, 128, 0), width=1),
+            pg.mkPen(color=(255, 255, 255), width=1),
         ]
 
-        # Plot performance / behavior tweaks
+        # plot performance / behavior tweaks
         self.widget.setClipToView(True)
         self.widget.setDownsampling(mode="peak")
         self.widget.setRange(xRange=(0, self.samples - 1), padding=0)
         self.widget.setMouseEnabled(x=False, y=False)
-
-        # set y range in fixed mode
-        """
-        self.widget.enableAutoRange('y', False)
-        self.widget.setYRange(-100.0, 100.0, padding=0)
-        """
 
         # set y width to fixed size (in pixel)
         axis_y = self.widget.getPlotItem().getAxis('left')
@@ -73,10 +143,48 @@ class QRealTimeScope:
         self._view = np.empty((self.channels, self.samples), dtype=np.float32)
 
         # one curve per channel (created once)
+        self._plot_item = _ensure_legend(
+            self.widget,
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
         self._curves = [
-            self.widget.plot(self._x, self._buf[ch], pen=self.colors[ch])
+            self.widget.plot(
+                self._x,
+                self._buf[ch],
+                pen=self.colors[ch],
+                name=self.channel_names[ch],
+            )
             for ch in range(self.channels)
         ]
+        self._refresh_legend_style(
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
+
+    def _refresh_legend_style(
+        self,
+        legend_anchor=(1, 0),
+        legend_offset=(-10, 10),
+        legend_bg=(20, 20, 20, 180),
+        legend_border=(200, 200, 200, 120),
+        legend_text_color="white",
+    ):
+        """Refresh legend style after curves have been created."""
+        _ensure_legend(
+            self.widget,
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
 
     def push(self, values):
         """
@@ -86,7 +194,7 @@ class QRealTimeScope:
         if values is None:
             raise TypeError("values must be a sequence, got None")
 
-        # Fast length check (works for list/tuple/np.ndarray)
+        # fast length check (works for list/tuple/np.ndarray)
         try:
             n = len(values)
         except TypeError:
@@ -95,22 +203,22 @@ class QRealTimeScope:
         if n != self.channels:
             raise ValueError(f"values length must be {self.channels}, got {n}")
 
-        # Convert to float32 without unnecessary copies if possible
+        # convert to float32 without unnecessary copies if possible
         v = np.asarray(values, dtype=np.float32)
 
         h = self._head
 
-        # Write one column (one sample for all channels)
+        # write one column (one sample for all channels)
         self._buf[:, h] = v
 
-        # Advance head
+        # advance head
         h += 1
         if h >= self.samples:
             h = 0
             self._filled = True
         self._head = h
 
-        # Build left-to-right view without shifting or concatenating
+        # build left-to-right view without shifting or concatenating
         if self._filled:
             k = h  # cut index
             self._view[:, :self.samples - k] = self._buf[:, k:]
@@ -119,7 +227,7 @@ class QRealTimeScope:
         else:
             y = self._buf
 
-        # Update curves
+        # update curves
         for ch, curve in enumerate(self._curves):
             curve.setData(self._x, y[ch])
 
@@ -133,7 +241,18 @@ class QRealTimeScope:
 
 
 class QRealTimeScopeSynched:
-    def __init__(self, widget: pg.PlotWidget, channels: int, samples: int):
+    def __init__(
+        self,
+        widget: pg.PlotWidget,
+        channels: int,
+        samples: int,
+        channel_names=None,
+        legend_anchor=(1, 0),
+        legend_offset=(-10, 10),
+        legend_bg=(20, 20, 20, 180),
+        legend_border=(200, 200, 200, 120),
+        legend_text_color="white",
+    ):
         if not isinstance(widget, pg.PlotWidget):
             raise TypeError(f"widget must be PlotWidget, got {type(widget).__name__}")
 
@@ -152,36 +271,75 @@ class QRealTimeScopeSynched:
         self.widget = widget
         self.channels = channels
         self.samples = samples
+        self.channel_names = _build_channel_names(channels, channel_names)
 
-        # Plot behavior/perf
+        # plot behavior/perf
         self.widget.setClipToView(True)
         self.widget.setDownsampling(mode="peak")
         self.widget.setMouseEnabled(x=False, y=False)
 
-        # Ring buffer state
+        # ring buffer state
         self._head = 0
         self._filled = False
 
-        # Buffers
+        # buffers
         self._t = np.zeros(self.samples, dtype=np.float64)                 # timestamps
         self._buf = np.zeros((self.channels, self.samples), dtype=np.float32)
 
-        # Preallocated views (avoid allocations each push)
+        # preallocated views (avoid allocations each push)
         self._t_view = np.empty(self.samples, dtype=np.float64)
         self._y_view = np.empty((self.channels, self.samples), dtype=np.float32)
 
-        # Curves (one per channel)
+        # curves (one per channel)
+        self._plot_item = _ensure_legend(
+            self.widget,
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
         self._curves = [
-            self.widget.plot(self._t, self._buf[ch], pen=pg.mkPen(width=1))
+            self.widget.plot(
+                self._t,
+                self._buf[ch],
+                pen=pg.mkPen(width=1),
+                name=self.channel_names[ch],
+            )
             for ch in range(self.channels)
         ]
+        self._refresh_legend_style(
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
 
-        # Optional: keep a rolling visible time window (seconds).
-        # If None -> auto range based on all visible points.
+        # optional: keep a rolling visible time window (seconds).
+        # if None -> auto range based on all visible points.
         self.time_window_s = None
 
-        # For sanity check on time ordering (optional)
+        # for sanity check on time ordering (optional)
         self._last_t = None
+
+    def _refresh_legend_style(
+        self,
+        legend_anchor=(1, 0),
+        legend_offset=(-10, 10),
+        legend_bg=(20, 20, 20, 180),
+        legend_border=(200, 200, 200, 120),
+        legend_text_color="white",
+    ):
+        """Refresh legend style after curves have been created."""
+        _ensure_legend(
+            self.widget,
+            legend_anchor=legend_anchor,
+            legend_offset=legend_offset,
+            legend_bg=legend_bg,
+            legend_border=legend_border,
+            legend_text_color=legend_text_color,
+        )
 
     def push(self, values, t=None):
         """
@@ -192,12 +350,12 @@ class QRealTimeScopeSynched:
         if t is None:
             t = time.monotonic()
         else:
-            # Accept int/float/np number
+            # accept int/float/np number
             if not isinstance(t, (int, float, np.floating, np.integer)) or isinstance(t, bool):
                 raise TypeError(f"t must be a number (seconds), got {type(t).__name__}")
             t = float(t)
 
-        # Optional: enforce non-decreasing time (helps display)
+        # optional: enforce non-decreasing time (helps display)
         if self._last_t is not None and t < self._last_t:
             # If packets arrive out-of-order, you can either:
             # - clamp: t = self._last_t
@@ -218,18 +376,18 @@ class QRealTimeScopeSynched:
 
         h = self._head
 
-        # Write into ring buffers
+        # write into ring buffers
         self._t[h] = t
         self._buf[:, h] = v
 
-        # Advance head
+        # advance head
         h += 1
         if h >= self.samples:
             h = 0
             self._filled = True
         self._head = h
 
-        # Build left-to-right views (timestamps + signals)
+        # build left-to-right views (timestamps + signals)
         if self._filled:
             k = h
             self._t_view[:self.samples - k] = self._t[k:]
@@ -244,11 +402,11 @@ class QRealTimeScopeSynched:
             x = self._t
             y = self._buf
 
-        # Update curves with real X
+        # update curves with real X
         for ch, curve in enumerate(self._curves):
             curve.setData(x, y[ch])
 
-        # Optional: show only last "time_window_s" seconds
+        # optional: show only last "time_window_s" seconds
         if self.time_window_s is not None:
             t_max = x[-1]
             self.widget.setXRange(t_max - self.time_window_s, t_max, padding=0)

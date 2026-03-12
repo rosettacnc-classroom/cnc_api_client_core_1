@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'desktop_viewHbomaC.ui'
+## Form generated from reading UI file 'desktop_viewKlCBLO.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.3
 ##
@@ -1617,9 +1617,9 @@ class Ui_DesktopView(object):
         self.laserMCSXPositionLabel.setText(QCoreApplication.translate("DesktopView", u"MCS.X Position", None))
         self.laserMCSZPositionLabel.setText(QCoreApplication.translate("DesktopView", u"MCS.Z Position", None))
         self.laserMCSYPositionLabel.setText(QCoreApplication.translate("DesktopView", u"MCS.Y Position", None))
-        self.laserZeroXAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero X-Axis", None))
-        self.laserZeroYAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero Y-Axis", None))
-        self.laserZeroZAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero Z-Axis (with Laser Value)", None))
+        self.laserZeroXAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero X-Axis to Actual Laser Position", None))
+        self.laserZeroYAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero Y-Axis to Actual Laser Position", None))
+        self.laserZeroZAxisButton.setText(QCoreApplication.translate("DesktopView", u"Zero Z-Axis to Actual Laser Position", None))
         self.laserOutBitValue.setText(QCoreApplication.translate("DesktopView", u"---", None))
         self.laserOutUmfValue.setText(QCoreApplication.translate("DesktopView", u"---", None))
         self.laserHMeasureValue.setText(QCoreApplication.translate("DesktopView", u"---", None))

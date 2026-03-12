@@ -185,10 +185,11 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.__persistable_save_version = 1
 
         # set realtime scope to plot axes positions
-        self.realtime_scope = QRealTimeScope(self.ui.axesPositionsPlot, 6, 4000)
+        channel_names = ['X-axis', 'Y-axis', 'Z-axis', 'A-axis', 'B-axis', 'C-axis']
+        self.realtime_scope = QRealTimeScope(self.ui.axesPositionsPlot, 6, 4000, channel_names)
 
         # set laser scope to plot laser values
-        self.laser_scope = QRealTimeScope(self.ui.laserPlot, 1, 4000)
+        self.laser_scope = QRealTimeScope(self.ui.laserPlot, 2, 4000, ['BIT', 'UMF'])
         self.ui.laserPlot.enableAutoRange('y', False)
         self.ui.laserPlot.setYRange(0, 4095, padding=0.05)
         self.ui.laserPlot.getPlotItem().getAxis('left').setWidth(30)
@@ -920,9 +921,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # updates tab d i/o
             # updates tab a i/o
             # updates tab scanning laser
-            self.ui.laserZeroXAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
-            self.ui.laserZeroYAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
-            self.ui.laserZeroZAxisButton.setEnabled(enabled_commands.cnc_mdi_command)
+            set_program_position = self.ctx.enabled_commands.set_program_position
+            self.ui.laserZeroXAxisButton.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
+            self.ui.laserZeroYAxisButton.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
+            self.ui.laserZeroZAxisButton.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
 
             # updates tab machining info
 
@@ -1666,7 +1668,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.laserMCSYPositionValue.setText(mcs_y)
                 self.ui.laserMCSZPositionValue.setText(mcs_z)
                 if self.ui.laserShowOutBitPlotCheckBox.isChecked():
-                    self.laser_scope.push([laser_info.laser_out_bit])
+                    self.laser_scope.push([laser_info.laser_out_bit, laser_info.laser_out_umf])
                 else:
                     self.laser_scope.clear()
 
