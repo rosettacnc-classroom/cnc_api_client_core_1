@@ -20,6 +20,7 @@
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
 # pylint: disable=C0123 -> unidiomatic-typecheck
+# pylint: disable=C0209 -> consider-using-f-string
 # pylint: disable=C0301 -> line-too-long
 # pylint: disable=C0302 -> too-many-lines
 # pylint: disable=R0902 -> too-many-instance-attributes
@@ -394,7 +395,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # link actions to all buttons
         for obj in self.findChildren(QPushButton):
             name = obj.objectName()
-            if name.startswith('cncJogCommand'):
+            if name.startswith('jogCommand'):
                 obj.pressed.connect(self.__on_cnc_jog_command_mouse_down)
                 obj.released.connect(self.__on_cnc_jog_command_mouse_up)
             else:
@@ -605,44 +606,46 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # events tab cnc
         if sender == self.ui.cncProgramAnalysisMTButton:
-            pass
+            self.api.program_analysis(cnc.ANALYSIS_MT)
         if sender == self.ui.cncProgramAnalysisRTButton:
-            pass
+            self.api.program_analysis(cnc.ANALYSIS_RT)
         if sender == self.ui.cncProgramAnalysisRFButton:
-            pass
+            self.api.program_analysis(cnc.ANALYSIS_RF)
         if sender == self.ui.cncProgramAnalysisRVButton:
-            pass
+            self.api.program_analysis(cnc.ANALYSIS_RV)
         if sender == self.ui.cncProgramAnalysisRZButton:
-            pass
+            self.api.program_analysis(cnc.ANALYSIS_RZ)
         if sender == self.ui.cncProgramAnalysisAbortButton:
-            pass
-        if sender == self.ui.cncStartButton: # ???
-            pass
-        if sender == self.ui.cncStopButton: # ???
-            pass
-        if sender == self.ui.cncPauseButton: # ???
-            pass
-        if sender == self.ui.cncContinueButton: # ???
-            pass
-        if sender == self.ui.cncStartFromLineButton: # ???
-            pass
-        if sender == self.ui.cncResumeAfterStopButton: # ???
-            pass
-        if sender == self.ui.cncResumeAfterStopFromLineButton: # ???
-            pass
+            self.api.program_analysis_abort()
+
+        if sender == self.ui.cncStartButton:
+            self.api.cnc_start()
+        if sender == self.ui.cncStopButton:
+            self.api.cnc_stop()
+        if sender == self.ui.cncPauseButton:
+            self.api.cnc_pause()
+        if sender == self.ui.cncContinueButton:
+            self.api.cnc_continue()
+
+        if sender == self.ui.cncStartFromLineButton:
+            self.api.cnc_start_from_line(self.cnc_start_from_line)
+        if sender == self.ui.cncResumeAfterStopButton:
+            self.api.cnc_resume(0)
+        if sender == self.ui.cncResumeAfterStopFromLineButton:
+            self.api.cnc_resume_from_line(self.cnc_resume_after_stop_from_line)
 
         # events tab jog
-        if sender == self.ui.setProgramPositionXButton:
+        if sender == self.ui.jogSetProgramPositionXButton:
             self.api.set_program_position_x(self.set_program_position_x)
-        if sender == self.ui.setProgramPositionYButton:
+        if sender == self.ui.jogSetProgramPositionYButton:
             self.api.set_program_position_y(self.set_program_position_y)
-        if sender == self.ui.setProgramPositionZButton:
+        if sender == self.ui.jogSetProgramPositionZButton:
             self.api.set_program_position_z(self.set_program_position_z)
-        if sender == self.ui.setProgramPositionAButton:
+        if sender == self.ui.jogSetProgramPositionAButton:
             self.api.set_program_position_a(self.set_program_position_a)
-        if sender == self.ui.setProgramPositionBButton:
+        if sender == self.ui.jogSetProgramPositionBButton:
             self.api.set_program_position_b(self.set_program_position_b)
-        if sender == self.ui.setProgramPositionCButton:
+        if sender == self.ui.jogSetProgramPositionCButton:
             self.api.set_program_position_c(self.set_program_position_c)
 
         if sender == self.ui.jogSTOPButton:
@@ -774,30 +777,44 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.gcodeClearProgramTextButton.setEnabled(False)
 
             # updates tab mdi
+
             # updates tab cnc
+            self.ui.cncProgramAnalysisMTButton.setEnabled(False)
+            self.ui.cncProgramAnalysisRTButton.setEnabled(False)
+            self.ui.cncProgramAnalysisRFButton.setEnabled(False)
+            self.ui.cncProgramAnalysisRVButton.setEnabled(False)
+            self.ui.cncProgramAnalysisRZButton.setEnabled(False)
+            self.ui.cncProgramAnalysisAbortButton.setEnabled(False)
+            self.ui.cncStartButton.setEnabled(False)
+            self.ui.cncStopButton.setEnabled(False)
+            self.ui.cncPauseButton.setEnabled(False)
+            self.ui.cncContinueButton.setEnabled(False)
+            self.ui.cncStartFromLineButton.setEnabled(False)
+            self.ui.cncResumeAfterStopButton.setEnabled(False)
+            self.ui.cncResumeAfterStopFromLineButton.setEnabled(False)
 
             # updates tab jog
-            self.ui.cncJogCommandXMButton.setEnabled(False)
-            self.ui.cncJogCommandXPButton.setEnabled(False)
-            self.ui.cncJogCommandYMButton.setEnabled(False)
-            self.ui.cncJogCommandYPButton.setEnabled(False)
-            self.ui.cncJogCommandZMButton.setEnabled(False)
-            self.ui.cncJogCommandZPButton.setEnabled(False)
-            self.ui.cncJogCommandAMButton.setEnabled(False)
-            self.ui.cncJogCommandAPButton.setEnabled(False)
-            self.ui.cncJogCommandBMButton.setEnabled(False)
-            self.ui.cncJogCommandBPButton.setEnabled(False)
-            self.ui.cncJogCommandCMButton.setEnabled(False)
-            self.ui.cncJogCommandCPButton.setEnabled(False)
+            self.ui.jogCommandXMButton.setEnabled(False)
+            self.ui.jogCommandXPButton.setEnabled(False)
+            self.ui.jogCommandYMButton.setEnabled(False)
+            self.ui.jogCommandYPButton.setEnabled(False)
+            self.ui.jogCommandZMButton.setEnabled(False)
+            self.ui.jogCommandZPButton.setEnabled(False)
+            self.ui.jogCommandAMButton.setEnabled(False)
+            self.ui.jogCommandAPButton.setEnabled(False)
+            self.ui.jogCommandBMButton.setEnabled(False)
+            self.ui.jogCommandBPButton.setEnabled(False)
+            self.ui.jogCommandCMButton.setEnabled(False)
+            self.ui.jogCommandCPButton.setEnabled(False)
 
             self.ui.jogSTOPButton.setEnabled(False)
 
-            self.ui.setProgramPositionXButton.setEnabled(False)
-            self.ui.setProgramPositionYButton.setEnabled(False)
-            self.ui.setProgramPositionZButton.setEnabled(False)
-            self.ui.setProgramPositionAButton.setEnabled(False)
-            self.ui.setProgramPositionBButton.setEnabled(False)
-            self.ui.setProgramPositionCButton.setEnabled(False)
+            self.ui.jogSetProgramPositionXButton.setEnabled(False)
+            self.ui.jogSetProgramPositionYButton.setEnabled(False)
+            self.ui.jogSetProgramPositionZButton.setEnabled(False)
+            self.ui.jogSetProgramPositionAButton.setEnabled(False)
+            self.ui.jogSetProgramPositionBButton.setEnabled(False)
+            self.ui.jogSetProgramPositionCButton.setEnabled(False)
 
             # updates tab overrides
 
@@ -898,30 +915,43 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.mdiCommandExecuteButton.setEnabled(enabled_commands.cnc_mdi_command)
 
             # updates tab cnc
+            self.ui.cncProgramAnalysisMTButton.setEnabled(enabled_commands.program_analysis)
+            self.ui.cncProgramAnalysisRTButton.setEnabled(enabled_commands.program_analysis)
+            self.ui.cncProgramAnalysisRFButton.setEnabled(enabled_commands.program_analysis)
+            self.ui.cncProgramAnalysisRVButton.setEnabled(enabled_commands.program_analysis)
+            self.ui.cncProgramAnalysisRZButton.setEnabled(enabled_commands.program_analysis)
+            self.ui.cncProgramAnalysisAbortButton.setEnabled(enabled_commands.program_analysis_abort)
+            self.ui.cncStartButton.setEnabled(enabled_commands.cnc_start)
+            self.ui.cncStopButton.setEnabled(enabled_commands.cnc_stop)
+            self.ui.cncPauseButton.setEnabled(enabled_commands.cnc_pause)
+            self.ui.cncContinueButton.setEnabled(enabled_commands.cnc_continue)
+            self.ui.cncStartFromLineButton.setEnabled(enabled_commands.cnc_start_from_line)
+            self.ui.cncResumeAfterStopButton.setEnabled(enabled_commands.cnc_resume)
+            self.ui.cncResumeAfterStopFromLineButton.setEnabled(enabled_commands.cnc_resume_from_line)
 
             # updates tab jog
             cnc_jog_command = self.ctx.enabled_commands.cnc_jog_command
-            self.ui.cncJogCommandXMButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
-            self.ui.cncJogCommandXPButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
-            self.ui.cncJogCommandYMButton.setEnabled((cnc_jog_command & cnc.Y_AXIS_MASK) > 0)
-            self.ui.cncJogCommandYPButton.setEnabled((cnc_jog_command & cnc.Y_AXIS_MASK) > 0)
-            self.ui.cncJogCommandZMButton.setEnabled((cnc_jog_command & cnc.Z_AXIS_MASK) > 0)
-            self.ui.cncJogCommandZPButton.setEnabled((cnc_jog_command & cnc.Z_AXIS_MASK) > 0)
-            self.ui.cncJogCommandAMButton.setEnabled((cnc_jog_command & cnc.A_AXIS_MASK) > 0)
-            self.ui.cncJogCommandAPButton.setEnabled((cnc_jog_command & cnc.A_AXIS_MASK) > 0)
-            self.ui.cncJogCommandBMButton.setEnabled((cnc_jog_command & cnc.B_AXIS_MASK) > 0)
-            self.ui.cncJogCommandBPButton.setEnabled((cnc_jog_command & cnc.B_AXIS_MASK) > 0)
-            self.ui.cncJogCommandCMButton.setEnabled((cnc_jog_command & cnc.C_AXIS_MASK) > 0)
-            self.ui.cncJogCommandCPButton.setEnabled((cnc_jog_command & cnc.C_AXIS_MASK) > 0)
+            self.ui.jogCommandXMButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
+            self.ui.jogCommandXPButton.setEnabled((cnc_jog_command & cnc.X_AXIS_MASK) > 0)
+            self.ui.jogCommandYMButton.setEnabled((cnc_jog_command & cnc.Y_AXIS_MASK) > 0)
+            self.ui.jogCommandYPButton.setEnabled((cnc_jog_command & cnc.Y_AXIS_MASK) > 0)
+            self.ui.jogCommandZMButton.setEnabled((cnc_jog_command & cnc.Z_AXIS_MASK) > 0)
+            self.ui.jogCommandZPButton.setEnabled((cnc_jog_command & cnc.Z_AXIS_MASK) > 0)
+            self.ui.jogCommandAMButton.setEnabled((cnc_jog_command & cnc.A_AXIS_MASK) > 0)
+            self.ui.jogCommandAPButton.setEnabled((cnc_jog_command & cnc.A_AXIS_MASK) > 0)
+            self.ui.jogCommandBMButton.setEnabled((cnc_jog_command & cnc.B_AXIS_MASK) > 0)
+            self.ui.jogCommandBPButton.setEnabled((cnc_jog_command & cnc.B_AXIS_MASK) > 0)
+            self.ui.jogCommandCMButton.setEnabled((cnc_jog_command & cnc.C_AXIS_MASK) > 0)
+            self.ui.jogCommandCPButton.setEnabled((cnc_jog_command & cnc.C_AXIS_MASK) > 0)
 
             self.ui.jogSTOPButton.setEnabled(self.ctx.enabled_commands.cnc_stop)
 
-            self.ui.setProgramPositionXButton.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
-            self.ui.setProgramPositionYButton.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
-            self.ui.setProgramPositionZButton.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
-            self.ui.setProgramPositionAButton.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
-            self.ui.setProgramPositionBButton.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
-            self.ui.setProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionXButton.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionYButton.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionZButton.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionAButton.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionBButton.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
             # updates tab overrides
 
@@ -1013,34 +1043,34 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         self.api.cnc_jog_command(cnc.JC_NONE)
 
-        if sender == self.ui.cncJogCommandXMButton:
+        if sender == self.ui.jogCommandXMButton:
             self.api.cnc_jog_command(cnc.JC_X_BW)
-        if sender == self.ui.cncJogCommandXPButton:
+        if sender == self.ui.jogCommandXPButton:
             self.api.cnc_jog_command(cnc.JC_X_FW)
 
-        if sender == self.ui.cncJogCommandYMButton:
+        if sender == self.ui.jogCommandYMButton:
             self.api.cnc_jog_command(cnc.JC_Y_BW)
-        if sender == self.ui.cncJogCommandYPButton:
+        if sender == self.ui.jogCommandYPButton:
             self.api.cnc_jog_command(cnc.JC_Y_FW)
 
-        if sender == self.ui.cncJogCommandZMButton:
+        if sender == self.ui.jogCommandZMButton:
             self.api.cnc_jog_command(cnc.JC_Z_BW)
-        if sender == self.ui.cncJogCommandZPButton:
+        if sender == self.ui.jogCommandZPButton:
             self.api.cnc_jog_command(cnc.JC_Z_FW)
 
-        if sender == self.ui.cncJogCommandAMButton:
+        if sender == self.ui.jogCommandAMButton:
             self.api.cnc_jog_command(cnc.JC_A_BW)
-        if sender == self.ui.cncJogCommandAPButton:
+        if sender == self.ui.jogCommandAPButton:
             self.api.cnc_jog_command(cnc.JC_A_FW)
 
-        if sender == self.ui.cncJogCommandBMButton:
+        if sender == self.ui.jogCommandBMButton:
             self.api.cnc_jog_command(cnc.JC_B_BW)
-        if sender == self.ui.cncJogCommandBPButton:
+        if sender == self.ui.jogCommandBPButton:
             self.api.cnc_jog_command(cnc.JC_B_FW)
 
-        if sender == self.ui.cncJogCommandCMButton:
+        if sender == self.ui.jogCommandCMButton:
             self.api.cnc_jog_command(cnc.JC_C_BW)
-        if sender == self.ui.cncJogCommandCPButton:
+        if sender == self.ui.jogCommandCPButton:
             self.api.cnc_jog_command(cnc.JC_C_FW)
 
     def __on_cnc_jog_command_mouse_up(self):
@@ -1106,20 +1136,25 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # events tab program
         # evenst tab g-code
         # events tab mdi
+
         # events tab cnc
+        if sender == self.ui.cncStartFromLineEdit:
+            try_str_2_int('cnc_start_from_line', 1, None)
+        if sender == self.ui.cncResumeAfterStopFromLineEdit:
+            try_str_2_int('cnc_resume_after_stop_from_line', 1, None)
 
         # events tab jog
-        if sender == self.ui.setProgramPositionXEdit:
+        if sender == self.ui.jogSetProgramPositionXEdit:
             try_str_2_float('set_program_position_x')
-        if sender == self.ui.setProgramPositionYEdit:
+        if sender == self.ui.jogSetProgramPositionYEdit:
             try_str_2_float('set_program_position_y')
-        if sender == self.ui.setProgramPositionZEdit:
+        if sender == self.ui.jogSetProgramPositionZEdit:
             try_str_2_float('set_program_position_z')
-        if sender == self.ui.setProgramPositionAEdit:
+        if sender == self.ui.jogSetProgramPositionAEdit:
             try_str_2_float('set_program_position_a')
-        if sender == self.ui.setProgramPositionBEdit:
+        if sender == self.ui.jogSetProgramPositionBEdit:
             try_str_2_float('set_program_position_b')
-        if sender == self.ui.setProgramPositionCEdit:
+        if sender == self.ui.jogSetProgramPositionCEdit:
             try_str_2_float('set_program_position_c')
 
         # events tab overrides
@@ -1170,8 +1205,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.api_server_connection_state = ASCS_DISCONNECTED
         self.stay_on_top_changed = False
         self.axes_mask_enablings_in_use = -1
-        self.cnc_resume_after_stop_from_line = 0
-        self.cnc_start_from_line = 0
+        self.cnc_resume_after_stop_from_line = 1
+        self.cnc_start_from_line = 1
         self.in_update = False
 
         # load settings from memento
@@ -1381,15 +1416,18 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
             # updates tab g-code
             # updates tab mdi
+
             # updates tab cnc
+            self.ui.cncStartFromLineEdit.setText(f'{self.cnc_start_from_line}')
+            self.ui.cncResumeAfterStopFromLineEdit.setText(f'{self.cnc_resume_after_stop_from_line}')
 
             # updates tab jog
-            self.ui.setProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
-            self.ui.setProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
-            self.ui.setProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
-            self.ui.setProgramPositionAEdit.setText(pos_um.format(self.set_program_position_a))
-            self.ui.setProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
-            self.ui.setProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
+            self.ui.jogSetProgramPositionXEdit.setText(pos_um.format(self.set_program_position_x))
+            self.ui.jogSetProgramPositionYEdit.setText(pos_um.format(self.set_program_position_y))
+            self.ui.jogSetProgramPositionZEdit.setText(pos_um.format(self.set_program_position_z))
+            self.ui.jogSetProgramPositionAEdit.setText(pos_um.format(self.set_program_position_a))
+            self.ui.jogSetProgramPositionBEdit.setText(pos_um.format(self.set_program_position_b))
+            self.ui.jogSetProgramPositionCEdit.setText(pos_um.format(self.set_program_position_c))
 
             # updates tab overrides
             # updates tab homing
@@ -1454,6 +1492,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         # create shortcuts
         cnc_info = self.ctx.cnc_info
         axes_info = self.ctx.axes_info
+        compile_info = self.ctx.compile_info
         enabled_commands = self.ctx.enabled_commands
 
         # evaluate blink state
@@ -1546,7 +1585,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # updates tab cnc
         if self.ui.tabWidget.currentWidget() == self.ui.tabCNC:
-            pass
+            text = 'Analysis State : '
+            if is_in_str_list_range(CS_TEXTS, compile_info.state):
+                text += CS_TEXTS[compile_info.state]
+            self.ui.cncProgramAnalysisStateLabel.setText(text)
+            text = 'Message : ' + compile_info.message
+            self.ui.cncProgramAnalysisMessageLabel.setText(text)
 
         # updates tab jog
         if self.ui.tabWidget.currentWidget() == self.ui.tabJOG:
@@ -1600,7 +1644,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                     state_widget = getattr(self.ui, f"homing{axis}AxisState")
                     sensor_widget = getattr(self.ui, f"homing{axis}AxisSensor")
                     correction_widget = getattr(self.ui, f"homing{axis}CorrectionSpaceValue")
-                    if not (cnc_info.axes_mask & axis_mask):
+                    if not cnc_info.axes_mask & axis_mask:
                         state_ss = c_none
                         sensor_ss = c_none
                         correction_v = '- - -'
@@ -2021,15 +2065,18 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings tab program
             # enablings tab g-code
             # enablings tab mdi
+
             # enablings tab cnc
+            self.ui.cncStartFromLineEdit.setEnabled(False)
+            self.ui.cncResumeAfterStopFromLineEdit.setEnabled(False)
 
             # enablings tab jog
-            self.ui.setProgramPositionXEdit.setEnabled(False)
-            self.ui.setProgramPositionYEdit.setEnabled(False)
-            self.ui.setProgramPositionZEdit.setEnabled(False)
-            self.ui.setProgramPositionAEdit.setEnabled(False)
-            self.ui.setProgramPositionBEdit.setEnabled(False)
-            self.ui.setProgramPositionCEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionXEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionYEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionZEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionAEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionBEdit.setEnabled(False)
+            self.ui.jogSetProgramPositionCEdit.setEnabled(False)
 
             # enablings tab overrides
             self.ui.ovrJogLabel.setEnabled(False)
@@ -2101,16 +2148,19 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # enablings tab program
             # enablings tab g-code
             # enablings tab mdi
+
             # enablings tab cnc
+            self.ui.cncStartFromLineEdit.setEnabled(enabled_commands.cnc_start_from_line)
+            self.ui.cncResumeAfterStopFromLineEdit.setEnabled(enabled_commands.cnc_resume_from_line)
 
             # enablings tab jog
             set_program_position = enabled_commands.set_program_position
-            self.ui.setProgramPositionXEdit.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
-            self.ui.setProgramPositionYEdit.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
-            self.ui.setProgramPositionZEdit.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
-            self.ui.setProgramPositionAEdit.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
-            self.ui.setProgramPositionBEdit.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
-            self.ui.setProgramPositionCEdit.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionXEdit.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionYEdit.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionZEdit.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionAEdit.setEnabled((set_program_position & cnc.A_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionBEdit.setEnabled((set_program_position & cnc.B_AXIS_MASK) > 0)
+            self.ui.jogSetProgramPositionCEdit.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
             # enablings tab overrides
             self.ui.ovrJogLabel.setEnabled(cnc_info.override_jog_enabled)

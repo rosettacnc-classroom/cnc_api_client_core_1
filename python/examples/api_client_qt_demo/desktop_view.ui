@@ -743,7 +743,7 @@
      <attribute name="title">
       <string>JOG</string>
      </attribute>
-     <widget class="QPushButton" name="cncJogCommandXMButton">
+     <widget class="QPushButton" name="jogCommandXMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -756,7 +756,7 @@
        <string>X -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandYMButton">
+     <widget class="QPushButton" name="jogCommandYMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -769,7 +769,7 @@
        <string>Y -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandZMButton">
+     <widget class="QPushButton" name="jogCommandZMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -782,7 +782,7 @@
        <string>Z -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandAMButton">
+     <widget class="QPushButton" name="jogCommandAMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -795,7 +795,7 @@
        <string>A -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandBMButton">
+     <widget class="QPushButton" name="jogCommandBMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -808,7 +808,7 @@
        <string>B -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandCMButton">
+     <widget class="QPushButton" name="jogCommandCMButton">
       <property name="geometry">
        <rect>
         <x>16</x>
@@ -821,7 +821,7 @@
        <string>C -</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandYPButton">
+     <widget class="QPushButton" name="jogCommandYPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -834,7 +834,7 @@
        <string>Y +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandAPButton">
+     <widget class="QPushButton" name="jogCommandAPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -847,7 +847,7 @@
        <string>A +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandBPButton">
+     <widget class="QPushButton" name="jogCommandBPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -860,7 +860,7 @@
        <string>B +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandXPButton">
+     <widget class="QPushButton" name="jogCommandXPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -873,7 +873,7 @@
        <string>X +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandCPButton">
+     <widget class="QPushButton" name="jogCommandCPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -886,7 +886,7 @@
        <string>C +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="cncJogCommandZPButton">
+     <widget class="QPushButton" name="jogCommandZPButton">
       <property name="geometry">
        <rect>
         <x>104</x>
@@ -899,7 +899,7 @@
        <string>Z +</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionYButton">
+     <widget class="QPushButton" name="jogSetProgramPositionYButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -912,7 +912,7 @@
        <string>Set Y</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionCButton">
+     <widget class="QPushButton" name="jogSetProgramPositionCButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -925,7 +925,7 @@
        <string>Set C</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionXButton">
+     <widget class="QPushButton" name="jogSetProgramPositionXButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -938,7 +938,7 @@
        <string>Set X</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionBButton">
+     <widget class="QPushButton" name="jogSetProgramPositionBButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -951,7 +951,7 @@
        <string>Set B</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionAButton">
+     <widget class="QPushButton" name="jogSetProgramPositionAButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -964,7 +964,7 @@
        <string>Set A</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="setProgramPositionZButton">
+     <widget class="QPushButton" name="jogSetProgramPositionZButton">
       <property name="geometry">
        <rect>
         <x>825</x>
@@ -977,7 +977,7 @@
        <string>Set Z</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionXEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionXEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -993,7 +993,7 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionYEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionYEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -1009,7 +1009,7 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionZEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionZEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -1025,7 +1025,7 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionAEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionAEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -1041,7 +1041,7 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionBEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionBEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -1057,7 +1057,7 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QLineEdit" name="setProgramPositionCEdit">
+     <widget class="QLineEdit" name="jogSetProgramPositionCEdit">
       <property name="geometry">
        <rect>
         <x>713</x>
@@ -1073,20 +1073,26 @@
        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="Line" name="jogSetSeparatorLine">
+     <widget class="Line" name="jogVLine01">
       <property name="geometry">
        <rect>
         <x>216</x>
         <y>14</y>
-        <width>2</width>
+        <width>1</width>
         <height>182</height>
        </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
       </property>
       <property name="orientation">
        <enum>Qt::Orientation::Vertical</enum>
       </property>
+      <property name="isVLine" stdset="0">
+       <bool>true</bool>
+      </property>
      </widget>
-     <widget class="QLabel" name="textAxisPositionText">
+     <widget class="QLabel" name="jogSetAxisPositionLabel">
       <property name="geometry">
        <rect>
         <x>224</x>
@@ -5764,7 +5770,7 @@ after STOP</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(35, 207, 255);</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>SPINDLE STATES</string>
@@ -5840,7 +5846,7 @@ after STOP</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(35, 207, 255);</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>COOLERS STATES</string>
@@ -5960,7 +5966,7 @@ after STOP</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(35, 207, 255);</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>AUXILIARIES STATES</string>
@@ -6029,7 +6035,7 @@ after STOP</string>
     <property name="frameShadow">
      <enum>QFrame::Shadow::Plain</enum>
     </property>
-    <widget class="QLabel" name="cmdsTitleLabel_2">
+    <widget class="QLabel" name="showTitleLabel">
      <property name="geometry">
       <rect>
        <x>8</x>
@@ -6130,21 +6136,21 @@ History</string>
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>cncJogCommandAPButton</tabstop>
-  <tabstop>cncJogCommandBPButton</tabstop>
-  <tabstop>cncJogCommandCPButton</tabstop>
-  <tabstop>setProgramPositionXEdit</tabstop>
-  <tabstop>setProgramPositionYEdit</tabstop>
-  <tabstop>setProgramPositionZEdit</tabstop>
-  <tabstop>setProgramPositionAEdit</tabstop>
-  <tabstop>setProgramPositionBEdit</tabstop>
-  <tabstop>setProgramPositionCEdit</tabstop>
-  <tabstop>setProgramPositionXButton</tabstop>
-  <tabstop>setProgramPositionYButton</tabstop>
-  <tabstop>setProgramPositionZButton</tabstop>
-  <tabstop>setProgramPositionAButton</tabstop>
-  <tabstop>setProgramPositionBButton</tabstop>
-  <tabstop>setProgramPositionCButton</tabstop>
+  <tabstop>jogCommandAPButton</tabstop>
+  <tabstop>jogCommandBPButton</tabstop>
+  <tabstop>jogCommandCPButton</tabstop>
+  <tabstop>jogSetProgramPositionXEdit</tabstop>
+  <tabstop>jogSetProgramPositionYEdit</tabstop>
+  <tabstop>jogSetProgramPositionZEdit</tabstop>
+  <tabstop>jogSetProgramPositionAEdit</tabstop>
+  <tabstop>jogSetProgramPositionBEdit</tabstop>
+  <tabstop>jogSetProgramPositionCEdit</tabstop>
+  <tabstop>jogSetProgramPositionXButton</tabstop>
+  <tabstop>jogSetProgramPositionYButton</tabstop>
+  <tabstop>jogSetProgramPositionZButton</tabstop>
+  <tabstop>jogSetProgramPositionAButton</tabstop>
+  <tabstop>jogSetProgramPositionBButton</tabstop>
+  <tabstop>jogSetProgramPositionCButton</tabstop>
   <tabstop>jogSTOPButton</tabstop>
   <tabstop>uidChangeBoardIPButton</tabstop>
   <tabstop>uidParametersLibraryButton</tabstop>
@@ -6179,15 +6185,15 @@ History</string>
   <tabstop>programSaveButton</tabstop>
   <tabstop>programSaveFileAsFileNameEdit</tabstop>
   <tabstop>programSaveAsButton</tabstop>
-  <tabstop>cncJogCommandXMButton</tabstop>
-  <tabstop>cncJogCommandYMButton</tabstop>
-  <tabstop>cncJogCommandZMButton</tabstop>
-  <tabstop>cncJogCommandAMButton</tabstop>
-  <tabstop>cncJogCommandBMButton</tabstop>
-  <tabstop>cncJogCommandCMButton</tabstop>
-  <tabstop>cncJogCommandXPButton</tabstop>
-  <tabstop>cncJogCommandYPButton</tabstop>
-  <tabstop>cncJogCommandZPButton</tabstop>
+  <tabstop>jogCommandXMButton</tabstop>
+  <tabstop>jogCommandYMButton</tabstop>
+  <tabstop>jogCommandZMButton</tabstop>
+  <tabstop>jogCommandAMButton</tabstop>
+  <tabstop>jogCommandBMButton</tabstop>
+  <tabstop>jogCommandCMButton</tabstop>
+  <tabstop>jogCommandXPButton</tabstop>
+  <tabstop>jogCommandYPButton</tabstop>
+  <tabstop>jogCommandZPButton</tabstop>
  </tabstops>
  <resources>
   <include location="resources.qrc"/>
