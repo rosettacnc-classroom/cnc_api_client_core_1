@@ -1583,6 +1583,605 @@
      <attribute name="title">
       <string>Homing</string>
      </attribute>
+     <widget class="QPushButton" name="homingXAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>40</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing X-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingYAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>85</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing Y-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingZAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>130</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing Z-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingAAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>175</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing A-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingBAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>220</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing B-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingCAxisButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>265</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing C-Axis</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="homingAllAxesButton">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>310</y>
+        <width>100</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Homing all Axes</string>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingXAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>50</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingYAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>95</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingZAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>140</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingAAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>185</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingBAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>230</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingCAxisState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>275</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingAllAxesState">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>320</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingXCorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>50</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingYCorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>95</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingZCorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>140</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingACorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>185</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingBCorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>230</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingCCorrectionSpaceValue">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>275</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>DejaVu Sans Mono</family>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingCAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>275</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingXAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>50</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingZAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>140</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingBAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>230</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingYAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>95</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QFrame" name="homingAAxisSensor">
+      <property name="geometry">
+       <rect>
+        <x>236</x>
+        <y>185</y>
+        <width>40</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingCommandLabel">
+      <property name="geometry">
+       <rect>
+        <x>16</x>
+        <y>16</y>
+        <width>100</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>COMMAND</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingDoneLabel">
+      <property name="geometry">
+       <rect>
+        <x>146</x>
+        <y>16</y>
+        <width>60</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>DONE</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingCorrectionSpaceLabe">
+      <property name="geometry">
+       <rect>
+        <x>316</x>
+        <y>16</y>
+        <width>120</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>CORRECTION SPACE</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="homingSensorLabel">
+      <property name="geometry">
+       <rect>
+        <x>226</x>
+        <y>16</y>
+        <width>60</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Tahoma</family>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>SENSOR</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="Line" name="homingVLine01">
+      <property name="geometry">
+       <rect>
+        <x>136</x>
+        <y>40</y>
+        <width>1</width>
+        <height>310</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="isVLine" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="Line" name="homingVLine02">
+      <property name="geometry">
+       <rect>
+        <x>216</x>
+        <y>40</y>
+        <width>1</width>
+        <height>310</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="isVLine" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="Line" name="homingVLine03">
+      <property name="geometry">
+       <rect>
+        <x>296</x>
+        <y>40</y>
+        <width>1</width>
+        <height>310</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="isVLine" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="Line" name="homingVLine04">
+      <property name="geometry">
+       <rect>
+        <x>456</x>
+        <y>40</y>
+        <width>1</width>
+        <height>310</height>
+       </rect>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Plain</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <property name="isVLine" stdset="0">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabWCS">
      <attribute name="title">
@@ -2298,7 +2897,7 @@
        <enum>QFrame::Shadow::Raised</enum>
       </property>
      </widget>
-     <widget class="QCheckBox" name="laserShowOutBitPlotCheckBox">
+     <widget class="QCheckBox" name="laserEnableDataPlotCheckBox">
       <property name="geometry">
        <rect>
         <x>270</x>
@@ -2308,7 +2907,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Show Laser Out BIT Plot</string>
+       <string>Enable Data Plot</string>
       </property>
      </widget>
     </widget>

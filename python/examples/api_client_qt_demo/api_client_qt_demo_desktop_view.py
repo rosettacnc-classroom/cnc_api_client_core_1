@@ -212,7 +212,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             QFrame[isHLine="true"] {
                 color: #B9B9B9;
             }
-
+            QFrame[isVLine="true"] {
+                color: #B9B9B9;
+            }
             /* style for g-code editors */
             QPlainTextEdit {
                 background-color: #1E1E1E;
@@ -340,6 +342,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         self.in_update = None
         self.slider_update_inhibition_until = 0.0
         self.stay_on_top_changed = None
+        self.blink_state = False
 
         # declare active operator request attributes
         self.active_operator_request = None
@@ -646,7 +649,22 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.api.cnc_stop()
 
         # events tab overrides
+
         # events tab homing
+        if sender == self.ui.homingXAxisButton:
+            self.api.cnc_homing(cnc.X_AXIS_MASK)
+        if sender == self.ui.homingYAxisButton:
+            self.api.cnc_homing(cnc.Y_AXIS_MASK)
+        if sender == self.ui.homingZAxisButton:
+            self.api.cnc_homing(cnc.Z_AXIS_MASK)
+        if sender == self.ui.homingAAxisButton:
+            self.api.cnc_homing(cnc.A_AXIS_MASK)
+        if sender == self.ui.homingBAxisButton:
+            self.api.cnc_homing(cnc.B_AXIS_MASK)
+        if sender == self.ui.homingCAxisButton:
+            self.api.cnc_homing(cnc.C_AXIS_MASK)
+        if sender == self.ui.homingAllAxesButton:
+            self.api.cnc_homing(cnc.X2C_AXIS_MASK)
 
         # events tab wcs
         if sender == self.ui.csApplyWCSChangesButton:
@@ -782,7 +800,15 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionCButton.setEnabled(False)
 
             # updates tab overrides
+
             # updates tab homing
+            self.ui.homingXAxisButton.setEnabled(False)
+            self.ui.homingYAxisButton.setEnabled(False)
+            self.ui.homingZAxisButton.setEnabled(False)
+            self.ui.homingAAxisButton.setEnabled(False)
+            self.ui.homingBAxisButton.setEnabled(False)
+            self.ui.homingCAxisButton.setEnabled(False)
+            self.ui.homingAllAxesButton.setEnabled(False)
 
             # updates tab wcs
             self.ui.csApplyWCSChangesButton.setEnabled(False)
@@ -812,8 +838,10 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
             # updates tab system info
         else:
-            connected = self.ctx.cnc_info.state_machine != cnc.SM_DISCONNECTED
+            cnc_info = self.ctx.cnc_info
             enabled_commands = self.ctx.enabled_commands
+            connected = self.ctx.cnc_info.state_machine != cnc.SM_DISCONNECTED
+            set_program_position = self.ctx.enabled_commands.set_program_position
 
             # updates main view
 
@@ -888,7 +916,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
             self.ui.jogSTOPButton.setEnabled(self.ctx.enabled_commands.cnc_stop)
 
-            set_program_position = self.ctx.enabled_commands.set_program_position
             self.ui.setProgramPositionXButton.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
             self.ui.setProgramPositionYButton.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
             self.ui.setProgramPositionZButton.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
@@ -897,7 +924,16 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             self.ui.setProgramPositionCButton.setEnabled((set_program_position & cnc.C_AXIS_MASK) > 0)
 
             # updates tab overrides
+
             # updates tab homing
+            enabled = enabled_commands.cnc_homing
+            self.ui.homingXAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.X_AXIS_MASK > 0))
+            self.ui.homingYAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.Y_AXIS_MASK > 0))
+            self.ui.homingZAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.Z_AXIS_MASK > 0))
+            self.ui.homingAAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.A_AXIS_MASK > 0))
+            self.ui.homingBAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.B_AXIS_MASK > 0))
+            self.ui.homingCAxisButton.setEnabled(enabled and (cnc_info.axes_mask & cnc.C_AXIS_MASK > 0))
+            self.ui.homingAllAxesButton.setEnabled(enabled)
 
             # updates tab wcs
             enabled = False
@@ -921,7 +957,6 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             # updates tab d i/o
             # updates tab a i/o
             # updates tab scanning laser
-            set_program_position = self.ctx.enabled_commands.set_program_position
             self.ui.laserZeroXAxisButton.setEnabled((set_program_position & cnc.X_AXIS_MASK) > 0)
             self.ui.laserZeroYAxisButton.setEnabled((set_program_position & cnc.Y_AXIS_MASK) > 0)
             self.ui.laserZeroZAxisButton.setEnabled((set_program_position & cnc.Z_AXIS_MASK) > 0)
@@ -1421,6 +1456,9 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         axes_info = self.ctx.axes_info
         enabled_commands = self.ctx.enabled_commands
 
+        # evaluate blink state
+        self.blink_state = (int(time.perf_counter() * 1000) % 700) >= 350
+
         # get connection with cnc state and related changed state
         connection_with_cnc = cnc_info.state_machine != cnc.SM_DISCONNECTED
         connection_with_cnc_changed = self.connection_with_cnc != connection_with_cnc
@@ -1437,6 +1475,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         um_vel_lf = '{:7.0f} mm/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} in/min'
         um_vel_rf = '{:7.0f} dg/min' if self.units_mode == cnc.UM_METRIC else '{:7.0f} dg/min'
         um_decimals = 3 if self.units_mode == cnc.UM_METRIC else 4
+        hcs_decimals = 4 if self.units_mode == cnc.UM_METRIC else 5
 
         # updates tab general
         if self.ui.tabWidgetMain.currentWidget() == self.ui.tabGeneral:
@@ -1550,7 +1589,54 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # updates tab homing
         if self.ui.tabWidget.currentWidget() == self.ui.tabHoming:
-            pass
+            c_done = 'background-color: #54FF00'
+            c_miss = 'background-color: #FF0000'
+            c_stsh = 'background-color: #54FF00'
+            c_stsl = 'background-color: #FFFFFF'
+            c_none = 'background-color: #C5C5C5'
+            if cnc_info.has_data and axes_info.has_data and connection_with_cnc:
+                for idx, axis in enumerate(self.axes):
+                    axis_mask = getattr(cnc, f"{axis}_AXIS_MASK")
+                    state_widget = getattr(self.ui, f"homing{axis}AxisState")
+                    sensor_widget = getattr(self.ui, f"homing{axis}AxisSensor")
+                    correction_widget = getattr(self.ui, f"homing{axis}CorrectionSpaceValue")
+                    if not (cnc_info.axes_mask & axis_mask):
+                        state_ss = c_none
+                        sensor_ss = c_none
+                        correction_v = '- - -'
+                    elif axes_info.homing_running_mask & axis_mask:
+                        state_ss = c_miss if self.blink_state else c_stsl
+                        sensor_ss = c_stsh if axes_info.homing_sensors_mask & axis_mask else c_stsl
+                        correction_v = 'running...'
+                    else:
+                        state_ss = c_done if axes_info.homing_done_mask & axis_mask else c_miss
+                        sensor_ss = c_stsh if axes_info.homing_sensors_mask & axis_mask else c_stsl
+                        homing_correction_space = axes_info.homing_correction_space[idx]
+                        correction_v = format_float(homing_correction_space, hcs_decimals, DecimalsTrimMode.NONE)
+                    state_widget.setStyleSheet(state_ss)
+                    sensor_widget.setStyleSheet(sensor_ss)
+                    correction_widget.setText(correction_v)
+                self.ui.homingAllAxesState.setStyleSheet(c_done if axes_info.homing_done else c_miss)
+            else:
+                self.ui.homingXAxisState.setStyleSheet(c_none)
+                self.ui.homingYAxisState.setStyleSheet(c_none)
+                self.ui.homingZAxisState.setStyleSheet(c_none)
+                self.ui.homingAAxisState.setStyleSheet(c_none)
+                self.ui.homingBAxisState.setStyleSheet(c_none)
+                self.ui.homingCAxisState.setStyleSheet(c_none)
+                self.ui.homingAllAxesState.setStyleSheet(c_none)
+                self.ui.homingXAxisSensor.setStyleSheet(c_none)
+                self.ui.homingYAxisSensor.setStyleSheet(c_none)
+                self.ui.homingZAxisSensor.setStyleSheet(c_none)
+                self.ui.homingAAxisSensor.setStyleSheet(c_none)
+                self.ui.homingBAxisSensor.setStyleSheet(c_none)
+                self.ui.homingCAxisSensor.setStyleSheet(c_none)
+                self.ui.homingXCorrectionSpaceValue.setText('- - -')
+                self.ui.homingYCorrectionSpaceValue.setText('- - -')
+                self.ui.homingZCorrectionSpaceValue.setText('- - -')
+                self.ui.homingACorrectionSpaceValue.setText('- - -')
+                self.ui.homingBCorrectionSpaceValue.setText('- - -')
+                self.ui.homingCCorrectionSpaceValue.setText('- - -')
 
         # updates tab wcs
         if self.ui.tabWidget.currentWidget() == self.ui.tabWCS:
@@ -1667,10 +1753,8 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 self.ui.laserMCSXPositionValue.setText(mcs_x)
                 self.ui.laserMCSYPositionValue.setText(mcs_y)
                 self.ui.laserMCSZPositionValue.setText(mcs_z)
-                if self.ui.laserShowOutBitPlotCheckBox.isChecked():
+                if self.ui.laserEnableDataPlotCheckBox.isChecked():
                     self.laser_scope.push([laser_info.laser_out_bit, laser_info.laser_out_umf])
-                else:
-                    self.laser_scope.clear()
 
         # updates tab machining info
         if self.ui.tabWidget.currentWidget() == self.ui.tabMachiningInfo:
@@ -2120,13 +2204,12 @@ class ApiClientQtDemoDesktopView(QMainWindow):
                 update_button_icon(btn_cw, SPINDLE_CW_ENABLED_03)
                 update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_03)
             else:
-                blink_state = (int(time.perf_counter() * 1000) % 700) >= 350
                 if cnc_info.spindle_direction == cnc.SD_CW:
                     update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01)
-                    update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01 if blink_state else SPINDLE_CW_ENABLED_02)
+                    update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01 if self.blink_state else SPINDLE_CW_ENABLED_02)
                 elif cnc_info.spindle_direction == cnc.SD_CCW:
                     update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01)
-                    update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01 if blink_state else SPINDLE_CCW_ENABLED_02)
+                    update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01 if self.blink_state else SPINDLE_CCW_ENABLED_02)
                 else:
                     update_button_icon(btn_cw, SPINDLE_CW_ENABLED_01)
                     update_button_icon(btn_ccw, SPINDLE_CCW_ENABLED_01)

@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      12/03/2026
+# Created:      13/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -519,6 +519,9 @@ class APIAxesInfo(APIComparableMixin):
         self.dynamic_offset                     = [0.0] * 3
         self.homing_done                        = False
         self.homing_done_mask                   = 0
+        self.homing_running_mask                = 0
+        self.homing_sensors_mask                = 0
+        self.homing_correction_space            = [0.0] * 6
 
 class APICncInfo(APIComparableMixin):
     """API data structure for cnc info."""
@@ -1974,6 +1977,9 @@ class CncAPIClientCore:
                 data.dynamic_offset                     = j['res']['dynamic.offset']
                 data.homing_done                        = j['res']['homing.done']
                 data.homing_done_mask                   = j['res']['homing.done.mask']
+                data.homing_running_mask                = j['res']['homing.running.mask']
+                data.homing_sensors_mask                = j['res']['homing.sensors.mask']
+                data.homing_correction_space            = j['res']['homing.correction.space']
                 data.has_data                           = True
             return data
         except Exception:
