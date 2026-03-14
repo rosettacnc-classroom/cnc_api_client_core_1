@@ -118,7 +118,6 @@ DesktopView -> QMainWindow
                 cncStopButton -> QPushButton
                 cncPauseButton -> QPushButton
                 cncContinueButton -> QPushButton
-                
                 cncCNCCommandsSpecialLabel -> QLabel
                 cncCNCCommandsSpecialLine -> Line [P: isHLine]
                 cncStartFromLineButton -> QPushButton
@@ -237,9 +236,11 @@ DesktopView -> QMainWindow
                 csSetWCSCEdit -> QLineEdit
                 csApplyWCSChangesButton -> QPushButton
             tabDIO -> QWidget
-                ???
+                dioDataEdit -> QTextEdit
+                dioDigitalInputsRadioButton -> RadioButton
+                dioDigitalOutputsRadioButton -> RadioButton
             tabAIO -> QWidget
-                ???
+                aioDataEdit -> QTextEdit
             tabScanningLaser -> QWidget
                 laserInfoLabel -> QLabel
                 laserOutBitLabel -> QLabel

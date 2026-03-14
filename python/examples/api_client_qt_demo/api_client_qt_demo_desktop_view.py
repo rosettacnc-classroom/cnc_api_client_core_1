@@ -13,7 +13,7 @@
 #
 # Author:       rosettacnc-classroom@gmail.com
 #
-# Created:      12/03/2026
+# Created:      14/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style  https://www.python.org/dev/peps/pep-0008/
@@ -1769,11 +1769,52 @@ class ApiClientQtDemoDesktopView(QMainWindow):
 
         # updates tab d i/o
         if self.ui.tabWidget.currentWidget() == self.ui.tabDIO:
-            pass
+            cols = 8
+            rows = 16
+            html_io_active = '<span style="color:red;"><b>1</b></span>'
+            html_separator = '&nbsp;&nbsp;&nbsp;&nbsp;'
+            html_body = (
+                '<div style="text-align: center;">'
+                '<pre style="font-family: DejaVu Sans Mono; font-size: 10pt; margin: 0;">'
+                '{content}'
+                '</pre>'
+                '</div>'
+            )
+            is_input = self.ui.dioDigitalInputsRadioButton.isChecked()
+            dio = self.api.get_digital_inputs() if is_input else self.api.get_digital_outputs()
+            prefix = 'I.' if is_input else 'O.'
+            data = dio.value
+            lines = []
+            for row in range(rows):
+                row_parts = []
+                for col in range(cols):
+                    idx = col * rows + row
+                    value = html_io_active if dio.has_data and data[idx] else '0' if dio.has_data else '*'
+                    row_parts.append(f'{prefix}{idx + 1:03d}: {value}')
+                lines.append(html_separator.join(row_parts))
+            self.ui.dioDataEdit.setHtml(html_body.format(content='<br>'.join(lines)))
 
         # updates tab a i/o
         if self.ui.tabWidget.currentWidget() == self.ui.tabAIO:
-            pass
+            html_body = (
+                '<div style="text-align: center;">'
+                '<pre style="font-family: DejaVu Sans Mono; font-size: 10pt; margin: 0;">'
+                '{content}'
+                '</pre>'
+                '</div>'
+            )
+            lines = [f'<b>{"ANALOG INPUTS":^33}{"ANALOG OUTPUTS":^33}</b>', '']
+            ai = self.api.get_analog_inputs()
+            ao = self.api.get_analog_outputs()
+            for row in range(8):
+                ai_1 = f'{ai.value[row]:>6.2f} %' if ai.has_data else '  *.** %'
+                ai_2 = f'{ai.value[row + 8]:>6.2f} %' if ai.has_data else '  *.** %'
+                ao_1 = f'{ao.value[row]:>6.2f} %' if ao.has_data else '  *.** %'
+                ao_2 = f'{ao.value[row + 8]:>6.2f} %' if ao.has_data else '  *.** %'
+                left = f'AN.{row + 1:02d}: {ai_1}    AN.{row + 9:02d}: {ai_2}'
+                right = f'AN.{row + 1:02d}: {ao_1}    AN.{row + 9:02d}: {ao_2}'
+                lines.append(f'{left:<33}{right}')
+            self.ui.aioDataEdit.setHtml(html_body.format(content='<br>'.join(lines)))
 
         # updates tab scanning laser
         if self.ui.tabWidget.currentWidget() == self.ui.tabScanningLaser:
