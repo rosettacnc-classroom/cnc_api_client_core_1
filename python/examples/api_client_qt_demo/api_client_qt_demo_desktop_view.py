@@ -302,33 +302,33 @@ class ApiClientQtDemoDesktopView(QMainWindow):
             icon_size=QSize(50, 50)
         )
         self.ui.cfsmAUX01Button.setStatusIcons(
-            icon_disabled="images\\aux_01_disabled.svg",
-            icon_off="images\\aux_01_enabled_1.svg",
-            icon_on="images\\aux_01_enabled_2.svg",
+            icon_disabled=":/images/images/aux_01_disabled.svg",
+            icon_off=":/images/images/aux_01_enabled_1.svg",
+            icon_on=":/images/images/aux_01_enabled_2.svg",
             icon_size=QSize(28, 28)
         )
         self.ui.cfsmAUX02Button.setStatusIcons(
-            icon_disabled="images\\aux_02_disabled.svg",
-            icon_off="images\\aux_02_enabled_1.svg",
-            icon_on="images\\aux_02_enabled_2.svg",
+            icon_disabled=":/images/images/aux_02_disabled.svg",
+            icon_off=":/images/images/aux_02_enabled_1.svg",
+            icon_on=":/images/images/aux_02_enabled_2.svg",
             icon_size=QSize(28, 28)
         )
         self.ui.cfsmAUX03Button.setStatusIcons(
-            icon_disabled="images\\aux_03_disabled.svg",
-            icon_off="images\\aux_03_enabled_1.svg",
-            icon_on="images\\aux_03_enabled_2.svg",
+            icon_disabled=":/images/images/aux_03_disabled.svg",
+            icon_off=":/images/images/aux_03_enabled_1.svg",
+            icon_on=":/images/images/aux_03_enabled_2.svg",
             icon_size=QSize(28, 28)
         )
         self.ui.cfsmAUX04Button.setStatusIcons(
-            icon_disabled="images\\aux_04_disabled.svg",
-            icon_off="images\\aux_04_enabled_1.svg",
-            icon_on="images\\aux_04_enabled_2.svg",
+            icon_disabled=":/images/images/aux_04_disabled.svg",
+            icon_off=":/images/images/aux_04_enabled_1.svg",
+            icon_on=":/images/images/aux_04_enabled_2.svg",
             icon_size=QSize(28, 28)
         )
         self.ui.cfsmAUX05Button.setStatusIcons(
-            icon_disabled="images\\aux_05_disabled.svg",
-            icon_off="images\\aux_05_enabled_1.svg",
-            icon_on="images\\aux_05_enabled_2.svg",
+            icon_disabled=":/images/images/aux_05_disabled.svg",
+            icon_off=":/images/images/aux_05_enabled_1.svg",
+            icon_on=":/images/images/aux_05_enabled_2.svg",
             icon_size=QSize(28, 28)
         )
 
