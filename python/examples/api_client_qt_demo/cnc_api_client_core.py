@@ -4,37 +4,37 @@
 #
 # Purpose:      CNC API Client Core for RosettaCNC & derivated NC Systems
 #
-# Note          Compatible with API server version 1.5.3
+# Note:         Compatible with API server version 1.5.3
 #               1 (on 1.x.y) means interface contract
 #               x (on 1.x.y) means version
 #               y (on 1.x.y) means release
 #
-# Note          Checked with Python 3.11.9
+# Note:         Checked with Python 3.11.9
 #
-# Note          Some data values or code are aligned to specified text columns to
+# Note:         Some data values or code are aligned to specified text columns to
 #               simplify data identification during the update of the API client
 #               to a newer version of the API server.
 #
-# Note          The use of generic exception raising and catching is intentional.
+# Note:         The use of generic exception raising and catching is intentional.
 #               As a client, we are not concerned with logging the specific
 #               exceptions that occur. Instead, our focus is on handling these
 #               exceptions to maintain the desired execution flow within set
 #               parameters.
 #
-# TO DO         To change the direct dict value recovery j[''][''] with j.get('')
+# TO DO:        To change the direct dict value recovery j[''][''] with j.get('')
 #               to avoid exception when received response do not contains the
 #               key:value. This permit to increase compatibility of API.
 #
-# TO DO         Use isinstance(data, type) or isinstance(data, (type, type)) to
+# TO DO:        Use isinstance(data, type) or isinstance(data, (type, type)) to
 #               verify data type. For int you can use type(int) because bool is
 #               a specific subclass of int and isinstance will fail.
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      13/03/2026
+# Created:      23/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
-# Coding Style  https://www.python.org/dev/peps/pep-0008/
+# Coding Style: https://www.python.org/dev/peps/pep-0008/
 #-------------------------------------------------------------------------------
 # pylint: disable=C0103 -> invalid-name
 # pylint: disable=C0123 -> unidiomatic-typecheck
@@ -57,6 +57,7 @@ import ssl
 import math
 import json
 import time
+import base64
 import socket
 
 from typing import Any, List
@@ -534,6 +535,7 @@ class APICncInfo(APIComparableMixin):
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
+        self.toolpath_id                        = ''
         self.operator_request_id_pending        = ''
         self.current_alarm_datetime             = datetime.min
         self.current_alarm_code                 = 0
@@ -954,6 +956,12 @@ class APISystemInfo(APIComparableMixin):
         self.licensed_feature_probe_sdk_g3      = False
         self.licensed_feature_probe_sdk_g4      = False
         self.licensed_feature_probe_sdk_g5      = False
+
+class APIToolpathData(APIComparableMixin):
+    """API data structure for toolpath data."""
+    def __init__(self):
+        self.has_data                           = False
+        self.data                               = None
 
 class APIToolsLibCount(APIComparableMixin):
     """API data structure for tools library count."""
@@ -2002,6 +2010,7 @@ class CncAPIClientCore:
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
+                data.toolpath_id                        = j['res']['toolpath.id']
                 data.operator_request_id_pending        = j['res']['operator.request.id.pending']
                 data.current_alarm_datetime             = self.__d(j['res']['current.alarm']['datetime'])
                 data.current_alarm_code                 = j['res']['current.alarm']['code']
@@ -2544,6 +2553,23 @@ class CncAPIClientCore:
             return data
         except Exception:
             return APISystemInfo()
+
+    def get_toolpath_data(self) -> APIToolpathData:
+        """Get toolpath data as numpy data array."""
+        try:
+            data = APIToolpathData()
+            if not self.is_connected:
+                return data
+            request = '{"get":"toolpath.data"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                b64_string                              = j['res']['data']
+                data.data = base64.b64decode(b64_string)
+                data.has_data = True
+            return data
+        except Exception:
+            return APIToolpathData()
 
     def get_tools_lib_count(self) -> APIToolsLibCount:
         """Xxx..."""
