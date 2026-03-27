@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      23/03/2026
+# Created:      26/03/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style: https://www.python.org/dev/peps/pep-0008/
@@ -422,6 +422,7 @@ SPMEM_PARAMETERS_LIBRARY            =  1 << 11
 SPMEM_PROGRAM_SETTINGS              =  1 << 12
 SPMEM_TOOLS_LIBRARY                 =  1 << 13
 SPMEM_WORK_COORDINATES              =  1 << 14
+
 
 class APIComparableMixin:
     """
@@ -1226,10 +1227,12 @@ class CncAPIClientCore:
         self.socket_ssl = None
         self.socket_ssl_info = ''
         self.i = 0
+        self.connection_host = ''
+        self.connection_port = 0
+        self.connection_use_ssl = False
 
     # == BEG: public attributes
     #
-
     def connect(self, host: str, port: int, use_ssl: bool = False) -> bool:
         """
         Opens the connection with the specified API server host/port.
@@ -1297,6 +1300,9 @@ class CncAPIClientCore:
                 self.ipc = self.socket
 
             self.is_connected = True
+            self.connection_host = host
+            self.connection_port = port
+            self.connection_use_ssl = use_ssl
         except Exception:
             self.is_connected = False
             self.ipc = None
@@ -1304,6 +1310,9 @@ class CncAPIClientCore:
             self.socket_ssl = None
             self.socket_ssl_info = ''
             self.i = 0
+            self.connection_host = ''
+            self.connection_port = 0
+            self.connection_use_ssl = False
             return False
         return True
 
@@ -1317,41 +1326,50 @@ class CncAPIClientCore:
         self.is_connected = True
         return True
 
+    def connection_clone(self) -> CncAPIClientCore:
+        """Create a clone of connection."""
+        if not self.is_connected or self.use_cnc_direct_access:
+            return None
+        api = CncAPIClientCore()
+        ret = api.connect(self.connection_host, self.connection_port, self.connection_use_ssl)
+        if not ret:
+            return None
+        return api
+
     def close(self) -> bool:
         """
         Closes the current connection with the API server
 
         return      True if the client is connected to an API server and connection is close or has been closed successfully.
         """
+        def clean_states():
+            self.use_cnc_direct_access = False
+            self.is_connected = False
+            self.ipc = None
+            self.socket = None
+            self.socket_ssl = None
+            self.socket_ssl_info = ''
+            self.i = 0
+            self.connection_host = ''
+            self.connection_port = 0
+            self.connection_use_ssl = False
+
         if self.is_connected:
             try:
                 if not self.use_cnc_direct_access:
                     self.ipc.close()
-                self.use_cnc_direct_access = False
-                self.is_connected = False
-                self.ipc = None
-                self.socket = None
-                self.socket_ssl = None
-                self.socket_ssl_info = ''
-                self.i = 0
+                clean_states()
                 return True
             except Exception:
-                self.use_cnc_direct_access = False
-                self.is_connected = False
-                self.ipc = None
-                self.socket = None
-                self.socket_ssl = None
-                self.socket_ssl_info = ''
-                self.i = 0
+                clean_states()
                 return False
         return True
-
     #
     # == END: public attributes
 
+
     # == BEG: API Server "cmd" requests
     #
-
     def cnc_change_function_state_mode(self, name: int, mode: int) -> bool:
         """Executes the change of a cnc function state mode."""
         if type(name) is not int or type(mode) is not int:
@@ -1873,13 +1891,12 @@ class CncAPIClientCore:
             return self.__execute_request(f'{{"cmd":"work.order.delete","order.code":{order_code_json}}}')
         except Exception:
             return False
-
     #
     # == END: API Server "cmd" requests
 
+
     # == BEG: API Server "get" requests
     #
-
     def get_alarms_current_list(self) -> APIAlarmsWarningsList:
         """xxx"""
         try:
@@ -2554,19 +2571,32 @@ class CncAPIClientCore:
         except Exception:
             return APISystemInfo()
 
-    def get_toolpath_data(self) -> APIToolpathData:
-        """Get toolpath data as numpy data array."""
+    def get_toolpath_data(self, mode: int = 0) -> APIToolpathData:
+        """Get toolpath data as numpy data array in normal or raw mode."""
         try:
             data = APIToolpathData()
             if not self.is_connected:
                 return data
-            request = '{"get":"toolpath.data"}'
-            response = self.__send_command(request)
-            if response:
-                j = json.loads(response)
-                b64_string                              = j['res']['data']
-                data.data = base64.b64decode(b64_string)
+
+            if not isinstance(mode, int) or isinstance(mode, bool):
+                return data
+
+            if mode == 0:
+                request = '{"get":"toolpath.data"}'
+                response = self.__send_command(request)
+                if response:
+                    j = json.loads(response)
+                    b64_string                              = j['res']['data']
+                    data.data = base64.b64decode(b64_string)
+                    data.has_data = True
+            elif mode == 1:
+                request = '{"get":"toolpath.data","mode":1}'
+                raw = self.__send_command_raw(request)
+                if raw is None:
+                    return data
+                data.data = raw
                 data.has_data = True
+
             return data
         except Exception:
             return APIToolpathData()
@@ -2918,13 +2948,12 @@ class CncAPIClientCore:
             return data
         except Exception:
             return APIWorkOrderFileList()
-
     #
     # == END: API Server "get" requests
 
+
     # == BEG: API Server "set" requests
     #
-
     def set_cnc_parameters(self, address: int, values: list = None, descriptions: list = None) -> bool:
         """
         Set CNC parameters with validation for values and descriptions.
@@ -3549,13 +3578,12 @@ class CncAPIClientCore:
 
         request_json = json.dumps(request_data)
         return self.__execute_request(request_json)
-
     #
     # == END: API Server "set" requests
 
+
     # == BEG: non-public attributes
     #
-
     @staticmethod
     def __evaluate_response(response: str) -> bool:
         try:
@@ -3647,6 +3675,135 @@ class CncAPIClientCore:
             self.close()
             return ''
 
+    def __send_command_raw(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> bytearray | None:
+
+        def __flush_receiving_buffer(max_flush: int = 1048576):
+            try:
+                self.ipc.settimeout(0.0)
+                flushed = 0
+                while flushed < max_flush:
+                    data = self.ipc.recv(4096)
+                    if not data:
+                        break
+                    flushed += len(data)
+            except (BlockingIOError, socket.error):
+                pass
+
+        def __extract_data_size(header_bytes: bytes) -> int | None:
+            """
+            Extract numeric value from:
+            {"res":{"data_size":123}}
+            without using json.loads().
+            """
+            marker = b'"data_size":'
+            start = header_bytes.find(marker)
+            if start == -1:
+                return None
+
+            start += len(marker)
+
+            # skip optional spaces
+            while start < len(header_bytes) and header_bytes[start] in b' \t':
+                start += 1
+
+            end = start
+            while end < len(header_bytes) and 48 <= header_bytes[end] <= 57:  # '0'..'9'
+                end += 1
+
+            if end == start:
+                return None
+
+            try:
+                return int(header_bytes[start:end])
+            except Exception:
+                return None
+
+        if not self.is_connected or not request:
+            return None
+
+        if not request.endswith('\n'):
+            request += '\n'
+
+        if self.use_cnc_direct_access:
+            # raw mode not supported here unless cda.api_server_request()
+            # is updated to return raw bytes in the same way
+            try:
+                response = cda.api_server_request(request)
+                if isinstance(response, (bytes, bytearray)):
+                    return bytearray(response)
+                return None
+            except Exception:
+                self.close()
+                return None
+
+        try:
+            __flush_receiving_buffer()
+            self.ipc.sendall(request.encode('utf-8'))
+
+            chunk_size = 65536
+            header_buffer = bytearray()
+            first_chunk = True
+
+            self.ipc.settimeout(first_timeout)
+
+            # ------------------------------------------------------------
+            # Step 1: read header until '\n'
+            # ------------------------------------------------------------
+            while True:
+                chunk = self.ipc.recv(chunk_size)
+                if not chunk:
+                    self.close()
+                    return None
+
+                if first_chunk:
+                    self.ipc.settimeout(chunk_timeout)
+                    first_chunk = False
+
+                newline_pos = chunk.find(b'\n')
+                if newline_pos != -1:
+                    # header part
+                    header_buffer.extend(chunk[:newline_pos])
+
+                    # any bytes after '\n' already belong to the raw payload
+                    payload = bytearray(chunk[newline_pos + 1:])
+                    break
+
+                header_buffer.extend(chunk)
+
+            # ------------------------------------------------------------
+            # Step 2: parse data_size from header
+            # ------------------------------------------------------------
+            data_size = __extract_data_size(header_buffer)
+            if data_size is None or data_size < 0:
+                return None
+
+            # special case: empty payload
+            if data_size == 0:
+                return bytearray()
+
+            # ------------------------------------------------------------
+            # Step 3: complete raw payload receive
+            # ------------------------------------------------------------
+            while len(payload) < data_size:
+                chunk = self.ipc.recv(min(chunk_size, data_size - len(payload)))
+                if not chunk:
+                    self.close()
+                    return None
+                payload.extend(chunk)
+
+            # if server accidentally sent more than expected in the same frame,
+            # keep only the declared payload size
+            if len(payload) > data_size:
+                del payload[data_size:]
+
+            return payload
+
+        except socket.timeout:
+            return None
+        except socket.error:
+            self.close()
+            return None
+
     @staticmethod
     def create_compact_json_request(data: dict) -> str:
         """
@@ -3698,9 +3855,9 @@ class CncAPIClientCore:
     @staticmethod
     def __s(value) -> str:
         return str(value)
-
     #
     # == END: non-public attributes
+
 
 class CncAPIInfoContext:
     """Service class for cnc api info context"""
@@ -3712,9 +3869,9 @@ class CncAPIInfoContext:
     def __init__(self, api):
         self.__api = api
 
+
     # == BEG: public attributes
     #
-
     def update(self) -> bool:
         """
         Update cnc api info context.
@@ -3733,6 +3890,5 @@ class CncAPIInfoContext:
         self.compile_info = APICompileInfo()
         self.enabled_commands = APIEnabledCommands()
         return False
-
     #
     # == END: public attributes
