@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      26/03/2026
+# Created:      16/04/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style: https://www.python.org/dev/peps/pep-0008/
@@ -165,6 +165,12 @@ SM_CHANGE_TOOL                      = 14        # CNC Board: ST_MACH.SM_CHANGE_T
 SM_SAFETY                           = 15        # CNC Board: ST_MACH.SM_SAFETY           : SAFETY
 SM_WAIT_MAIN_POWER                  = 16        # CNC Board: ST_MACH.SM_WAIT_MAIN_POWER  : WAIT MAIN POWER
 SM_RETRACT                          = 17        # CNC Board: ST_MACH.SM_RETRACT          : RETRACT
+
+# cnc connnection state
+CCS_DISCONNECTED                    = 0         # CNC Connection State: disconnected
+CCS_CONNECTING                      = 1         # CNC Connection State: connecting
+CCS_CONNECTED                       = 2         # CNC Connection State: connected
+CCS_ERROR                           = 3         # CNC Connection State: error
 
 # spindle direction
 SD_STOPPED                          = 1         # spindle direction: stopped
@@ -484,6 +490,7 @@ class APIAlarmsWarningsList(APIComparableMixin):
     class AlarmWarningData:
         """Data structure for alarm & warning list data."""
         def __init__(self):
+            """Initialize alarm or warning entry data."""
             self.code: int                      = 0
             self.info_1: int                    = 0
             self.info_2: int                    = 0
@@ -491,24 +498,28 @@ class APIAlarmsWarningsList(APIComparableMixin):
             self.datetime: datetime             = datetime.min
 
     def __init__(self):
+        """Initialize alarms and warnings list data."""
         self.has_data: bool                     = False
         self.list                               = []
 
 class APIAnalogInputs(APIComparableMixin):
     """API data structure for analog inputs."""
     def __init__(self):
+        """Initialize analog inputs data."""
         self.has_data                           = False
         self.value                              = [0.0] * 16
 
 class APIAnalogOutputs(APIComparableMixin):
     """API data structure for analog outputs."""
     def __init__(self):
+        """Initialize analog outputs data."""
         self.has_data                           = False
         self.value                              = [0.0] * 16
 
 class APIAxesInfo(APIComparableMixin):
     """API data structure for axes info."""
     def __init__(self):
+        """Initialize axes information data."""
         self.has_data                           = False
         self.joint_position                     = [0.0] * 6
         self.machine_position                   = [0.0] * 6
@@ -528,10 +539,13 @@ class APIAxesInfo(APIComparableMixin):
 class APICncInfo(APIComparableMixin):
     """API data structure for cnc info."""
     def __init__(self):
+        """Initialize CNC information data."""
         self.has_data                           = False
         self.units_mode                         = UM_METRIC
         self.axes_mask                          = 0
         self.state_machine                      = SM_DISCONNECTED
+        self.connection_state                   = CCS_DISCONNECTED
+        self.controller_settings_crc            = 0
         self.gcode_line                         = 0
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
@@ -621,10 +635,14 @@ class APICncInfo(APIComparableMixin):
         self.tool_param_2                       = 0.0
         self.tool_param_3                       = 0.0
         self.tool_description                   = ''
+        self.simulator_planned_time_ms          = 0
+        self.simulator_current_time_ms          = 0
+        self.simulator_speed_track              = 0
 
 class APICncParameters(APIComparableMixin):
     """API data structure for cnc parameters."""
     def __init__(self):
+        """Initialize CNC parameters data."""
         self.has_data                           = False
         self.address                            = 0
         self.values                             = []
@@ -633,6 +651,7 @@ class APICncParameters(APIComparableMixin):
 class APICompileInfo(APIComparableMixin):
     """API data structure for compile info."""
     def __init__(self):
+        """Initialize compile information data."""
         self.has_data                           = False
         self.code                               = 0
         self.code_line                          = 0
@@ -644,6 +663,7 @@ class APICompileInfo(APIComparableMixin):
 class APICoordinateSystemsInfo(APIComparableMixin):
     """API coordinate systems info."""
     def __init__(self):
+        """Initialize coordinate systems information data."""
         self.has_data                           = False
         self.working_wcs                        = 0
         self.working_offset                     = [0.0] * 6
@@ -660,18 +680,21 @@ class APICoordinateSystemsInfo(APIComparableMixin):
 class APIDigitalInputs(APIComparableMixin):
     """API data structure for digital inputs."""
     def __init__(self):
+        """Initialize digital inputs data."""
         self.has_data                           = False
         self.value                              = [0] * 128
 
 class APIDigitalOutputs(APIComparableMixin):
     """API data structure for digital outputs."""
     def __init__(self):
+        """Initialize digital outputs data."""
         self.has_data                           = False
         self.value                              = [0] * 128
 
 class APIEnabledCommands(APIComparableMixin):
     """API data structure for enabled commands."""
     def __init__(self):
+        """Initialize enabled commands data."""
         self.has_data                           = False
         self.cnc_csfm_aux                       = 0
         self.cnc_csfm_cooler_flood              = False
@@ -712,6 +735,12 @@ class APIEnabledCommands(APIComparableMixin):
         self.set_program_position               = 0
         self.set_kinematics                     = False
         self.show_ui_dialog                     = False
+        self.simulator_continue                 = False
+        self.simulator_pause                    = False
+        self.simulator_start                    = False
+        self.simulator_step_backward            = False
+        self.simulator_step_forward             = False
+        self.simulator_stop                     = False
         self.tools_lib_write                    = False
 
 class APILocalizationInfo(APIComparableMixin):
@@ -720,6 +749,7 @@ class APILocalizationInfo(APIComparableMixin):
     class LocalizationData:
         """Data structure for alarm & warning list data."""
         def __init__(self):
+            """Initialize localization entry data."""
             self.locale_name                     = None
             self.description                    = None
             self.owner                          = None
@@ -729,6 +759,7 @@ class APILocalizationInfo(APIComparableMixin):
             self.program                        = None
 
     def __init__(self):
+        """Initialize localization information data."""
         self.has_data                           = False
         self.units_mode                         = UM_METRIC
         self.locale_name                        = None
@@ -738,6 +769,7 @@ class APILocalizationInfo(APIComparableMixin):
 class APIMachineSettings(APIComparableMixin):
     """API data structure with machine settings."""
     def __init__(self):
+        """Initialize machine settings data."""
         self.has_data                           = False
         self.axis_machine_type                  = MT_MILL
         self.axis_kinematics_model              = KM_TRIVIAL
@@ -781,6 +813,7 @@ class APIMachineSettings(APIComparableMixin):
 class APIMachiningInfoUsedTool(APIComparableMixin):
     """API data structure with used tool info."""
     def __init__(self):
+        """Initialize used tool machining data."""
         self.tool_id                            = 0
         self.in_fast                            = 0.0
         self.in_feed                            = 0.0
@@ -788,6 +821,7 @@ class APIMachiningInfoUsedTool(APIComparableMixin):
 class APIMachiningInfo(APIComparableMixin):
     """API data structure for machining info."""
     def __init__(self):
+        """Initialize machining information data."""
         self.has_data                           = False
         self.tool_path_in_fast                  = 0.0
         self.tool_path_in_feed                  = 0.0
@@ -852,6 +886,7 @@ class APIMachiningInfo(APIComparableMixin):
 class APIOperatorRequest(APIComparableMixin):
     """API data structure for operator request."""
     def __init__(self):
+        """Initialize operator request data."""
         self.has_data                           = False
         self.id                                 = ''
         self.type                               = ORQT_NONE
@@ -873,6 +908,7 @@ class APIOperatorRequest(APIComparableMixin):
 class APIOperatorResponse(APIComparableMixin):
     """API data structure for operator response."""
     def __init__(self):
+        """Initialize operator response data."""
         self.id                                 = ''
         self.type                               = ORPT_STOP
         self.data_elements                      = 0
@@ -907,6 +943,7 @@ class APIOperatorResponse(APIComparableMixin):
 class APIProgramInfo(APIComparableMixin):
     """API data structure for program info."""
     def __init__(self):
+        """Initialize program information data."""
         self.has_data                           = False
         self.file_name                          = ""
         self.code                               = ""
@@ -914,12 +951,14 @@ class APIProgramInfo(APIComparableMixin):
 class APIProgrammedPoints(APIComparableMixin):
     """API data structure for programmed points."""
     def __init__(self):
+        """Initialize programmed points data."""
         self.has_data                           = False
         self.points                             = []
 
 class APIScanningLaserInfo(APIComparableMixin):
     """API data structure for scanning laser info."""
     def __init__(self):
+        """Initialize scanning laser information data."""
         self.has_data                           = False
         self.laser_out_bit                      = 0
         self.laser_out_umf                      = 0
@@ -931,6 +970,7 @@ class APIScanningLaserInfo(APIComparableMixin):
 class APISystemInfo(APIComparableMixin):
     """API data structure for system info."""
     def __init__(self):
+        """Initialize system information data."""
         self.has_data = False
         self.machine_name                       = ''
         self.control_software_version           = ''
@@ -961,18 +1001,21 @@ class APISystemInfo(APIComparableMixin):
 class APIToolpathData(APIComparableMixin):
     """API data structure for toolpath data."""
     def __init__(self):
+        """Initialize toolpath data."""
         self.has_data                           = False
         self.data                               = None
 
 class APIToolsLibCount(APIComparableMixin):
     """API data structure for tools library count."""
     def __init__(self):
+        """Initialize tool library count data."""
         self.has_data                           = False
         self.count                              = 0
 
 class APIToolsLibInfoForGet(APIComparableMixin):
     """API data structure for tools lib info for get."""
     def __init__(self):
+        """Initialize tool library read data."""
         self.tool_index                         = 0
         self.tool_id                            = 0
         self.tool_slot                          = False
@@ -1006,6 +1049,7 @@ class APIToolsLibInfoForGet(APIComparableMixin):
 class APIToolsLibInfoForSet(APIComparableMixin):
     """API data structure for tools lib info for set."""
     def __init__(self):
+        """Initialize tool library write data."""
         self.tool_index                         = None
         self.tool_id                            = None
         self.tool_slot                          = None
@@ -1039,12 +1083,14 @@ class APIToolsLibInfoForSet(APIComparableMixin):
 class APIToolsLibInfo(APIComparableMixin):
     """API data structure for tools library infos."""
     def __init__(self):
+        """Initialize tool library information container."""
         self.has_data                           = False
         self.data: APIToolsLibInfoForGet        = APIToolsLibInfoForGet()
 
 class APIToolsLibInfos(APIComparableMixin):
     """API data structure for tools library infos."""
     def __init__(self):
+        """Initialize tool library information list data."""
         self.has_data                           = False
         self.slot_enabled                       = False
         self.data: List[APIToolsLibInfoForGet]  = []
@@ -1052,12 +1098,14 @@ class APIToolsLibInfos(APIComparableMixin):
 class APIToolsLibToolIndexFromId(APIComparableMixin):
     """API data structure for tools library tool index from Id."""
     def __init__(self):
+        """Initialize tool library index lookup data."""
         self.has_data                           = False
         self.index                              = -1
 
 class APIVMGeometryInfo(APIComparableMixin):
     """API data structure for virtual machine geometry info."""
     def __init__(self):
+        """Initialize virtual machine geometry data."""
         self.has_data                           = False
         self.name                               = ''
         self.x                                  = 0.0
@@ -1118,6 +1166,7 @@ class APIWorkOrderDataForAdd(APIComparableMixin):
     files                                       = None
 
     def __init__(self):
+        """Initialize work order data for add operations."""
         self.files = [self.FileData() for _ in range(8)]
 
 class APIWorkOrderDataForGet(APIComparableMixin):
@@ -1167,6 +1216,7 @@ class APIWorkOrderDataForGet(APIComparableMixin):
     log_items: List[LogItemData]                = []
 
     def __init__(self):
+        """Initialize work order data for read operations."""
         self.files = [self.FileData() for _ in range(8)]
 
 class APIWorkOrderDataForSet(APIComparableMixin):
@@ -1191,6 +1241,7 @@ class APIWorkOrderDataForSet(APIComparableMixin):
     files                                       = None
 
     def __init__(self):
+        """Initialize work order data for update operations."""
         self.files = [self.FileData() for _ in range(8)]
 
 class APIWorkOrderFileList(APIComparableMixin):
@@ -1209,6 +1260,7 @@ class APIWorkOrderFileList(APIComparableMixin):
     files: List[FileData]                       = []
 
     def __init__(self):
+        """Initialize work order file list data."""
         self.files = []
 
 class CncAPIClientCore:
@@ -1220,6 +1272,7 @@ class CncAPIClientCore:
     """
 
     def __init__(self):
+        """Initialize the CNC API client core."""
         self.use_cnc_direct_access = False
         self.is_connected = False
         self.ipc = None
@@ -1235,7 +1288,7 @@ class CncAPIClientCore:
     #
     def connect(self, host: str, port: int, use_ssl: bool = False) -> bool:
         """
-        Opens the connection with the specified API server host/port.
+        Open the connection with the specified API server host/port.
 
         host        The server host address to connect to (eg.'192.168.0.220').
         port        The server host port to connect to (valid range 0..65535).
@@ -1245,7 +1298,7 @@ class CncAPIClientCore:
 
         def create_ssl_context(server_cert: str = None, server_key: str = None, ca_cert: str = None) -> ssl.SSLContext:
             """
-            Creates an SSL context for TLS and only safe Server Ciphers.
+            Create an SSL context for TLS and only safe Server Ciphers.
 
             server_cert     Full path and file name of server certificate (optional)
             server_key      Full path and file name of server key (optional)
@@ -1317,7 +1370,7 @@ class CncAPIClientCore:
         return True
 
     def connect_direct(self) -> bool:
-        """Opens a direct connection between cnc_direct_access module."""
+        """Open a direct connection through the cnc_direct_access module."""
         if self.is_connected:
             return True
         if not cnc_direct_access_available:
@@ -1338,7 +1391,7 @@ class CncAPIClientCore:
 
     def close(self) -> bool:
         """
-        Closes the current connection with the API server
+        Close the current connection with the API server
 
         return      True if the client is connected to an API server and connection is close or has been closed successfully.
         """
@@ -1371,7 +1424,7 @@ class CncAPIClientCore:
     # == BEG: API Server "cmd" requests
     #
     def cnc_change_function_state_mode(self, name: int, mode: int) -> bool:
-        """Executes the change of a cnc function state mode."""
+        """Execute the change of a cnc function state mode."""
         if type(name) is not int or type(mode) is not int:
             return False
         if name not in FS_ALLOWED_COMBO or mode not in FS_ALLOWED_COMBO[name]:
@@ -1380,7 +1433,7 @@ class CncAPIClientCore:
         return self.__execute_request(json.dumps(request))
 
     def cnc_connection_close(self) -> bool:
-        """Closes connection between Control Software and CNC."""
+        """Close connection between Control Software and CNC."""
         request = '{"cmd":"cnc.connection.close"}'
         return self.__execute_request(request)
 
@@ -1392,7 +1445,7 @@ class CncAPIClientCore:
         overwrite_cnc_settings: bool = False
     ) -> bool:
         """
-        Opens connection between Control Software and CNC.
+        Open connection between Control Software and CNC.
 
         This function is asynchronous so the API Server receive the command
         and return immediately the accepted state, but connection phase is
@@ -1420,11 +1473,11 @@ class CncAPIClientCore:
         return self.__execute_request(json.dumps(request))
 
     def cnc_continue(self) -> bool:
-        """Resumes the execution of an NC program/Macro or MDI command from the PAUSE state."""
+        """Resume the execution of an NC program/Macro or MDI command from the PAUSE state."""
         return self.__execute_request('{"cmd":"cnc.continue"}')
 
     def cnc_homing(self, axes_mask: int) -> bool:
-        """Executes the HOMING procedure for the required axes."""
+        """Execute the HOMING procedure for the required axes."""
         if type(axes_mask) is not int:
             return False
         if axes_mask <= 0 or axes_mask > X2C_AXIS_MASK:
@@ -1432,7 +1485,7 @@ class CncAPIClientCore:
         return self.__execute_request(f'{{"cmd":"cnc.homing","axes.mask":{axes_mask}}}')
 
     def cnc_jog_command(self, command: int) -> bool:
-        """Executes a JOG motion command."""
+        """Execute a JOG motion command."""
         if type(command) is not int:
             return False
         if command < JC_NONE or command > JC_C_FW:
@@ -1440,18 +1493,18 @@ class CncAPIClientCore:
         return self.__execute_request(f'{{"cmd":"cnc.jog.command","command":{command}}}')
 
     def cnc_mdi_command(self, command: str) -> bool:
-        """Executes an MDI command."""
+        """Execute an MDI command."""
         if not isinstance(command, str):
             return False
         command = json.dumps(command)
         return self.__execute_request('{"cmd":"cnc.mdi.command","command":' + command + '}')
 
     def cnc_pause(self) -> bool:
-        """Requests the numerical control to enter the PAUSE state."""
+        """Request the numerical control to enter the PAUSE state."""
         return self.__execute_request('{"cmd":"cnc.pause"}')
 
     def cnc_resume(self, line: int) -> bool:
-        """Resumes the execution of an NC program after a STOP."""
+        """Resume the execution of an NC program after a STOP."""
         if line > 0:
             request = '{"cmd":"cnc.resume", "line":' + str(line) + '}'
         else:
@@ -1459,74 +1512,74 @@ class CncAPIClientCore:
         return self.__execute_request(request)
 
     def cnc_resume_from_line(self, line: int) -> bool:
-        """Resumes the execution of an NC program after a STOP, starting from a specific line."""
+        """Resume the execution of an NC program after a STOP, starting from a specific line."""
         request = '{"cmd":"cnc.resume.from.line", "line":' + str(line) + '}'
         return self.__execute_request(request)
 
     def cnc_resume_from_point(self, point: int) -> bool:
-        """Resumes the execution of an NC program after a STOP, starting from a specific point."""
+        """Resume the execution of an NC program after a STOP, starting from a specific point."""
         request = '{"cmd":"cnc.resume.from.point", "point":' + str(point) + '}'
         return self.__execute_request(request)
 
     def cnc_start(self) -> bool:
-        """Starts the execution of the NC program."""
+        """Start the execution of the NC program."""
         return self.__execute_request('{"cmd":"cnc.start"}')
 
     def cnc_start_from_line(self, line: int) -> bool:
-        """Starts the execution of the NC program from a specific line."""
+        """Start the execution of the NC program from a specific line."""
         return self.__execute_request('{"cmd":"cnc.start.from.line", "line":' + str(line) + '}')
 
     def cnc_start_from_point(self, point: int) -> bool:
-        """Starts the execution of the NC program from a specific point."""
+        """Start the execution of the NC program from a specific point."""
         return self.__execute_request('{"cmd":"cnc.start.from.point", "point":' + str(point) + '}')
 
     def cnc_stop(self) -> bool:
-        """Stops the execution of the NC code or the ongoing procedure."""
+        """Stop the execution of the NC code or the ongoing procedure."""
         return self.__execute_request('{"cmd":"cnc.stop"}')
 
     def log_add(self, text: str) -> bool:
-        """Xxx..."""
+        """Add a message to the control software log."""
         text = json.dumps(text)
         return self.__execute_request('{"cmd":"log.add","text":' + text + '}')
 
     def program_analysis(self, mode: str) -> bool:
-        """Starts the analysis of the NC program."""
+        """Start the analysis of the NC program."""
         mode = json.dumps(mode)
         return self.__execute_request('{"cmd":"program.analysis","mode":' + mode + '}')
 
     def program_analysis_abort(self) -> bool:
-        """Aborts the analysis of the NC program."""
+        """Abort the analysis of the NC program."""
         return self.__execute_request('{"cmd":"program.analysis.abort"}')
 
     def program_gcode_add_text(self, text: str) -> bool:
-        """Adds a line of text (block) to the NC program."""
+        """Add a line of text (block) to the NC program."""
         text = json.dumps(text)
         return self.__execute_request('{"cmd":"program.gcode.add.text","text":' + text + '}')
 
     def program_gcode_clear(self) -> bool:
-        """Clears the content of the NC program."""
+        """Clear the content of the NC program."""
         return self.__execute_request('{"cmd":"program.gcode.clear"}')
 
     def program_gcode_set_text(self, text: str) -> bool:
-        """Sets the content of the NC program."""
+        """Set the content of the NC program."""
         text = json.dumps(text)
         return self.__execute_request('{"cmd":"program.gcode.set.text","text":' + text + '}')
 
     def program_load(self, file_name) -> bool:
-        """Loads an NC program from the specified file."""
+        """Load an NC program from the specified file."""
         file_name = json.dumps(file_name)
         return self.__execute_request('{"cmd":"program.load","name":' + file_name + '}')
 
     def program_new(self) -> bool:
-        """Creates a new NC program."""
+        """Create a new NC program."""
         return self.__execute_request('{"cmd":"program.new"}')
 
     def program_save(self) -> bool:
-        """Saves the NC program."""
+        """Save the NC program."""
         return self.__execute_request('{"cmd":"program.save"}')
 
     def program_save_as(self, file_name: str) -> bool:
-        """Saves the NC program to the specified file."""
+        """Save the NC program to the specified file."""
         try:
             if not isinstance(file_name, str):
                 return False
@@ -1536,23 +1589,23 @@ class CncAPIClientCore:
             return False
 
     def reset_alarms(self) -> bool:
-        """Resets the current alarms in the numerical control."""
+        """Reset the current alarms in the numerical control."""
         return self.__execute_request('{"cmd":"reset.alarms"}')
 
     def reset_alarms_history(self) -> bool:
-        """Resets the alarm history in the numerical control."""
+        """Reset the alarm history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.alarms.history"}')
 
     def reset_warnings(self) -> bool:
-        """Resets the current warnings in the numerical control."""
+        """Reset the current warnings in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings"}')
 
     def reset_warnings_history(self) -> bool:
-        """Resets the warning history in the numerical control."""
+        """Reset the warning history in the numerical control."""
         return self.__execute_request('{"cmd":"reset.warnings.history"}')
 
     def show_ui_dialog(self, uid_id: int = 0) -> bool:
-        """Shows UI Dialog by user interface dialog ID."""
+        """Show UI dialog by user interface dialog ID."""
         if not isinstance(uid_id, int) or type(uid_id) is bool:
             return False
         if not UID_ID_FIRST <= uid_id <= UID_ID_LAST:
@@ -1560,8 +1613,39 @@ class CncAPIClientCore:
         request = {"cmd": "show.ui.dialog", "uid_id": uid_id}
         return self.__execute_request(json.dumps(request))
 
+    def simulator_continue(self) -> bool:
+        """Resume the NC program simulation from the pause state."""
+        return self.__execute_request('{"cmd":"simulator.continue"}')
+
+    def simulator_pause(self) -> bool:
+        """Pause the NC program simulation."""
+        return self.__execute_request('{"cmd":"simulator.pause"}')
+
+    def simulator_place_and_pause_to_line(self, line: int):
+        """Place and pause the NC program simulation to specified line."""
+        if not isinstance(line, int) or isinstance(line, bool):
+            return False
+        request = {"cmd": "simulator.place.and.pause.to.line", "line": line}
+        return self.__execute_request(json.dumps(request))
+
+    def simulator_start(self) -> bool:
+        """Start the NC program simulation."""
+        return self.__execute_request('{"cmd":"simulator.start"}')
+
+    def simulator_step_backward(self) -> bool:
+        """Step the NC program simulation backward."""
+        return self.__execute_request('{"cmd":"simulator.step.backward"}')
+
+    def simulator_step_forward(self) -> bool:
+        """Step the NC program simulation forward."""
+        return self.__execute_request('{"cmd":"simulator.step.forward"}')
+
+    def simulator_stop(self) -> bool:
+        """Stop the NC program simulation."""
+        return self.__execute_request('{"cmd":"simulator.stop"}')
+
     def tools_lib_add(self, info: APIToolsLibInfoForSet = None) -> bool:
-        """Adds a tool with optional info into the NC tools library."""
+        """Add a tool with optional info into the NC tools library."""
         try:
             if not isinstance(info, APIToolsLibInfoForSet):
                 return False
@@ -1669,11 +1753,11 @@ class CncAPIClientCore:
             return False
 
     def tools_lib_clear(self) -> bool:
-        """Clears the NC tools library."""
+        """Clear the NC tools library."""
         return self.__execute_request('{"cmd":"tools.lib.clear"}')
 
     def tools_lib_delete(self, index: int = None) -> bool:
-        """Deletes a tool from the NC tools library."""
+        """Delete a tool from the NC tools library."""
         try:
             if not isinstance(index, int):
                 return False
@@ -1682,7 +1766,7 @@ class CncAPIClientCore:
             return False
 
     def tools_lib_insert(self, info: APIToolsLibInfoForSet = None) -> bool:
-        """Inserts a tool into the NC tools library."""
+        """Insert a tool into the NC tools library."""
         try:
             if not isinstance(info, APIToolsLibInfoForSet):
                 return False
@@ -1793,7 +1877,7 @@ class CncAPIClientCore:
             return False
 
     def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
-        """Adds a work order to the list of orders in the control software."""
+        """Add a work order to the list of orders in the control software."""
         try:
             if not self.is_connected:
                 return False
@@ -1883,7 +1967,7 @@ class CncAPIClientCore:
             return False
 
     def work_order_delete(self, order_code: str) -> bool:
-        """Deletes a work order from the list of orders in the control software."""
+        """Delete a work order from the list of orders in the control software."""
         try:
             if not isinstance(order_code, str):
                 return False
@@ -1898,7 +1982,7 @@ class CncAPIClientCore:
     # == BEG: API Server "get" requests
     #
     def get_alarms_current_list(self) -> APIAlarmsWarningsList:
-        """xxx"""
+        """Return current alarms list."""
         try:
             data = APIAlarmsWarningsList()
             if not self.is_connected:
@@ -1924,7 +2008,7 @@ class CncAPIClientCore:
             return APIAlarmsWarningsList()
 
     def get_alarms_history_list(self) -> APIAlarmsWarningsList:
-        """xxx"""
+        """Return alarms history list."""
         try:
             data = APIAlarmsWarningsList()
             if not self.is_connected:
@@ -1950,7 +2034,7 @@ class CncAPIClientCore:
             return APIAlarmsWarningsList()
 
     def get_analog_inputs(self) -> APIAnalogInputs:
-        """xxx"""
+        """Return analog inputs values."""
         try:
             data = APIAnalogInputs()
             if not self.is_connected:
@@ -1966,7 +2050,7 @@ class CncAPIClientCore:
             return APIAnalogInputs()
 
     def get_analog_outputs(self) -> APIAnalogOutputs:
-        """xxx"""
+        """Return analog outputs values."""
         try:
             data = APIAnalogOutputs()
             if not self.is_connected:
@@ -1982,7 +2066,7 @@ class CncAPIClientCore:
             return APIAnalogOutputs()
 
     def get_axes_info(self) -> APIAxesInfo:
-        """xxx"""
+        """Return axes information."""
         try:
             data = APIAxesInfo()
             if not self.is_connected:
@@ -2011,7 +2095,7 @@ class CncAPIClientCore:
             return APIAxesInfo()
 
     def get_cnc_info(self) -> APICncInfo:
-        """xxx"""
+        """Return CNC information."""
         try:
             data = APICncInfo()
             if not self.is_connected:
@@ -2023,6 +2107,8 @@ class CncAPIClientCore:
                 data.units_mode                         = j['res']['units.mode']
                 data.axes_mask                          = j['res']['axes.mask']
                 data.state_machine                      = j['res']['state.machine']
+                data.connection_state                   = j['res']['connection.state']
+                data.controller_settings_crc            = j['res']['controller.settings.crc']
                 data.gcode_line                         = j['res']['gcode.line']
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
@@ -2112,13 +2198,16 @@ class CncAPIClientCore:
                 data.tool_param_2                       = j['res']['tool']['param.2']
                 data.tool_param_3                       = j['res']['tool']['param.3']
                 data.tool_description                   = j['res']['tool']['description']
+                data.simulator_planned_time_ms          = j['res']['simulator']['planned.time.ms']
+                data.simulator_current_time_ms          = j['res']['simulator']['current.time.ms']
+                data.simulator_speed_track              = j['res']['simulator']['speed.track']
                 data.has_data = True
             return data
         except Exception:
             return APICncInfo()
 
     def get_cnc_parameters(self, address: int, elements: int) -> APICncParameters:
-        """xxx"""
+        """Return CNC parameters starting from the specified address."""
         try:
             data = APICncParameters()
             if not self.is_connected:
@@ -2141,7 +2230,7 @@ class CncAPIClientCore:
             return APICncParameters()
 
     def get_compile_info(self) -> APICompileInfo:
-        """xxx"""
+        """Return compile information."""
         try:
             data = APICompileInfo()
             if not self.is_connected:
@@ -2162,7 +2251,7 @@ class CncAPIClientCore:
             return APICompileInfo()
 
     def get_coordinate_systems_info(self) -> APICoordinateSystemsInfo:
-        """xxx"""
+        """Return coordinate systems information."""
         try:
             data = APICoordinateSystemsInfo()
             if not self.is_connected:
@@ -2188,7 +2277,7 @@ class CncAPIClientCore:
             return APICoordinateSystemsInfo()
 
     def get_digital_inputs(self) -> APIDigitalInputs:
-        """xxx"""
+        """Return digital inputs values."""
         try:
             data = APIDigitalInputs()
             if not self.is_connected:
@@ -2204,7 +2293,7 @@ class CncAPIClientCore:
             return APIDigitalInputs()
 
     def get_digital_outputs(self) -> APIDigitalOutputs:
-        """xxx"""
+        """Return digital outputs values."""
         try:
             data = APIDigitalOutputs()
             if not self.is_connected:
@@ -2220,7 +2309,7 @@ class CncAPIClientCore:
             return APIDigitalOutputs()
 
     def get_enabled_commands(self) -> APIEnabledCommands:
-        """xxx"""
+        """Return enabled commands state."""
         try:
             data = APIEnabledCommands()
             if not self.is_connected:
@@ -2268,6 +2357,12 @@ class CncAPIClientCore:
                 data.set_program_position               = j['res']['set.program.position']
                 data.set_kinematics                     = j['res']['set.kinematics']
                 data.show_ui_dialog                     = j['res']['show.ui.dialog']
+                data.simulator_continue                 = j['res']['simulator.continue']
+                data.simulator_pause                    = j['res']['simulator.pause']
+                data.simulator_start                    = j['res']['simulator.start']
+                data.simulator_step_backward            = j['res']['simulator.step.backward']
+                data.simulator_step_forward             = j['res']['simulator.step.forward']
+                data.simulator_stop                     = j['res']['simulator.stop']
                 data.tools_lib_write                    = j['res']['tools.lib.write']
                 data.has_data                           = True
             return data
@@ -2275,7 +2370,7 @@ class CncAPIClientCore:
             return APIEnabledCommands()
 
     def get_localization_info(self) -> APILocalizationInfo:
-        """xxx"""
+        """Return localization information."""
         try:
             data = APILocalizationInfo()
             if not self.is_connected:
@@ -2306,7 +2401,7 @@ class CncAPIClientCore:
             return APILocalizationInfo()
 
     def get_machine_settings(self) -> APIMachineSettings:
-        """xxx"""
+        """Return machine settings."""
         try:
             data = APIMachineSettings()
             if not self.is_connected:
@@ -2359,7 +2454,7 @@ class CncAPIClientCore:
             return APIMachineSettings()
 
     def get_machining_info(self) -> APIMachiningInfo:
-        """xxx"""
+        """Return machining information."""
 
         def get_machining_info_used_tool(j):
             l = len(j['res']['tool.path']['used.tool'])
@@ -2447,7 +2542,7 @@ class CncAPIClientCore:
             return APIMachiningInfo()
 
     def get_operator_request(self) -> APIOperatorRequest:
-        """xxx"""
+        """Return pending operator request information."""
         try:
             data = APIOperatorRequest()
             if not self.is_connected:
@@ -2478,7 +2573,7 @@ class CncAPIClientCore:
             return APIOperatorRequest()
 
     def get_program_info(self) -> APIProgramInfo:
-        """xxx"""
+        """Return loaded program information."""
         try:
             data = APIProgramInfo()
             if not self.is_connected:
@@ -2495,7 +2590,7 @@ class CncAPIClientCore:
             return APIProgramInfo()
 
     def get_programmed_points(self) -> APIProgrammedPoints:
-        """xxx"""
+        """Return programmed points information."""
         try:
             data = APIProgrammedPoints()
             if not self.is_connected:
@@ -2511,7 +2606,7 @@ class CncAPIClientCore:
             return APIProgrammedPoints()
 
     def get_scanning_laser_info(self) -> APIScanningLaserInfo:
-        """xxx"""
+        """Return scanning laser information."""
         try:
             data = APIScanningLaserInfo()
             if not self.is_connected:
@@ -2532,7 +2627,7 @@ class CncAPIClientCore:
             return APIScanningLaserInfo()
 
     def get_system_info(self) -> APISystemInfo:
-        """xxx"""
+        """Return system information."""
         try:
             data = APISystemInfo()
             if not self.is_connected:
@@ -2602,7 +2697,7 @@ class CncAPIClientCore:
             return APIToolpathData()
 
     def get_tools_lib_count(self) -> APIToolsLibCount:
-        """Xxx..."""
+        """Return tool library count."""
         try:
             data = APIToolsLibCount()
             if not self.is_connected:
@@ -2618,7 +2713,7 @@ class CncAPIClientCore:
             return APIToolsLibCount()
 
     def get_tools_lib_info(self, index: int = None) -> APIToolsLibInfo:
-        """xxx"""
+        """Return tool library information for the specified index."""
         try:
             data = APIToolsLibInfo()
             if not self.is_connected:
@@ -2664,7 +2759,7 @@ class CncAPIClientCore:
             return APIToolsLibInfo()
 
     def get_tools_lib_infos(self) -> APIToolsLibInfos:
-        """xxx"""
+        """Return all tool library information entries."""
         try:
             data = APIToolsLibInfos()
             if not self.is_connected:
@@ -2713,7 +2808,7 @@ class CncAPIClientCore:
             return APIToolsLibInfos()
 
     def get_tools_lib_tool_index_from_id(self, tool_id: int = None) -> APIToolsLibToolIndexFromId:
-        """Xxx..."""
+        """Return tool library index for the specified tool id."""
         try:
             data = APIToolsLibToolIndexFromId()
             if not self.is_connected:
@@ -2731,7 +2826,7 @@ class CncAPIClientCore:
             return APIToolsLibToolIndexFromId()
 
     def get_warnings_current_list(self) -> APIAlarmsWarningsList:
-        """xxx"""
+        """Return current warnings list."""
         try:
             data = APIAlarmsWarningsList()
             if not self.is_connected:
@@ -2757,7 +2852,7 @@ class CncAPIClientCore:
             return APIAlarmsWarningsList()
 
     def get_warnings_history_list(self) -> APIAlarmsWarningsList:
-        """xxx"""
+        """Return warnings history list."""
         try:
             data = APIAlarmsWarningsList()
             if not self.is_connected:
@@ -2783,7 +2878,7 @@ class CncAPIClientCore:
             return APIAlarmsWarningsList()
 
     def get_vm_geometry_info(self, names: list): # -> ???
-        """xxx"""
+        """Return virtual machine geometry information for the specified names."""
         try:
             names_count = len(names)
             if names_count == 0:
@@ -2817,7 +2912,7 @@ class CncAPIClientCore:
             return None
 
     def get_work_info(self) -> APIWorkInfo:
-        """xxx"""
+        """Return work information."""
         try:
             if not self.is_connected:
                 raise Exception()
@@ -2838,7 +2933,7 @@ class CncAPIClientCore:
             return APIWorkInfo()
 
     def get_work_order_code_list(self) -> APIWorkOrderCodeList:
-        """xxx"""
+        """Return work order code list."""
         try:
             if self.is_connected is False:
                 raise Exception()
@@ -2861,7 +2956,7 @@ class CncAPIClientCore:
             return APIWorkOrderCodeList()
 
     def get_work_order_data(self, order_code: str, mode: int = 0) -> APIWorkOrderDataForGet:
-        """xxx"""
+        """Return work order data for the specified order code."""
         try:
             if self.is_connected is False:
                 raise Exception()
@@ -2920,7 +3015,7 @@ class CncAPIClientCore:
             return APIWorkOrderDataForGet()
 
     def get_work_order_file_list(self, path: str ='', file_filter: str ='') -> APIWorkOrderFileList:
-        """xxx"""
+        """Return work order file list."""
         try:
             if self.is_connected is False:
                 raise Exception()
@@ -3027,7 +3122,7 @@ class CncAPIClientCore:
             return False
 
     def set_localization(self, units_mode: int | None = None, locale_name: str | None = None) -> bool:
-        """xxx"""
+        """Set localization values."""
         try:
             if not self.is_connected:
                 return False
@@ -3102,7 +3197,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_fast(self, value: int) -> bool:
-        """xxx"""
+        """Set fast override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3113,7 +3208,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_feed(self, value: int) -> bool:
-        """xxx"""
+        """Set feed override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3124,7 +3219,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_feed_custom_1(self, value: int) -> bool:
-        """xxx"""
+        """Set custom feed override 1 value."""
         try:
             if not self.is_connected:
                 return False
@@ -3135,7 +3230,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_feed_custom_2(self, value: int) -> bool:
-        """xxx"""
+        """Set custom feed override 2 value."""
         try:
             if not self.is_connected:
                 return False
@@ -3146,7 +3241,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_jog(self, value: int) -> bool:
-        """xxx"""
+        """Set jog override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3157,7 +3252,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_plasma_power(self, value: int) -> bool:
-        """xxx"""
+        """Set plasma power override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3168,7 +3263,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_plasma_voltage(self, value: int) -> bool:
-        """xxx"""
+        """Set plasma voltage override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3179,7 +3274,7 @@ class CncAPIClientCore:
             return False
 
     def set_override_spindle(self, value: int) -> bool:
-        """xxx"""
+        """Set spindle override value."""
         try:
             if not self.is_connected:
                 return False
@@ -3190,25 +3285,25 @@ class CncAPIClientCore:
             return False
 
     def set_program_position_a(self, value: float) -> bool:
-        """xxx"""
+        """Set A-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"a":' + str(value) + '}}')
 
     def set_program_position_b(self, value: float) -> bool:
-        """xxx"""
+        """Set B-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"b":' + str(value) + '}}')
 
     def set_program_position_c(self, value: float) -> bool:
-        """xxx"""
+        """Set C-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"c":' + str(value) + '}}')
 
     def set_program_position_x(self, value: float) -> bool:
-        """xxx"""
+        """Set X-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"x":' + str(value) + '}}')
@@ -3233,7 +3328,7 @@ class CncAPIClientCore:
             return False
 
     def set_program_position_y(self, value: float) -> bool:
-        """Xxx..."""
+        """Set Y-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"y":' + str(value) + '}}')
@@ -3258,7 +3353,7 @@ class CncAPIClientCore:
             return False
 
     def set_program_position_z(self, value: float) -> bool:
-        """xxx"""
+        """Set Z-axis program position value."""
         if not self.is_connected:
             return False
         return self.__execute_request('{"set":"program.position", "data":{"z":' + str(value) + '}}')
@@ -3289,8 +3384,32 @@ class CncAPIClientCore:
         except Exception:
             return False
 
+    def set_simulator_current_time_ms(self, value: int) -> bool:
+        """Set simulator current time as ms."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(value, int) or isinstance(value, bool):
+                return False
+            request = {"set":"simulator.current.time.ms", "value": value}
+            return self.__execute_request(json.dumps(request))
+        except Exception:
+            return False
+
+    def set_simulator_speed_track(self, value: int) -> bool:
+        """Set simulator speed track in interval."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(value, int) or isinstance(value, bool):
+                return False
+            request = {"set":"simulator.speed.track", "value": value}
+            return self.__execute_request(json.dumps(request))
+        except Exception:
+            return False
+
     def set_tools_lib_info(self, info: APIToolsLibInfoForSet = None) -> bool:
-        """Sets info of a tool into the NC tools library."""
+        """Set info of a tool into the NC tools library."""
         try:
             if not self.is_connected:
                 return False
@@ -3404,7 +3523,7 @@ class CncAPIClientCore:
 
     def set_wcs_info(self, wcs: int, offset: list, activate: bool = False) -> bool:
         """
-        Sets desired WCS offsets.
+        Set desired WCS offsets.
 
         Args:
             wcs         : define what of wcs, from 1 to 9, you want to set offsets
@@ -3457,7 +3576,7 @@ class CncAPIClientCore:
             return False
 
     def set_vm_geometry_info(self, values: list) -> bool:
-        """xxx."""
+        """Set virtual machine geometry information."""
         try:
             if not self.is_connected:
                 return False
@@ -3487,7 +3606,7 @@ class CncAPIClientCore:
             return False
 
     def set_work_order_data(self, order_code: str, data: APIWorkOrderDataForSet) -> bool:
-        """xxx"""
+        """Set work order data for the specified order code."""
         if not self.is_connected:
             return False
 
@@ -3586,6 +3705,7 @@ class CncAPIClientCore:
     #
     @staticmethod
     def __evaluate_response(response: str) -> bool:
+        """Evaluate API server response."""
         try:
             if len(response) == 0:
                 return False
@@ -3597,6 +3717,7 @@ class CncAPIClientCore:
             return False
 
     def __execute_request(self, request: str) -> bool:
+        """Execute a request and evaluate the API server response."""
         try:
             if self.is_connected is False:
                 return False
@@ -3606,6 +3727,7 @@ class CncAPIClientCore:
             return False
 
     def __send_command(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> str:
+        """Send a request and return the textual response payload."""
 
         def __flush_receiving_buffer(max_flush: int = 1048576):
             try:
@@ -3676,6 +3798,7 @@ class CncAPIClientCore:
             return ''
 
     def __send_command_raw(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> bytearray | None:
+        """Send a request and return the raw binary payload."""
 
         def __flush_receiving_buffer(max_flush: int = 1048576):
             try:
@@ -3807,7 +3930,7 @@ class CncAPIClientCore:
     @staticmethod
     def create_compact_json_request(data: dict) -> str:
         """
-        Converts a dictionary to a compact JSON string without spaces between fields.
+        Convert a dictionary to a compact JSON string without spaces between fields.
 
         Args:
             data (dict): The dictionary to convert.
@@ -3819,7 +3942,7 @@ class CncAPIClientCore:
 
     @staticmethod
     def datetime_to_filetime(dt: datetime) -> int:
-        """Converts an UTC datetime to FILETIME timestamps (100 ns intervals from 1 January 1601)."""
+        """Convert a UTC datetime to FILETIME timestamps (100 ns intervals from 1 January 1601)."""
         epoch_start = datetime(1601, 1, 1, tzinfo=dt.tzinfo)
         delta = dt - epoch_start
         filetime = int((delta.days * 86400 + delta.seconds) * 10**7 + delta.microseconds * 10)
@@ -3828,7 +3951,7 @@ class CncAPIClientCore:
     @staticmethod
     def __d(filetime: int) -> datetime:
         """
-        Converts a string FILETIME timestamps (100 ns intervals from 1 January 1601) to UTC datetime.
+        Convert FILETIME timestamps (100 ns intervals from 1 January 1601) to a UTC datetime.
 
         For a translation test use: https://www.silisoftware.com/tools/date.php
         """
@@ -3846,14 +3969,17 @@ class CncAPIClientCore:
 
     @staticmethod
     def __b(value) -> bool:
+        """Convert a value to bool."""
         return bool(value)
 
     @staticmethod
     def __i(value) -> int:
+        """Convert a value to int."""
         return int(value)
 
     @staticmethod
     def __s(value) -> str:
+        """Convert a value to str."""
         return str(value)
     #
     # == END: non-public attributes
@@ -3867,6 +3993,7 @@ class CncAPIInfoContext:
     enabled_commands    = APIEnabledCommands()
 
     def __init__(self, api):
+        """Initialize CNC API info context service."""
         self.__api = api
 
 
