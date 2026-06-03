@@ -1,8 +1,8 @@
-"""CNC API Client Core for RosettaCNC & derivated NC Systems."""
+"""CNC API Client Core for RosettaCNC & derived NC Systems."""
 #-------------------------------------------------------------------------------
 # Name:         cnc_api_client_core
 #
-# Purpose:      CNC API Client Core for RosettaCNC & derivated NC Systems
+# Purpose:      CNC API Client Core for RosettaCNC & derived NC Systems
 #
 # Note:         Compatible with API server version 1.5.3
 #               1 (on 1.x.y) means interface contract
@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      16/04/2026
+# Created:      03/06/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style: https://www.python.org/dev/peps/pep-0008/
@@ -48,6 +48,7 @@
 # pylint: disable=R0912 -> too-many-branches
 # pylint: disable=R0915 -> too-many-statements
 # pylint: disable=R1702 -> too-many-nested-blocks
+# pylint: disable=R1732 -> consider-using-with
 # pylint: disable=W0718 -> broad-exception-caught           ## take care when you use that ##
 # pylint: disable=W0719 -> broad-exception-raised           ## take care when you use that ##
 #-------------------------------------------------------------------------------
@@ -59,12 +60,15 @@ import json
 import time
 import base64
 import socket
+import threading
 
-from typing import Any, List
+from typing import Any, Callable, List
 from statistics import median
 from datetime import datetime, timedelta
 
 # evaluate if cnc direct access is available
+# direct access is used only when Python is hosted inside the Delphi OPC UA
+# server process, so API requests bypass TCP/IP socket transport on purpose
 from importlib import import_module
 try:
     cda = import_module('cnc_direct_access')
@@ -75,6 +79,11 @@ except ImportError:
 # module version
 __version__ = '1.5.3'                           # module version
 
+# transport timeouts
+DEFAULT_REQUEST_FIRST_TIMEOUT      = 5.0       # default timeout for first server response chunk
+DEFAULT_REQUEST_CHUNK_TIMEOUT      = 2.0       # default timeout between following response chunks
+DEFAULT_FORCE_SYNC_TIMEOUT         = 160.0     # default timeout for force_sync server commands
+
 # units mode
 UM_METRIC                           = 0         # units mode: metric system
 UM_IMPERIAL                         = 1         # units mode: imperial system
@@ -84,7 +93,7 @@ ANALYSIS_MT                         = 'mt'      # model path with tools colors
 ANALYSIS_RT                         = 'rt'      # real path with tools colors
 ANALYSIS_RF                         = 'rf'      # real path with colors related to feed
 ANALYSIS_RV                         = 'rv'      # real path with colors related to velocity
-ANALYSIS_RZ                         = 'rz'      # real path with colors realted to the Z level of the feed
+ANALYSIS_RZ                         = 'rz'      # real path with colors related to the Z level of the feed
 
 # axis id
 X_AXIS_ID                           = 1         # X axis id
@@ -120,6 +129,16 @@ W_AXIS_MASK                         = 0x0100    # W-axis mask
 X2Z_AXIS_MASK                       = 0x0007    # X to Z axes mask
 X2C_AXIS_MASK                       = 0x003F    # X to C axes mask
 X2W_AXIS_MASK                       = 0x01FF    # X to W axes mask
+
+# compiler mode
+CM_NONE                             = 0         # compiler mode: none
+CM_MDI                              = 1         # compiler mode: MDI
+CM_MACRO                            = 2         # compiler mode: macro
+CM_PROGRAM                          = 3         # compiler mode: program
+CM_PROGRAM_FROM_LINE                = 4         # compiler mode: program from line
+CM_PROGRAM_FOR_RESUME               = 5         # compiler mode: program for resume
+CM_PROGRAM_FOR_RESUME_FROM_LINE     = 6         # compiler mode: program for resume from line
+CM_PROGRAM_FOR_ANALYSIS             = 7         # compiler mode: program for analysis
 
 # compiler state
 CS_INIT                             = 0         # compiler state: init
@@ -166,7 +185,12 @@ SM_SAFETY                           = 15        # CNC Board: ST_MACH.SM_SAFETY  
 SM_WAIT_MAIN_POWER                  = 16        # CNC Board: ST_MACH.SM_WAIT_MAIN_POWER  : WAIT MAIN POWER
 SM_RETRACT                          = 17        # CNC Board: ST_MACH.SM_RETRACT          : RETRACT
 
-# cnc connnection state
+# simulator state
+SIM_IDLE                            = 0         # simulator state: idle
+SIM_RUN                             = 1         # simulator state: run
+SIM_PAUSE                           = 2         # simulator state: pause
+
+# cnc connection state
 CCS_DISCONNECTED                    = 0         # CNC Connection State: disconnected
 CCS_CONNECTING                      = 1         # CNC Connection State: connecting
 CCS_CONNECTED                       = 2         # CNC Connection State: connected
@@ -303,6 +327,19 @@ ORQT_USER_MESSAGE_VALUES_OR_STOP    = 10        # operator request type: user me
 ORPT_CONTINUE                       = 0         # operator response type = continue
 ORPT_STOP                           = 1         # operator response type = stop
 
+# runtime data state
+RDST_IDLE                           = 0         # runtime data state: idle
+RDST_WAITING_DATA                   = 1         # runtime data state: waiting for data
+RDST_DATA_READY                     = 2         # runtime data state: data are ready
+
+# runtime data canon code
+RDCC_NOP                            = 0         # runtime data canon code: none operation
+RDCC_STRAIGHT_PROBE                 = 24        # runtime data canon code: straight probe (G38.2|3|4|5)
+RDCC_WAIT_INPUT                     = 48        # runtime data canon code: wait input (M66)
+RDCC_USER_MESSAGE                   = 59        # runtime data canon code: user message (M109)
+RDCC_USER_MEDIA_PATH                = 60        # runtime data canon code: user media (M120)
+RDCC_READ_INPUT_GROUP               = 66        # runtime data canon code: read input group (M166/M167)
+
 # function state name
 FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
 FS_NM_SPINDLE_CCW                   = 1         # function state name: spindle counter-clockwise
@@ -347,7 +384,7 @@ FS_NM_AUX_32                        = 71        # function state name: digital o
 # function state mode
 FS_MD_OFF                           = 0         # function state mode: set digital output state to OFF
 FS_MD_ON                            = 1         # function state mode: set digital output state to ON
-FS_MD_TOGGLE                        = 2         # function state mode: toogle actual digital output state
+FS_MD_TOGGLE                        = 2         # function state mode: toggle actual digital output state
 FS_MD_JOG_MODE_DEFAULT              = 3         # function state mode: set jog mode to default
 FS_MD_JOG_MODE_ALONG_TOOL           = 4         # function state mode: set jog mode to along the tool
 FS_MD_JOG_MODE_TOGGLE               = 5         # function state mode: toggle actual jog mode
@@ -541,17 +578,20 @@ class APICncInfo(APIComparableMixin):
     def __init__(self):
         """Initialize CNC information data."""
         self.has_data                           = False
+        self.file_name                          = ''
         self.units_mode                         = UM_METRIC
         self.axes_mask                          = 0
         self.state_machine                      = SM_DISCONNECTED
         self.connection_state                   = CCS_DISCONNECTED
         self.controller_settings_crc            = 0
+        self.interp_buffer_level                = 0
         self.gcode_line                         = 0
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
         self.toolpath_id                        = ''
         self.operator_request_id_pending        = ''
+        self.program_gcode_sync_required        = False
         self.current_alarm_datetime             = datetime.min
         self.current_alarm_code                 = 0
         self.current_alarm_info1                = 0
@@ -635,6 +675,8 @@ class APICncInfo(APIComparableMixin):
         self.tool_param_2                       = 0.0
         self.tool_param_3                       = 0.0
         self.tool_description                   = ''
+        self.simulator_available                = False
+        self.simulator_state                    = SIM_IDLE
         self.simulator_planned_time_ms          = 0
         self.simulator_current_time_ms          = 0
         self.simulator_speed_track              = 0
@@ -658,6 +700,7 @@ class APICompileInfo(APIComparableMixin):
         self.file_line                          = 0
         self.file_name                          = ''
         self.message                            = ''
+        self.mode                               = CM_NONE
         self.state                              = CS_INIT
 
 class APICoordinateSystemsInfo(APIComparableMixin):
@@ -723,6 +766,7 @@ class APIEnabledCommands(APIComparableMixin):
         self.program_analysis_abort             = False
         self.program_gcode_add_text             = False
         self.program_gcode_clear                = False
+        self.program_gcode_modified             = False
         self.program_gcode_set_text             = False
         self.program_load                       = False
         self.program_new                        = False
@@ -732,8 +776,11 @@ class APIEnabledCommands(APIComparableMixin):
         self.reset_alarms_history               = False
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
-        self.set_program_position               = 0
+        self.set_dynamic_offsets                = 0
         self.set_kinematics                     = False
+        self.set_program_position               = 0
+        self.set_simulator_current_time_ms      = False
+        self.set_simulator_speed_track          = False
         self.show_ui_dialog                     = False
         self.simulator_continue                 = False
         self.simulator_pause                    = False
@@ -883,6 +930,13 @@ class APIMachiningInfo(APIComparableMixin):
         self.joints_in_feed_length_b            = 0.0
         self.joints_in_feed_length_c            = 0.0
 
+class APIMRUProgramsList(APIComparableMixin):
+    """API data structure for MRU program list."""
+    def __init__(self):
+        """Initialize operator request data."""
+        self.has_data                           = False
+        self.items: List[str]                   = []
+
 class APIOperatorRequest(APIComparableMixin):
     """API data structure for operator request."""
     def __init__(self):
@@ -923,7 +977,7 @@ class APIOperatorResponse(APIComparableMixin):
         self.data_d09                           = None
         self.data_d10                           = None
 
-    def copy_data_from_request(self, request: APIOperatorRequest = None) -> bool:
+    def copy_data_from_request(self, request: APIOperatorRequest | None = None) -> bool:
         """Copy data from a request."""
         if not isinstance(request, APIOperatorRequest):
             return False
@@ -954,6 +1008,37 @@ class APIProgrammedPoints(APIComparableMixin):
         """Initialize programmed points data."""
         self.has_data                           = False
         self.points                             = []
+
+class APIRuntimeDataPendingItem(APIComparableMixin):
+    """API data structure for runtime data pending item."""
+    def __init__(self):
+        """Initialize runtime data pending item."""
+        self.gcode_line                         = 0
+        self.canon_id                           = 0
+        self.canon_code                         = RDCC_NOP
+        self.canon_segment                      = 0
+        self.text                               = ''
+
+class APIRuntimeDataAcquiredItem(APIComparableMixin):
+    """API data structure for runtime data acquired item."""
+    def __init__(self):
+        """Initialize runtime data acquired item."""
+        self.datetime                           = datetime.min
+        self.gcode_line                         = 0
+        self.canon_id                           = 0
+        self.canon_code                         = RDCC_NOP
+        self.canon_segment                      = 0
+        self.text                               = ''
+        self.data                               = []
+
+class APIRuntimeData(APIComparableMixin):
+    """API data structure for runtime data."""
+    def __init__(self):
+        """Initialize runtime data."""
+        self.has_data                           = False
+        self.state                              = RDST_IDLE
+        self.pending_item                       = APIRuntimeDataPendingItem()
+        self.acquired_items: List[APIRuntimeDataAcquiredItem] = []
 
 class APIScanningLaserInfo(APIComparableMixin):
     """API data structure for scanning laser info."""
@@ -1273,18 +1358,51 @@ class CncAPIClientCore:
 
     def __init__(self):
         """Initialize the CNC API client core."""
-        self.use_cnc_direct_access = False
-        self.is_connected = False
-        self.ipc = None
-        self.socket = None
-        self.socket_ssl = None
-        self.socket_ssl_info = ''
-        self.i = 0
-        self.connection_host = ''
-        self.connection_port = 0
-        self.connection_use_ssl = False
+        self._use_cnc_direct_access = False
+        self._is_connected = False
+        self._ipc = None
+        self._socket = None
+        self._socket_ssl = None
+        self._socket_ssl_info = ''
+        self._connection_host = ''
+        self._connection_port = 0
+        self._connection_use_ssl = False
+        self._force_sync_api = None
+        self._force_sync_lock = threading.Lock()
+        self._force_sync_thread = None
 
-    # == BEG: public attributes
+
+    # == BEG: property section
+    #
+    @property
+    def is_connected(self) -> bool:
+        """Return the current connection state."""
+        return self._is_connected
+
+    @property
+    def socket_ssl_info(self) -> str:
+        """Return the current SSL connection information."""
+        return self._socket_ssl_info
+
+    @property
+    def connection_host(self) -> str:
+        """Return the current connection host."""
+        return self._connection_host
+
+    @property
+    def connection_port(self) -> int:
+        """Return the current connection port."""
+        return self._connection_port
+
+    @property
+    def connection_use_ssl(self) -> bool:
+        """Return whether the current connection uses SSL."""
+        return self._connection_use_ssl
+    #
+    # == END: property section
+
+
+    # == BEG: public section
     #
     def connect(self, host: str, port: int, use_ssl: bool = False) -> bool:
         """
@@ -1292,7 +1410,7 @@ class CncAPIClientCore:
 
         host        The server host address to connect to (eg.'192.168.0.220').
         port        The server host port to connect to (valid range 0..65535).
-        use_ssl     The server is using the transport layer securty (TLSv1_2 and TLSv1_3).
+        use_ssl     The server is using the transport layer security (TLSv1_2 and TLSv1_3).
         return      True if the connection with the API server is or has been established.
         """
 
@@ -1330,7 +1448,7 @@ class CncAPIClientCore:
         try:
             # creates client socket
             ipc_server_address = (host, port)
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
             # evaluates if enabled use_ssl
             if use_ssl:
@@ -1341,31 +1459,30 @@ class CncAPIClientCore:
                 context = create_ssl_context(server_cert, server_key, ca_cert)
 
                 # wraps the socket with SSL
-                self.socket_ssl = context.wrap_socket(self.socket, server_hostname=host)
+                self._socket_ssl = context.wrap_socket(self._socket, server_hostname=host)
 
                 # establishes an SSL connection to the server
-                self.socket_ssl.connect((host, port))
-                self.ipc = self.socket_ssl
-                cipher = self.socket_ssl.cipher()
-                self.socket_ssl_info = f'{cipher[1]} | {cipher[0]} | {cipher[2]}'
+                self._socket_ssl.connect((host, port))
+                self._ipc = self._socket_ssl
+                cipher = self._socket_ssl.cipher()
+                self._socket_ssl_info = f'{cipher[1]} | {cipher[0]} | {cipher[2]}'
             else:
-                self.socket.connect(ipc_server_address)
-                self.ipc = self.socket
+                self._socket.connect(ipc_server_address)
+                self._ipc = self._socket
 
-            self.is_connected = True
-            self.connection_host = host
-            self.connection_port = port
-            self.connection_use_ssl = use_ssl
+            self._is_connected = True
+            self._connection_host = host
+            self._connection_port = port
+            self._connection_use_ssl = use_ssl
         except Exception:
-            self.is_connected = False
-            self.ipc = None
-            self.socket = None
-            self.socket_ssl = None
-            self.socket_ssl_info = ''
-            self.i = 0
-            self.connection_host = ''
-            self.connection_port = 0
-            self.connection_use_ssl = False
+            self._is_connected = False
+            self._ipc = None
+            self._socket = None
+            self._socket_ssl = None
+            self._socket_ssl_info = ''
+            self._connection_host = ''
+            self._connection_port = 0
+            self._connection_use_ssl = False
             return False
         return True
 
@@ -1375,16 +1492,18 @@ class CncAPIClientCore:
             return True
         if not cnc_direct_access_available:
             return False
-        self.use_cnc_direct_access = True
-        self.is_connected = True
+        # direct access bypasses the TCP/IP transport and therefore cannot
+        # provide cloned parallel API connections for threaded requests
+        self._use_cnc_direct_access = True
+        self._is_connected = True
         return True
 
     def connection_clone(self) -> CncAPIClientCore:
         """Create a clone of connection."""
-        if not self.is_connected or self.use_cnc_direct_access:
+        if not self.is_connected or self._use_cnc_direct_access:
             return None
         api = CncAPIClientCore()
-        ret = api.connect(self.connection_host, self.connection_port, self.connection_use_ssl)
+        ret = api.connect(self._connection_host, self._connection_port, self._connection_use_ssl)
         if not ret:
             return None
         return api
@@ -1396,21 +1515,30 @@ class CncAPIClientCore:
         return      True if the client is connected to an API server and connection is close or has been closed successfully.
         """
         def clean_states():
-            self.use_cnc_direct_access = False
-            self.is_connected = False
-            self.ipc = None
-            self.socket = None
-            self.socket_ssl = None
-            self.socket_ssl_info = ''
-            self.i = 0
-            self.connection_host = ''
-            self.connection_port = 0
-            self.connection_use_ssl = False
+            self._use_cnc_direct_access = False
+            self._is_connected = False
+            self._ipc = None
+            self._socket = None
+            self._socket_ssl = None
+            self._socket_ssl_info = ''
+            self._connection_host = ''
+            self._connection_port = 0
+            self._connection_use_ssl = False
+            self._force_sync_api = None
+            self._force_sync_lock = threading.Lock()
+            self._force_sync_thread = None
+
+        force_sync_api = self._force_sync_api
+        if force_sync_api is not None:
+            try:
+                force_sync_api.close()
+            except Exception:
+                pass
 
         if self.is_connected:
             try:
-                if not self.use_cnc_direct_access:
-                    self.ipc.close()
+                if not self._use_cnc_direct_access:
+                    self._ipc.close()
                 clean_states()
                 return True
             except Exception:
@@ -1418,10 +1546,10 @@ class CncAPIClientCore:
                 return False
         return True
     #
-    # == END: public attributes
+    # == END: public section
 
 
-    # == BEG: API Server "cmd" requests
+    # == BEG: API Server "cmd" requests section
     #
     def cnc_change_function_state_mode(self, name: int, mode: int) -> bool:
         """Execute the change of a cnc function state mode."""
@@ -1434,8 +1562,8 @@ class CncAPIClientCore:
 
     def cnc_connection_close(self) -> bool:
         """Close connection between Control Software and CNC."""
-        request = '{"cmd":"cnc.connection.close"}'
-        return self.__execute_request(request)
+        request = {"cmd": "cnc.connection.close"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def cnc_connection_open(
         self,
@@ -1474,7 +1602,8 @@ class CncAPIClientCore:
 
     def cnc_continue(self) -> bool:
         """Resume the execution of an NC program/Macro or MDI command from the PAUSE state."""
-        return self.__execute_request('{"cmd":"cnc.continue"}')
+        request = {"cmd": "cnc.continue"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def cnc_homing(self, axes_mask: int) -> bool:
         """Execute the HOMING procedure for the required axes."""
@@ -1482,7 +1611,8 @@ class CncAPIClientCore:
             return False
         if axes_mask <= 0 or axes_mask > X2C_AXIS_MASK:
             return False
-        return self.__execute_request(f'{{"cmd":"cnc.homing","axes.mask":{axes_mask}}}')
+        request = {"cmd": "cnc.homing", "axes.mask": axes_mask}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def cnc_jog_command(self, command: int) -> bool:
         """Execute a JOG motion command."""
@@ -1490,119 +1620,442 @@ class CncAPIClientCore:
             return False
         if command < JC_NONE or command > JC_C_FW:
             return False
-        return self.__execute_request(f'{{"cmd":"cnc.jog.command","command":{command}}}')
+        request = {"cmd": "cnc.jog.command", "command": command}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def cnc_mdi_command(self, command: str) -> bool:
         """Execute an MDI command."""
         if not isinstance(command, str):
             return False
-        command = json.dumps(command)
-        return self.__execute_request('{"cmd":"cnc.mdi.command","command":' + command + '}')
+        request = {"cmd": "cnc.mdi.command", "command": command}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def cnc_pause(self) -> bool:
         """Request the numerical control to enter the PAUSE state."""
-        return self.__execute_request('{"cmd":"cnc.pause"}')
+        request = {"cmd": "cnc.pause"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def cnc_resume(self, line: int) -> bool:
-        """Resume the execution of an NC program after a STOP."""
-        if line > 0:
-            request = '{"cmd":"cnc.resume", "line":' + str(line) + '}'
-        else:
-            request = '{"cmd":"cnc.resume"}'
-        return self.__execute_request(request)
+    def cnc_resume(self, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Resume the execution of an NC program after a STOP.
 
-    def cnc_resume_from_line(self, line: int) -> bool:
-        """Resume the execution of an NC program after a STOP, starting from a specific line."""
-        request = '{"cmd":"cnc.resume.from.line", "line":' + str(line) + '}'
-        return self.__execute_request(request)
+        Args:
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.resume"}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
 
-    def cnc_resume_from_point(self, point: int) -> bool:
-        """Resume the execution of an NC program after a STOP, starting from a specific point."""
-        request = '{"cmd":"cnc.resume.from.point", "point":' + str(point) + '}'
-        return self.__execute_request(request)
+    def cnc_resume_threaded(self, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Resume the execution of an NC program after a STOP in a worker thread using a parallel API server connection.
 
-    def cnc_start(self) -> bool:
-        """Start the execution of the NC program."""
-        return self.__execute_request('{"cmd":"cnc.start"}')
+        Args:
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_resume(force_sync=True, timeout=timeout),
+            on_done
+        )
 
-    def cnc_start_from_line(self, line: int) -> bool:
-        """Start the execution of the NC program from a specific line."""
-        return self.__execute_request('{"cmd":"cnc.start.from.line", "line":' + str(line) + '}')
+    def cnc_resume_from_line(self, line: int, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Resume the execution of an NC program after a STOP, starting from a specific line.
 
-    def cnc_start_from_point(self, point: int) -> bool:
-        """Start the execution of the NC program from a specific point."""
-        return self.__execute_request('{"cmd":"cnc.start.from.point", "point":' + str(point) + '}')
+        Args:
+            line        : define the line number from which the program must resume
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.resume.from.line", "line": line}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def cnc_resume_from_line_threaded(self, line: int, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Resume the execution of an NC program after a STOP from a line in a worker thread using a parallel API server connection.
+
+        Args:
+            line        : define the line number from which the program must resume
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(line, int) or isinstance(line, bool):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_resume_from_line(line, force_sync=True, timeout=timeout),
+            on_done
+        )
+
+    def cnc_resume_from_point(self, point: int, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Resume the execution of an NC program after a STOP, starting from a specific point.
+
+        Args:
+            point       : define the point index from which the program must resume
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.resume.from.point", "point": point}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def cnc_resume_from_point_threaded(self, point: int, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Resume the execution of an NC program after a STOP from a point in a worker thread using a parallel API server connection.
+
+        Args:
+            point       : define the point index from which the program must resume
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(point, int) or isinstance(point, bool):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_resume_from_point(point, force_sync=True, timeout=timeout),
+            on_done
+        )
+
+    def cnc_start(self, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Start the execution of the NC program.
+
+        Args:
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.start"}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def cnc_start_threaded(self, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Start the execution of the NC program in a worker thread using a parallel API server connection.
+
+        Args:
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_start(force_sync=True, timeout=timeout),
+            on_done
+        )
+
+    def cnc_start_from_line(self, line: int, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Start the execution of the NC program from a specific line.
+
+        Args:
+            line        : define the line number from which the program must start
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.start.from.line", "line": line}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def cnc_start_from_line_threaded(self, line: int, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Start the execution of the NC program from a line in a worker thread using a parallel API server connection.
+
+        Args:
+            line        : define the line number from which the program must start
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(line, int) or isinstance(line, bool):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_start_from_line(line, force_sync=True, timeout=timeout),
+            on_done
+        )
+
+    def cnc_start_from_point(self, point: int, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Start the execution of the NC program from a specific point.
+
+        Args:
+            point       : define the point index from which the program must start
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "cnc.start.from.point", "point": point}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def cnc_start_from_point_threaded(self, point: int, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Start the execution of the NC program from a point in a worker thread using a parallel API server connection.
+
+        Args:
+            point       : define the point index from which the program must start
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(point, int) or isinstance(point, bool):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.cnc_start_from_point(point, force_sync=True, timeout=timeout),
+            on_done
+        )
 
     def cnc_stop(self) -> bool:
         """Stop the execution of the NC code or the ongoing procedure."""
-        return self.__execute_request('{"cmd":"cnc.stop"}')
+        request = {"cmd": "cnc.stop"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def log_add(self, text: str) -> bool:
         """Add a message to the control software log."""
-        text = json.dumps(text)
-        return self.__execute_request('{"cmd":"log.add","text":' + text + '}')
+        request = {"cmd": "log.add", "text": text}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def program_analysis(self, mode: str) -> bool:
-        """Start the analysis of the NC program."""
-        mode = json.dumps(mode)
-        return self.__execute_request('{"cmd":"program.analysis","mode":' + mode + '}')
+    def mru_programs_list_clear(self) -> bool:
+        """Clear the MRU programs list."""
+        request = {"cmd": "mdi.programs.list.clear"}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def mru_programs_list_remove_item(self, index: int) -> bool:
+        """Remove an item from the MRU programs list."""
+        if not isinstance(index, int) or isinstance(index, bool):
+            return False
+        request = {
+            "cmd": "mru.programs.list.remove.item",
+            "index": index
+        }
+        return self.__execute_request(json.dumps(request))
+
+    def program_analysis(self, mode: str, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Start the analysis of the NC program.
+
+        Args:
+            mode        : define the analysis mode to execute
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "program.analysis", "mode": mode}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def program_analysis_threaded(self, mode: str, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Start the analysis of the NC program in a worker thread using a parallel API server connection.
+
+        Args:
+            mode        : define the analysis mode to execute
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(mode, str):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.program_analysis(mode, force_sync=True, timeout=timeout),
+            on_done
+        )
 
     def program_analysis_abort(self) -> bool:
         """Abort the analysis of the NC program."""
-        return self.__execute_request('{"cmd":"program.analysis.abort"}')
+        request = {"cmd": "program.analysis.abort"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def program_gcode_add_text(self, text: str) -> bool:
         """Add a line of text (block) to the NC program."""
-        text = json.dumps(text)
-        return self.__execute_request('{"cmd":"program.gcode.add.text","text":' + text + '}')
+        request = {"cmd": "program.gcode.add.text", "text": text}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def program_gcode_clear(self) -> bool:
         """Clear the content of the NC program."""
-        return self.__execute_request('{"cmd":"program.gcode.clear"}')
+        request = {"cmd": "program.gcode.clear"}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def program_gcode_modified(self) -> bool:
+        """Set program modified state to invalidate derived runtime data."""
+        if not self.is_connected:
+            return False
+        request = {"cmd": "program.gcode.modified"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def program_gcode_set_text(self, text: str) -> bool:
         """Set the content of the NC program."""
-        text = json.dumps(text)
-        return self.__execute_request('{"cmd":"program.gcode.set.text","text":' + text + '}')
+        request = {"cmd": "program.gcode.set.text", "text": text}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def program_load(self, file_name) -> bool:
-        """Load an NC program from the specified file."""
-        file_name = json.dumps(file_name)
-        return self.__execute_request('{"cmd":"program.load","name":' + file_name + '}')
+    def program_load(self, file_name: str, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Load an NC program from the specified file.
+
+        Args:
+            file_name   : define the file name of the program to load
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "program.load", "name": file_name}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def program_load_threaded(self, file_name: str, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Load an NC program from the specified file in a worker thread using a parallel API server connection.
+
+        Args:
+            file_name   : define the file name of the program to load
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(file_name, str):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.program_load(file_name, force_sync=True, timeout=timeout),
+            on_done
+        )
 
     def program_new(self) -> bool:
         """Create a new NC program."""
-        return self.__execute_request('{"cmd":"program.new"}')
+        request = {"cmd": "program.new"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def program_save(self) -> bool:
-        """Save the NC program."""
-        return self.__execute_request('{"cmd":"program.save"}')
+    def program_save(self, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Save the NC program.
 
-    def program_save_as(self, file_name: str) -> bool:
-        """Save the NC program to the specified file."""
+        Args:
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
+        request = {"cmd": "program.save"}
+        if not self.__append_force_sync(request, force_sync):
+            return False
+        first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+        if first_timeout is None:
+            return False
+        return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
+
+    def program_save_threaded(self, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Save the NC program in a worker thread using a parallel API server connection.
+
+        Args:
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.program_save(force_sync=True, timeout=timeout),
+            on_done
+        )
+
+    def program_save_as(self, file_name: str, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+        """
+        Save the NC program to the specified file.
+
+        Args:
+            file_name   : define the destination file name
+            force_sync  : when True, wait for the real completion of the server command
+            timeout     : use this timeout only when force_sync is True
+        """
         try:
             if not isinstance(file_name, str):
                 return False
-            file_name = json.dumps(file_name)
-            return self.__execute_request('{"cmd":"program.save.as","file.name":' + file_name + '}')
+            request = {"cmd": "program.save.as", "file.name": file_name}
+            if not self.__append_force_sync(request, force_sync):
+                return False
+            first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
+            if first_timeout is None:
+                return False
+            return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
         except Exception:
             return False
 
+    def program_save_as_threaded(self, file_name: str, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+        """
+        Save the NC program to the specified file in a worker thread using a parallel API server connection.
+
+        Args:
+            file_name   : define the destination file name
+            timeout     : define the timeout used by the forced synchronous server request
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not isinstance(file_name, str):
+            return False
+        if self.__get_force_sync_timeout(True, timeout) is None:
+            return False
+        return self.__start_force_sync_async_request(
+            lambda api: api.program_save_as(file_name, force_sync=True, timeout=timeout),
+            on_done
+        )
+
     def reset_alarms(self) -> bool:
         """Reset the current alarms in the numerical control."""
-        return self.__execute_request('{"cmd":"reset.alarms"}')
+        request = {"cmd": "reset.alarms"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def reset_alarms_history(self) -> bool:
         """Reset the alarm history in the numerical control."""
-        return self.__execute_request('{"cmd":"reset.alarms.history"}')
+        request = {"cmd": "reset.alarms.history"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def reset_warnings(self) -> bool:
         """Reset the current warnings in the numerical control."""
-        return self.__execute_request('{"cmd":"reset.warnings"}')
+        request = {"cmd": "reset.warnings"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def reset_warnings_history(self) -> bool:
         """Reset the warning history in the numerical control."""
-        return self.__execute_request('{"cmd":"reset.warnings.history"}')
+        request = {"cmd": "reset.warnings.history"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def show_ui_dialog(self, uid_id: int = 0) -> bool:
         """Show UI dialog by user interface dialog ID."""
@@ -1615,13 +2068,15 @@ class CncAPIClientCore:
 
     def simulator_continue(self) -> bool:
         """Resume the NC program simulation from the pause state."""
-        return self.__execute_request('{"cmd":"simulator.continue"}')
+        request = {"cmd": "simulator.continue"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def simulator_pause(self) -> bool:
         """Pause the NC program simulation."""
-        return self.__execute_request('{"cmd":"simulator.pause"}')
+        request = {"cmd": "simulator.pause"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def simulator_place_and_pause_to_line(self, line: int):
+    def simulator_place_and_pause_to_line(self, line: int) -> bool:
         """Place and pause the NC program simulation to specified line."""
         if not isinstance(line, int) or isinstance(line, bool):
             return False
@@ -1630,21 +2085,25 @@ class CncAPIClientCore:
 
     def simulator_start(self) -> bool:
         """Start the NC program simulation."""
-        return self.__execute_request('{"cmd":"simulator.start"}')
+        request = {"cmd": "simulator.start"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def simulator_step_backward(self) -> bool:
         """Step the NC program simulation backward."""
-        return self.__execute_request('{"cmd":"simulator.step.backward"}')
+        request = {"cmd": "simulator.step.backward"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def simulator_step_forward(self) -> bool:
         """Step the NC program simulation forward."""
-        return self.__execute_request('{"cmd":"simulator.step.forward"}')
+        request = {"cmd": "simulator.step.forward"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
     def simulator_stop(self) -> bool:
         """Stop the NC program simulation."""
-        return self.__execute_request('{"cmd":"simulator.stop"}')
+        request = {"cmd": "simulator.stop"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def tools_lib_add(self, info: APIToolsLibInfoForSet = None) -> bool:
+    def tools_lib_add(self, info: APIToolsLibInfoForSet | None = None) -> bool:
         """Add a tool with optional info into the NC tools library."""
         try:
             if not isinstance(info, APIToolsLibInfoForSet):
@@ -1754,18 +2213,20 @@ class CncAPIClientCore:
 
     def tools_lib_clear(self) -> bool:
         """Clear the NC tools library."""
-        return self.__execute_request('{"cmd":"tools.lib.clear"}')
+        request = {"cmd": "tools.lib.clear"}
+        return self.__execute_request(self.create_compact_json_request(request))
 
-    def tools_lib_delete(self, index: int = None) -> bool:
+    def tools_lib_delete(self, index: int | None = None) -> bool:
         """Delete a tool from the NC tools library."""
         try:
             if not isinstance(index, int):
                 return False
-            return self.__execute_request('{' + f'"cmd":"tools.lib.delete","index":{index}' + '}')
+            request = {"cmd": "tools.lib.delete", "index": index}
+            return self.__execute_request(self.create_compact_json_request(request))
         except Exception:
             return False
 
-    def tools_lib_insert(self, info: APIToolsLibInfoForSet = None) -> bool:
+    def tools_lib_insert(self, info: APIToolsLibInfoForSet | None = None) -> bool:
         """Insert a tool into the NC tools library."""
         try:
             if not isinstance(info, APIToolsLibInfoForSet):
@@ -1876,7 +2337,7 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd = None) -> bool:
+    def work_order_add(self, order_code: str, data: APIWorkOrderDataForAdd | None = None) -> bool:
         """Add a work order to the list of orders in the control software."""
         try:
             if not self.is_connected:
@@ -1976,10 +2437,10 @@ class CncAPIClientCore:
         except Exception:
             return False
     #
-    # == END: API Server "cmd" requests
+    # == END: API Server "cmd" requests section
 
 
-    # == BEG: API Server "get" requests
+    # == BEG: API Server "get" requests section
     #
     def get_alarms_current_list(self) -> APIAlarmsWarningsList:
         """Return current alarms list."""
@@ -2104,17 +2565,20 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
+                data.file_name                          = j['res']['file.name']
                 data.units_mode                         = j['res']['units.mode']
                 data.axes_mask                          = j['res']['axes.mask']
                 data.state_machine                      = j['res']['state.machine']
                 data.connection_state                   = j['res']['connection.state']
                 data.controller_settings_crc            = j['res']['controller.settings.crc']
+                data.interp_buffer_level                = j['res']['interp.buffer.level']
                 data.gcode_line                         = j['res']['gcode.line']
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
                 data.toolpath_id                        = j['res']['toolpath.id']
                 data.operator_request_id_pending        = j['res']['operator.request.id.pending']
+                data.program_gcode_sync_required        = j['res']['program.gcode.sync.required']
                 data.current_alarm_datetime             = self.__d(j['res']['current.alarm']['datetime'])
                 data.current_alarm_code                 = j['res']['current.alarm']['code']
                 data.current_alarm_info1                = j['res']['current.alarm']['info1']
@@ -2198,6 +2662,8 @@ class CncAPIClientCore:
                 data.tool_param_2                       = j['res']['tool']['param.2']
                 data.tool_param_3                       = j['res']['tool']['param.3']
                 data.tool_description                   = j['res']['tool']['description']
+                data.simulator_available                = j['res']['simulator']['available']
+                data.simulator_state                    = j['res']['simulator']['state']
                 data.simulator_planned_time_ms          = j['res']['simulator']['planned.time.ms']
                 data.simulator_current_time_ms          = j['res']['simulator']['current.time.ms']
                 data.simulator_speed_track              = j['res']['simulator']['speed.track']
@@ -2244,6 +2710,7 @@ class CncAPIClientCore:
                 data.file_line                          = j['res']['file.line']
                 data.file_name                          = j['res']['file.name']
                 data.message                            = j['res']['message']
+                data.mode                               = j['res']['mode']
                 data.state                              = j['res']['state']
                 data.has_data = True
             return data
@@ -2345,6 +2812,7 @@ class CncAPIClientCore:
                 data.program_analysis_abort             = j['res']['program.analysis.abort']
                 data.program_gcode_add_text             = j['res']['program.gcode.add.text']
                 data.program_gcode_clear                = j['res']['program.gcode.clear']
+                data.program_gcode_modified             = j['res']['program.gcode.modified']
                 data.program_gcode_set_text             = j['res']['program.gcode.set.text']
                 data.program_load                       = j['res']['program.load']
                 data.program_new                        = j['res']['program.new']
@@ -2354,8 +2822,11 @@ class CncAPIClientCore:
                 data.reset_alarms_history               = j['res']['reset.alarms.history']
                 data.reset_warnings                     = j['res']['reset.warnings']
                 data.reset_warnings_history             = j['res']['reset.warnings.history']
-                data.set_program_position               = j['res']['set.program.position']
+                data.set_dynamic_offsets                = j['res']['set.dynamic.offsets']
                 data.set_kinematics                     = j['res']['set.kinematics']
+                data.set_program_position               = j['res']['set.program.position']
+                data.set_simulator_current_time_ms      = j['res']['set.simulator.current.time.ms']
+                data.set_simulator_speed_track          = j['res']['set.simulator.speed.track']
                 data.show_ui_dialog                     = j['res']['show.ui.dialog']
                 data.simulator_continue                 = j['res']['simulator.continue']
                 data.simulator_pause                    = j['res']['simulator.pause']
@@ -2541,6 +3012,22 @@ class CncAPIClientCore:
         except Exception:
             return APIMachiningInfo()
 
+    def get_mru_programs_list(self) -> APIMRUProgramsList:
+        """Return the MRU programs list."""
+        try:
+            data = APIMRUProgramsList()
+            if not self.is_connected:
+                return data
+            request = '{"get":"mru.programs.list"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.items                              = j['res']['items']
+                data.has_data = True
+            return data
+        except Exception:
+            return APIMRUProgramsList()
+
     def get_operator_request(self) -> APIOperatorRequest:
         """Return pending operator request information."""
         try:
@@ -2604,6 +3091,38 @@ class CncAPIClientCore:
             return data
         except Exception:
             return APIProgrammedPoints()
+
+    def get_runtime_data(self) -> APIRuntimeData:
+        """Return runtime data information."""
+        try:
+            data = APIRuntimeData()
+            if not self.is_connected:
+                return data
+            request = '{"get":"runtime.data"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                data.state                              = j['res']['state']
+                data.pending_item.gcode_line            = j['res']['pending.item']['gcode.line']
+                data.pending_item.canon_id              = j['res']['pending.item']['canon.id']
+                data.pending_item.canon_code            = j['res']['pending.item']['canon.code']
+                data.pending_item.canon_segment         = j['res']['pending.item']['canon.segment']
+                data.pending_item.text                  = j['res']['pending.item']['text']
+                data.acquired_items                     = []
+                for item in j['res']['acquired.items']:
+                    acquired_item = APIRuntimeDataAcquiredItem()
+                    acquired_item.datetime              = self.__d(item['datetime'])
+                    acquired_item.gcode_line            = item['gcode.line']
+                    acquired_item.canon_id              = item['canon.id']
+                    acquired_item.canon_code            = item['canon.code']
+                    acquired_item.canon_segment         = item['canon.segment']
+                    acquired_item.text                  = item['text']
+                    acquired_item.data                  = item['data']
+                    data.acquired_items.append(acquired_item)
+                data.has_data = True
+            return data
+        except Exception:
+            return APIRuntimeData()
 
     def get_scanning_laser_info(self) -> APIScanningLaserInfo:
         """Return scanning laser information."""
@@ -2712,7 +3231,7 @@ class CncAPIClientCore:
         except Exception:
             return APIToolsLibCount()
 
-    def get_tools_lib_info(self, index: int = None) -> APIToolsLibInfo:
+    def get_tools_lib_info(self, index: int | None = None) -> APIToolsLibInfo:
         """Return tool library information for the specified index."""
         try:
             data = APIToolsLibInfo()
@@ -2807,7 +3326,7 @@ class CncAPIClientCore:
         except Exception:
             return APIToolsLibInfos()
 
-    def get_tools_lib_tool_index_from_id(self, tool_id: int = None) -> APIToolsLibToolIndexFromId:
+    def get_tools_lib_tool_index_from_id(self, tool_id: int | None = None) -> APIToolsLibToolIndexFromId:
         """Return tool library index for the specified tool id."""
         try:
             data = APIToolsLibToolIndexFromId()
@@ -2877,22 +3396,22 @@ class CncAPIClientCore:
         except Exception:
             return APIAlarmsWarningsList()
 
-    def get_vm_geometry_info(self, names: list): # -> ???
+    def get_vm_geometry_info(self, names: list[str]) -> list[APIVMGeometryInfo] | None:
         """Return virtual machine geometry information for the specified names."""
         try:
+            if not isinstance(names, list):
+                return None
             names_count = len(names)
             if names_count == 0:
                 return None
-            data = [APIVMGeometryInfo() for i in range(names_count)]
-            request = '{"get":"vm.geometry.info", "name":['
-            for i in range(names_count):
-                name = names[i]
+            data = [APIVMGeometryInfo() for _ in range(names_count)]
+            for name in names:
                 if not isinstance(name, str):
                     return None
-                request = request + '"' + name + '"'
-                if i < (names_count - 1):
-                    request = request + ','
-            request = request + ']}'
+            request = self.create_compact_json_request({
+                "get": "vm.geometry.info",
+                "name": names
+            })
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
@@ -3044,12 +3563,12 @@ class CncAPIClientCore:
         except Exception:
             return APIWorkOrderFileList()
     #
-    # == END: API Server "get" requests
+    # == END: API Server "get" requests section
 
 
-    # == BEG: API Server "set" requests
+    # == BEG: API Server "set" requests section
     #
-    def set_cnc_parameters(self, address: int, values: list = None, descriptions: list = None) -> bool:
+    def set_cnc_parameters(self, address: int, values: list | None = None, descriptions: list | None = None) -> bool:
         """
         Set CNC parameters with validation for values and descriptions.
 
@@ -3121,6 +3640,85 @@ class CncAPIClientCore:
         except Exception:
             return False
 
+    def set_dynamic_offset_x(self, value: int | float) -> bool:
+        """Set dynamic offset for x-axis in um."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                return False
+            data = {
+                "set": "dynamic.offsets",
+                "offset.x": value,
+            }
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_dynamic_offset_y(self, value: int | float) -> bool:
+        """Set dynamic offset for y-axis in um."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                return False
+            data = {
+                "set": "dynamic.offsets",
+                "offset.y": value,
+            }
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_dynamic_offset_z(self, value: int | float) -> bool:
+        """Set dynamic offset for z-axis in um."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                return False
+            data = {
+                "set": "dynamic.offsets",
+                "offset.z": value,
+            }
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_dynamic_offsets(self, x: int | float | None = None, y: int | float | None = None, z: int | float | None = None) -> bool:
+        """Set dynamic offsets for xyz-axes in um."""
+        try:
+            if not self.is_connected:
+                return False
+            data = {
+                "set": "dynamic.offsets",
+            }
+            if x is not None:
+                if not isinstance(x, (int, float)) or isinstance(x, bool):
+                    return False
+                data["offset.x"] = x
+            if y is not None:
+                if not isinstance(y, (int, float)) or isinstance(y, bool):
+                    return False
+                data["offset.y"] = y
+            if z is not None:
+                if not isinstance(z, (int, float)) or isinstance(z, bool):
+                    return False
+                data["offset.z"] = z
+            if len(data) == 1:
+                return False
+            request = self.create_compact_json_request(data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
+    def set_kinematics(self) -> bool:
+        """NOT IMPLEMENTED HERE YET!"""
+        return False
+
     def set_localization(self, units_mode: int | None = None, locale_name: str | None = None) -> bool:
         """Set localization values."""
         try:
@@ -3152,7 +3750,7 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def set_operator_response(self, response: APIOperatorResponse = None) -> bool:
+    def set_operator_response(self, response: APIOperatorResponse | None = None) -> bool:
         """Set operator response."""
         try:
             if not self.is_connected:
@@ -3408,7 +4006,7 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def set_tools_lib_info(self, info: APIToolsLibInfoForSet = None) -> bool:
+    def set_tools_lib_info(self, info: APIToolsLibInfoForSet | None = None) -> bool:
         """Set info of a tool into the NC tools library."""
         try:
             if not self.is_connected:
@@ -3698,10 +4296,10 @@ class CncAPIClientCore:
         request_json = json.dumps(request_data)
         return self.__execute_request(request_json)
     #
-    # == END: API Server "set" requests
+    # == END: API Server "set" requests section
 
 
-    # == BEG: non-public attributes
+    # == BEG: private section
     #
     @staticmethod
     def __evaluate_response(response: str) -> bool:
@@ -3716,25 +4314,122 @@ class CncAPIClientCore:
         except Exception:
             return False
 
-    def __execute_request(self, request: str) -> bool:
+    @staticmethod
+    def __append_force_sync(request_data: dict, force_sync: bool) -> bool:
+        """Append force_sync request flag when required."""
+        if type(force_sync) is not bool:
+            return False
+        if force_sync:
+            request_data["force.sync"] = True
+        return True
+
+    def __get_force_sync_api(self) -> CncAPIClientCore | None:
+        """Return the dedicated clone connection used by forced synchronous worker requests."""
+        try:
+            if not self.is_connected or self._use_cnc_direct_access:
+                return None
+
+            if self._force_sync_api is not None and self._force_sync_api.is_connected:
+                return self._force_sync_api
+
+            if self._force_sync_api is not None:
+                try:
+                    self._force_sync_api.close()
+                except Exception:
+                    pass
+
+            self._force_sync_api = self.connection_clone()
+            return self._force_sync_api
+        except Exception:
+            return None
+
+    def __start_force_sync_async_request(
+        self,
+        worker_proc: Callable[[CncAPIClientCore], bool],
+        on_done: Callable[[bool | None], None] = None
+    ) -> bool:
+        """
+        Start a forced synchronous request in a worker thread.
+
+        Args:
+            worker_proc : call this procedure with the dedicated clone connection
+            on_done     : call this callback at end with result True, False or None
+        """
+        if not callable(worker_proc):
+            return False
+        if on_done is not None and not callable(on_done):
+            return False
+        if not self.is_connected or self._use_cnc_direct_access:
+            return False
+        if not self._force_sync_lock.acquire(blocking=False):
+            return False
+        force_sync_lock = self._force_sync_lock
+
+        api = self.__get_force_sync_api()
+        if api is None:
+            force_sync_lock.release()
+            return False
+
+        def worker():
+            result = None
+            try:
+                if api.is_connected:
+                    result = worker_proc(api)
+            except Exception:
+                result = None
+            finally:
+                try:
+                    if on_done is not None:
+                        on_done(result)
+                except Exception:
+                    pass
+                self._force_sync_thread = None
+                force_sync_lock.release()
+
+        try:
+            self._force_sync_thread = threading.Thread(target=worker, daemon=True)
+            self._force_sync_thread.start()
+            return True
+        except Exception:
+            self._force_sync_thread = None
+            force_sync_lock.release()
+            return False
+
+    @staticmethod
+    def __get_force_sync_timeout(force_sync: bool, timeout: float) -> float | None:
+        """Return timeout to use for requests that can be forced synchronous."""
+        if not force_sync:
+            return DEFAULT_REQUEST_FIRST_TIMEOUT
+        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
+            return None
+        if timeout <= 0.0:
+            return None
+        return float(timeout)
+
+    def __execute_request(self, request: str, first_timeout: float = DEFAULT_REQUEST_FIRST_TIMEOUT) -> bool:
         """Execute a request and evaluate the API server response."""
         try:
             if self.is_connected is False:
                 return False
-            response = self.__send_command(request)
+            response = self.__send_command(request, first_timeout=first_timeout)
             return self.__evaluate_response(response)
         except Exception:
             return False
 
-    def __send_command(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> str:
+    def __send_command(
+        self,
+        request: str,
+        first_timeout: float = DEFAULT_REQUEST_FIRST_TIMEOUT,
+        chunk_timeout: float = DEFAULT_REQUEST_CHUNK_TIMEOUT
+    ) -> str:
         """Send a request and return the textual response payload."""
 
         def __flush_receiving_buffer(max_flush: int = 1048576):
             try:
-                self.ipc.settimeout(0.0)
+                self._ipc.settimeout(0.0)
                 flushed = 0
                 while flushed < max_flush:
-                    data = self.ipc.recv(4096)
+                    data = self._ipc.recv(4096)
                     if not data:
                         break
                     flushed += len(data)
@@ -3747,7 +4442,7 @@ class CncAPIClientCore:
         if not request.endswith('\n'):
             request += '\n'
 
-        if self.use_cnc_direct_access:
+        if self._use_cnc_direct_access:
             try:
                 return cda.api_server_request(request)
             except Exception:
@@ -3757,7 +4452,7 @@ class CncAPIClientCore:
         try:
             # flush receiving buffer and send request
             __flush_receiving_buffer()
-            self.ipc.sendall(request.encode())
+            self._ipc.sendall(request.encode())
 
             # init receive attributes
             buffer = bytearray()
@@ -3766,19 +4461,19 @@ class CncAPIClientCore:
             first_chunk = True
 
             # set timeout to cover API Server request evaluation -> response time
-            self.ipc.settimeout(first_timeout)
+            self._ipc.settimeout(first_timeout)
 
             # response receiving loop
             while True:
                 # get chunk of data checking for connection closed (chunk is empty)
-                chunk = self.ipc.recv(chunk_size)
+                chunk = self._ipc.recv(chunk_size)
                 if not chunk:
                     self.close()
                     return ''
 
                 # switch to chunk_timeout after first chunk of data received
                 if first_chunk:
-                    self.ipc.settimeout(chunk_timeout)
+                    self._ipc.settimeout(chunk_timeout)
                     first_chunk = False
 
                 # add received chunk of data to buffer
@@ -3797,15 +4492,20 @@ class CncAPIClientCore:
             self.close()
             return ''
 
-    def __send_command_raw(self, request: str, first_timeout: float = 5.0, chunk_timeout: float = 2.0) -> bytearray | None:
+    def __send_command_raw(
+        self,
+        request: str,
+        first_timeout: float = DEFAULT_REQUEST_FIRST_TIMEOUT,
+        chunk_timeout: float = DEFAULT_REQUEST_CHUNK_TIMEOUT
+    ) -> bytearray | None:
         """Send a request and return the raw binary payload."""
 
         def __flush_receiving_buffer(max_flush: int = 1048576):
             try:
-                self.ipc.settimeout(0.0)
+                self._ipc.settimeout(0.0)
                 flushed = 0
                 while flushed < max_flush:
-                    data = self.ipc.recv(4096)
+                    data = self._ipc.recv(4096)
                     if not data:
                         break
                     flushed += len(data)
@@ -3847,7 +4547,7 @@ class CncAPIClientCore:
         if not request.endswith('\n'):
             request += '\n'
 
-        if self.use_cnc_direct_access:
+        if self._use_cnc_direct_access:
             # raw mode not supported here unless cda.api_server_request()
             # is updated to return raw bytes in the same way
             try:
@@ -3861,25 +4561,25 @@ class CncAPIClientCore:
 
         try:
             __flush_receiving_buffer()
-            self.ipc.sendall(request.encode('utf-8'))
+            self._ipc.sendall(request.encode('utf-8'))
 
             chunk_size = 65536
             header_buffer = bytearray()
             first_chunk = True
 
-            self.ipc.settimeout(first_timeout)
+            self._ipc.settimeout(first_timeout)
 
             # ------------------------------------------------------------
             # Step 1: read header until '\n'
             # ------------------------------------------------------------
             while True:
-                chunk = self.ipc.recv(chunk_size)
+                chunk = self._ipc.recv(chunk_size)
                 if not chunk:
                     self.close()
                     return None
 
                 if first_chunk:
-                    self.ipc.settimeout(chunk_timeout)
+                    self._ipc.settimeout(chunk_timeout)
                     first_chunk = False
 
                 newline_pos = chunk.find(b'\n')
@@ -3908,7 +4608,7 @@ class CncAPIClientCore:
             # Step 3: complete raw payload receive
             # ------------------------------------------------------------
             while len(payload) < data_size:
-                chunk = self.ipc.recv(min(chunk_size, data_size - len(payload)))
+                chunk = self._ipc.recv(min(chunk_size, data_size - len(payload)))
                 if not chunk:
                     self.close()
                     return None
@@ -3982,7 +4682,7 @@ class CncAPIClientCore:
         """Convert a value to str."""
         return str(value)
     #
-    # == END: non-public attributes
+    # == END: private section
 
 
 class CncAPIInfoContext:
@@ -3997,7 +4697,7 @@ class CncAPIInfoContext:
         self.__api = api
 
 
-    # == BEG: public attributes
+    # == BEG: public section
     #
     def update(self) -> bool:
         """
@@ -4018,4 +4718,4 @@ class CncAPIInfoContext:
         self.enabled_commands = APIEnabledCommands()
         return False
     #
-    # == END: public attributes
+    # == END: public section

@@ -531,7 +531,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cmdsContinueButton:
             self.api.cnc_continue()
         if sender == self.ui.cmdsResumeAfterStopButton:
-            self.api.cnc_resume(0)
+            self.api.cnc_resume()
 
         # evensts show
         if sender == self.ui.showAlarmsButton:
@@ -630,7 +630,7 @@ class ApiClientQtDemoDesktopView(QMainWindow):
         if sender == self.ui.cncStartFromLineButton:
             self.api.cnc_start_from_line(self.cnc_start_from_line)
         if sender == self.ui.cncResumeAfterStopButton:
-            self.api.cnc_resume(0)
+            self.api.cnc_resume()
         if sender == self.ui.cncResumeAfterStopFromLineButton:
             self.api.cnc_resume_from_line(self.cnc_resume_after_stop_from_line)
 
