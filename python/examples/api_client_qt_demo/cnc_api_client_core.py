@@ -31,7 +31,7 @@
 #
 # Author:       support@rosettacnc.com
 #
-# Created:      03/06/2026
+# Created:      17/07/2026
 # Copyright:    RosettaCNC (c) 2016-2026
 # Licence:      RosettaCNC License 1.0 (RCNC-1.0)
 # Coding Style: https://www.python.org/dev/peps/pep-0008/
@@ -80,20 +80,21 @@ except ImportError:
 __version__ = '1.5.3'                           # module version
 
 # transport timeouts
-DEFAULT_REQUEST_FIRST_TIMEOUT      = 5.0       # default timeout for first server response chunk
-DEFAULT_REQUEST_CHUNK_TIMEOUT      = 2.0       # default timeout between following response chunks
-DEFAULT_FORCE_SYNC_TIMEOUT         = 160.0     # default timeout for force_sync server commands
+DEFAULT_REQUEST_FIRST_TIMEOUT      = 5.0        # default timeout for first server response chunk
+DEFAULT_REQUEST_FIRST_TIMEOUT_HO   = 20.0       # default timeout for first server response chunk (heavy operations)
+DEFAULT_REQUEST_CHUNK_TIMEOUT      = 2.0        # default timeout between following response chunks
+DEFAULT_FORCE_SYNC_TIMEOUT         = 160.0      # default timeout for force_sync server commands
 
 # units mode
 UM_METRIC                           = 0         # units mode: metric system
 UM_IMPERIAL                         = 1         # units mode: imperial system
 
 # analysis mode
-ANALYSIS_MT                         = 'mt'      # model path with tools colors
-ANALYSIS_RT                         = 'rt'      # real path with tools colors
-ANALYSIS_RF                         = 'rf'      # real path with colors related to feed
-ANALYSIS_RV                         = 'rv'      # real path with colors related to velocity
-ANALYSIS_RZ                         = 'rz'      # real path with colors related to the Z level of the feed
+ANALYSIS_MT                         = 0         # model path with tools colors
+ANALYSIS_RT                         = 1         # real path with tools colors
+ANALYSIS_RF                         = 2         # real path with colors related to feed
+ANALYSIS_RV                         = 3         # real path with colors related to velocity
+ANALYSIS_RZ                         = 4         # real path with colors related to the Z level of the feed
 
 # axis id
 X_AXIS_ID                           = 1         # X axis id
@@ -149,6 +150,33 @@ CS_FIRST_STEP_RUNNING               = 4         # compiler state: first step run
 CS_WAITING_FOR_DATA                 = 5         # compiler state: waiting for data
 CS_WAITING_FOR_DATA_RUNNING         = 6         # compiler state: waiting for data running
 CS_FINISHED                         = 7         # compiler state: finished
+
+# compiler modal macro motion mode
+CP_MODAL_MACRO_MOTION_MODE_IN_FAST  = 0         # compiler modal macro motion mode: in fast (G00)
+CP_MODAL_MACRO_MOTION_MODE_IN_FEED  = 1         # compiler modal macro motion mode: in feed (G01)
+
+# compiler cutter compensation mode
+CP_CUTTER_COMPENSATION_MODE_NIST    = 0         # compiler cutter compensation mode: nist
+CP_CUTTER_COMPENSATION_MODE_LEAD_IN = 1         # compiler cutter compensation mode: easy lead-in
+CP_CUTTER_COMPENSATION_MODE_NORMAL  = 2         # compiler cutter compensation mode: normal
+
+# compiler user macro path mode
+CP_USER_MACRO_PATH_MODE_DISABLED    = 0         # compiler user macro path mode: disabled
+CP_USER_MACRO_PATH_MODE_PART_PRG    = 1         # compiler user macro path mode: part program
+CP_USER_MACRO_PATH_MODE_USER_DEF    = 2         # compiler user macro path mode: user defined
+
+# compiler restart default movement mode
+CP_RESTART_DEF_MOV_MODE_IN_FEED     = 0         # compiler restart default movement mode: in feed (G01)
+CP_RESTART_DEF_MOV_MODE_IN_FAST     = 1         # compiler restart default movement mode: in fast (G00)
+CP_RESTART_DEF_MOV_MODE_CNC_HANDLED = 2         # compiler restart default movement mode: handled by CNC
+
+# compiler rv color mode
+CP_RV_COLOR_MODE_SPECTRAL           = 0         # compiler rv color mode: spectral
+CP_RV_COLOR_MODE_GRADIENT           = 1         # compiler rv color mode: gradient
+
+# compiler rz color mode
+CP_RZ_COLOR_MODE_SPECTRAL           = 0         # compiler rz color mode: spectral
+CP_RZ_COLOR_MODE_GRADIENT           = 1         # compiler rz color mode: gradient
 
 # jog command
 JC_NONE                             = 0         # none (or stop the active JOG movement)
@@ -339,6 +367,10 @@ RDCC_WAIT_INPUT                     = 48        # runtime data canon code: wait 
 RDCC_USER_MESSAGE                   = 59        # runtime data canon code: user message (M109)
 RDCC_USER_MEDIA_PATH                = 60        # runtime data canon code: user media (M120)
 RDCC_READ_INPUT_GROUP               = 66        # runtime data canon code: read input group (M166/M167)
+
+# simulator data type
+SDT_FULL                            = 0         # simulator data type: full info
+SDT_MINIMAL                         = 1         # simulator data type: minimal info
 
 # function state name
 FS_NM_SPINDLE_CW                    = 0         # function state name: spindle clockwise
@@ -586,6 +618,7 @@ class APICncInfo(APIComparableMixin):
         self.controller_settings_crc            = 0
         self.interp_buffer_level                = 0
         self.gcode_line                         = 0
+        self.gcode_block_skip_enabled           = False
         self.planned_time                       = '00:00:00'
         self.worked_time                        = '00:00:00'
         self.hud_user_message                   = ''
@@ -676,6 +709,7 @@ class APICncInfo(APIComparableMixin):
         self.tool_param_3                       = 0.0
         self.tool_description                   = ''
         self.simulator_available                = False
+        self.simulator_data_id                  = ''
         self.simulator_state                    = SIM_IDLE
         self.simulator_planned_time_ms          = 0
         self.simulator_current_time_ms          = 0
@@ -702,6 +736,198 @@ class APICompileInfo(APIComparableMixin):
         self.message                            = ''
         self.mode                               = CM_NONE
         self.state                              = CS_INIT
+
+class APICompilerSettingsForGet(APIComparableMixin):
+    """API data structure for compiler settings for get."""
+    def __init__(self):
+        """Initialize compiler settings data for get."""
+        self.has_data                               = False
+        # general
+        self.current_toolpath_mode                  = ANALYSIS_MT
+        self.default_toolpath_mode                  = ANALYSIS_MT
+        self.modal_macro_motion_mode                = CP_MODAL_MACRO_MOTION_MODE_IN_FAST
+        self.cutter_compensation_mode               = CP_CUTTER_COMPENSATION_MODE_NORMAL
+        self.cutter_compensation_gouging_threshold  = 0
+        self.arc_radius_tolerance                   = 0.005
+        self.infinite_loop_threshold                = 0
+        self.gcode_block_skip_enabled               = False
+        self.g43_persistent                         = True
+        self.g52_independent                        = True
+        self.g92_persistent                         = False
+        self.origin_offset_persistent               = True
+        self.user_m_codes_arguments_enabled         = True
+        # macro
+        self.user_macro_path_mode                   = CP_USER_MACRO_PATH_MODE_DISABLED
+        self.user_macro_path                        = ""
+        # joints axes positions with state machine SM_DISCONNECTED
+        self.jpdc_axis_x                            = 0.0
+        self.jpdc_axis_y                            = 0.0
+        self.jpdc_axis_z                            = 0.0
+        self.jpdc_axis_a                            = 0.0
+        self.jpdc_axis_b                            = 0.0
+        self.jpdc_axis_c                            = 0.0
+        # start/resume from this line/point
+        self.restart_default_movement_mode          = CP_RESTART_DEF_MOV_MODE_IN_FEED
+        self.restart_first_movement_feed            = 100.0
+        self.restart_max_distance                   = 1.0
+        self.restart_force_tool_measurement         = False
+        # toolpath
+        self.toolpath_resolution                    = 0.2
+        self.use_points_per_block                   = False
+        self.points_per_block                       = 100
+        self.tool_xx0_color                         = 0x00C02E1D
+        self.tool_xx1_color                         = 0x00F16C20
+        self.tool_xx2_color                         = 0x00DBB417
+        self.tool_xx3_color                         = 0x00879F4D
+        self.tool_xx4_color                         = 0x00028097
+        self.tool_xx5_color                         = 0x000D3C56
+        self.tool_xx6_color                         = 0x00800080
+        self.tool_xx7_color                         = 0x00800000
+        self.tool_xx8_color                         = 0x00436B58
+        self.tool_xx9_color                         = 0x008000FF
+        self.rapid_move_color                       = 0x0000CB9A
+        # analysis and simulation)
+        self.rf_threshold                           = 50
+        self.rf_threshold_color_lower               = 0x000000FF
+        self.rf_threshold_color_equal               = 0x0000FF00
+        self.rf_threshold_color_upper               = 0x00FF0000
+        self.rv_color_mode                          = CP_RV_COLOR_MODE_SPECTRAL
+        self.rv_wavelength_min                      = 520
+        self.rv_wavelength_max                      = 700
+        self.rv_gradient_color_min                  = 0x0000FFFF
+        self.rv_gradient_color_max                  = 0x00FF0000
+        self.rz_color_mode                          = CP_RZ_COLOR_MODE_GRADIENT
+        self.rz_wavelength_min                      = 520
+        self.rz_wavelength_max                      = 700
+        self.rz_gradient_color_min                  = 0x00000000
+        self.rz_gradient_color_max                  = 0x00FFFFFF
+
+class APICompilerSettingsForSet(APIComparableMixin):
+    """API data structure for compiler settings for set."""
+    REQUEST_FIELDS = [
+        # general
+        ("current_toolpath_mode",                   int),
+        ("default_toolpath_mode",                   int),
+        ("modal_macro_motion_mode",                 int),
+        ("cutter_compensation_mode",                int),
+        ("cutter_compensation_gouging_threshold",   int),
+        ("arc_radius_tolerance",                    float),
+        ("infinite_loop_threshold",                 int),
+        ("gcode_block_skip_enabled",                bool),
+        ("g43_persistent",                          bool),
+        ("g52_independent",                         bool),
+        ("g92_persistent",                          bool),
+        ("origin_offset_persistent",                bool),
+        ("user_m_codes_arguments_enabled",          bool),
+        # macro
+        ("user_macro_path_mode",                    int),
+        ("user_macro_path",                         str),
+        # joints axes positions with state machine SM_DISCONNECTED
+        ("jpdc_axis_x",                             float),
+        ("jpdc_axis_y",                             float),
+        ("jpdc_axis_z",                             float),
+        ("jpdc_axis_a",                             float),
+        ("jpdc_axis_b",                             float),
+        ("jpdc_axis_c",                             float),
+        # start/resume from this line/point
+        ("restart_default_movement_mode",           int),
+        ("restart_first_movement_feed",             float),
+        ("restart_max_distance",                    float),
+        ("restart_force_tool_measurement",          bool),
+        # toolpath
+        ("toolpath_resolution",                     float),
+        ("use_points_per_block",                    bool),
+        ("points_per_block",                        int),
+        ("tool_xx0_color",                          int),
+        ("tool_xx1_color",                          int),
+        ("tool_xx2_color",                          int),
+        ("tool_xx3_color",                          int),
+        ("tool_xx4_color",                          int),
+        ("tool_xx5_color",                          int),
+        ("tool_xx6_color",                          int),
+        ("tool_xx7_color",                          int),
+        ("tool_xx8_color",                          int),
+        ("tool_xx9_color",                          int),
+        ("rapid_move_color",                        int),
+        # analysis and simulation
+        ("rf_threshold",                            int),
+        ("rf_threshold_color_lower",                int),
+        ("rf_threshold_color_equal",                int),
+        ("rf_threshold_color_upper",                int),
+        ("rv_color_mode",                           int),
+        ("rv_wavelength_min",                       int),
+        ("rv_wavelength_max",                       int),
+        ("rv_gradient_color_min",                   int),
+        ("rv_gradient_color_max",                   int),
+        ("rz_color_mode",                           int),
+        ("rz_wavelength_min",                       int),
+        ("rz_wavelength_max",                       int),
+        ("rz_gradient_color_min",                   int),
+        ("rz_gradient_color_max",                   int),
+    ]
+
+    def __init__(self):
+        """Initialize compiler settings data for set."""
+        self.has_data                               = False
+        # general
+        self.current_toolpath_mode                  = None
+        self.default_toolpath_mode                  = None
+        self.modal_macro_motion_mode                = None
+        self.cutter_compensation_mode               = None
+        self.cutter_compensation_gouging_threshold  = None
+        self.arc_radius_tolerance                   = None
+        self.infinite_loop_threshold                = None
+        self.gcode_block_skip_enabled               = None
+        self.g43_persistent                         = None
+        self.g52_independent                        = None
+        self.g92_persistent                         = None
+        self.origin_offset_persistent               = None
+        self.user_m_codes_arguments_enabled         = None
+        # macro
+        self.user_macro_path_mode                   = None
+        self.user_macro_path                        = None
+        # joints axes positions with state machine SM_DISCONNECTED
+        self.jpdc_axis_x                            = None
+        self.jpdc_axis_y                            = None
+        self.jpdc_axis_z                            = None
+        self.jpdc_axis_a                            = None
+        self.jpdc_axis_b                            = None
+        self.jpdc_axis_c                            = None
+        # start/resume from this line/point
+        self.restart_default_movement_mode          = None
+        self.restart_first_movement_feed            = None
+        self.restart_max_distance                   = None
+        self.restart_force_tool_measurement         = None
+        # toolpath
+        self.toolpath_resolution                    = None
+        self.use_points_per_block                   = None
+        self.points_per_block                       = None
+        self.tool_xx0_color                         = None
+        self.tool_xx1_color                         = None
+        self.tool_xx2_color                         = None
+        self.tool_xx3_color                         = None
+        self.tool_xx4_color                         = None
+        self.tool_xx5_color                         = None
+        self.tool_xx6_color                         = None
+        self.tool_xx7_color                         = None
+        self.tool_xx8_color                         = None
+        self.tool_xx9_color                         = None
+        self.rapid_move_color                       = None
+        # analysis and simulation
+        self.rf_threshold                           = None
+        self.rf_threshold_color_lower               = None
+        self.rf_threshold_color_equal               = None
+        self.rf_threshold_color_upper               = None
+        self.rv_color_mode                          = None
+        self.rv_wavelength_min                      = None
+        self.rv_wavelength_max                      = None
+        self.rv_gradient_color_min                  = None
+        self.rv_gradient_color_max                  = None
+        self.rz_color_mode                          = None
+        self.rz_wavelength_min                      = None
+        self.rz_wavelength_max                      = None
+        self.rz_gradient_color_min                  = None
+        self.rz_gradient_color_max                  = None
 
 class APICoordinateSystemsInfo(APIComparableMixin):
     """API coordinate systems info."""
@@ -776,6 +1002,7 @@ class APIEnabledCommands(APIComparableMixin):
         self.reset_alarms_history               = False
         self.reset_warnings                     = False
         self.reset_warnings_history             = False
+        self.set_compiler_settings              = False
         self.set_dynamic_offsets                = 0
         self.set_kinematics                     = False
         self.set_program_position               = 0
@@ -1045,12 +1272,23 @@ class APIScanningLaserInfo(APIComparableMixin):
     def __init__(self):
         """Initialize scanning laser information data."""
         self.has_data                           = False
+        self.laser_offset_x                     = 0.0
+        self.laser_offset_y                     = 0.0
+        self.laser_offset_z                     = 0.0
         self.laser_out_bit                      = 0
         self.laser_out_umf                      = 0
         self.laser_h_measure                    = 0.0
         self.laser_mcs_x_position               = 0.0
         self.laser_mcs_y_position               = 0.0
         self.laser_mcs_z_position               = 0.0
+
+class APISimulatorData(APIComparableMixin):
+    """API data structure for simulator data."""
+    def __init__(self):
+        """Initialize toolpath data."""
+        self.has_data                           = False
+        self.data_type                          = SDT_FULL
+        self.data                               = None
 
 class APISystemInfo(APIComparableMixin):
     """API data structure for system info."""
@@ -1842,6 +2080,76 @@ class CncAPIClientCore:
         request = {"cmd": "cnc.stop"}
         return self.__execute_request(self.create_compact_json_request(request))
 
+    def file_export_cpf(self, file_name: str) -> bool:
+        """Export cpf file (CNC parameters file, eg: RosettaCNC1.cpf)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.export.cpf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_export_csf(self, file_name: str) -> bool:
+        """Export csf file (CNC settings file, eg: settings.xml)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.export.csf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_export_ctf(self, file_name: str) -> bool:
+        """Export ctf file (CNC tools file, eg: RosettaCNC1.ctf)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.export.ctf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_export_msg(self, file_name: str) -> bool:
+        """Export msg file (program custom messages file, eg: RosettaCNC1.ini)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.export.msg", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_export_psf(self, file_name: str) -> bool:
+        """Export psf file (program settings file, eg: RosettaCNC1.xml)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.export.psf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_import_cpf(self, file_name: str) -> bool:
+        """Import cpf file (CNC parameters file, eg: RosettaCNC1.cpf)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.import.cpf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_import_csf(self, file_name: str) -> bool:
+        """Import csf file (CNC settings file, eg: settings.xml)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.import.csf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_import_ctf(self, file_name: str) -> bool:
+        """Import ctf file (CNC tools file, eg: RosettaCNC1.ctf)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.import.ctf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_import_msg(self, file_name: str) -> bool:
+        """Import msg file (program custom messages file, eg: RosettaCNC1.ini)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.import.msg", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
+    def file_import_psf(self, file_name: str) -> bool:
+        """Import psf file (program settings file, eg: RosettaCNC1.xml)."""
+        if not isinstance(file_name, str):
+            return False
+        request = {"cmd": "file.import.psf", "file.name": file_name}
+        return self.__execute_request(self.create_compact_json_request(request))
+
     def log_add(self, text: str) -> bool:
         """Add a message to the control software log."""
         request = {"cmd": "log.add", "text": text}
@@ -1862,16 +2170,23 @@ class CncAPIClientCore:
         }
         return self.__execute_request(json.dumps(request))
 
-    def program_analysis(self, mode: str, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
+    def program_analysis(self, mode: int | None, force_sync: bool = False, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT) -> bool:
         """
         Start the analysis of the NC program.
 
         Args:
-            mode        : define the analysis mode to execute
+            mode        : define the analysis mode to execute using ANALYSIS_* constants,
+                          or None to reuse the server-side value
             force_sync  : when True, wait for the real completion of the server command
             timeout     : use this timeout only when force_sync is True
         """
-        request = {"cmd": "program.analysis", "mode": mode}
+        request = {"cmd": "program.analysis"}
+        if mode is not None:
+            if type(mode) is not int:
+                return False
+            if mode < ANALYSIS_MT or mode > ANALYSIS_RZ:
+                return False
+            request["mode"] = mode
         if not self.__append_force_sync(request, force_sync):
             return False
         first_timeout = self.__get_force_sync_timeout(force_sync, timeout)
@@ -1879,12 +2194,13 @@ class CncAPIClientCore:
             return False
         return self.__execute_request(self.create_compact_json_request(request), first_timeout=first_timeout)
 
-    def program_analysis_threaded(self, mode: str, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
+    def program_analysis_threaded(self, mode: int | None, timeout: float = DEFAULT_FORCE_SYNC_TIMEOUT, on_done: Callable[[bool | None], None] = None) -> bool:
         """
         Start the analysis of the NC program in a worker thread using a parallel API server connection.
 
         Args:
-            mode        : define the analysis mode to execute
+            mode        : define the analysis mode to execute using ANALYSIS_* constants,
+                          or None to reuse the server-side value
             timeout     : define the timeout used by the forced synchronous server request
             on_done     : call this callback at end with result True, False or None
         """
@@ -2573,6 +2889,7 @@ class CncAPIClientCore:
                 data.controller_settings_crc            = j['res']['controller.settings.crc']
                 data.interp_buffer_level                = j['res']['interp.buffer.level']
                 data.gcode_line                         = j['res']['gcode.line']
+                data.gcode_block_skip_enabled           = j['res']['gcode.block.skip.enabled']
                 data.planned_time                       = j['res']['planned.time']
                 data.worked_time                        = j['res']['worked.time']
                 data.hud_user_message                   = j['res']['hud.user.message']
@@ -2663,6 +2980,7 @@ class CncAPIClientCore:
                 data.tool_param_3                       = j['res']['tool']['param.3']
                 data.tool_description                   = j['res']['tool']['description']
                 data.simulator_available                = j['res']['simulator']['available']
+                data.simulator_data_id                  = j['res']['simulator']['data.id']
                 data.simulator_state                    = j['res']['simulator']['state']
                 data.simulator_planned_time_ms          = j['res']['simulator']['planned.time.ms']
                 data.simulator_current_time_ms          = j['res']['simulator']['current.time.ms']
@@ -2712,6 +3030,80 @@ class CncAPIClientCore:
                 data.message                            = j['res']['message']
                 data.mode                               = j['res']['mode']
                 data.state                              = j['res']['state']
+                data.has_data = True
+            return data
+        except Exception:
+            return APICompileInfo()
+
+    def get_compiler_settings(self) -> APICompilerSettingsForGet:
+        """Return compiler settings."""
+        try:
+            data = APICompilerSettingsForGet()
+            if not self.is_connected:
+                return data
+            request = '{"get":"compiler.settings"}'
+            response = self.__send_command(request)
+            if response:
+                j = json.loads(response)
+                # general
+                data.current_toolpath_mode                  = j['res']['current.toolpath.mode']
+                data.default_toolpath_mode                  = j['res']['default.toolpath.mode']
+                data.modal_macro_motion_mode                = j['res']['modal.macro.motion.mode']
+                data.cutter_compensation_mode               = j['res']['cutter.compensation.mode']
+                data.cutter_compensation_gouging_threshold  = j['res']['cutter.compensation.gouging.threshold']
+                data.arc_radius_tolerance                   = j['res']['arc.radius.tolerance']
+                data.infinite_loop_threshold                = j['res']['infinite.loop.threshold']
+                data.gcode_block_skip_enabled               = j['res']['gcode.block.skip.enabled']
+                data.g43_persistent                         = j['res']['g43.persistent']
+                data.g52_independent                        = j['res']['g52.independent']
+                data.g92_persistent                         = j['res']['g92.persistent']
+                data.origin_offset_persistent               = j['res']['origin.offset.persistent']
+                data.user_m_codes_arguments_enabled         = j['res']['user.m.codes.arguments.enabled']
+                # macro
+                data.user_macro_path_mode                   = j['res']['user.macro.path.mode']
+                data.user_macro_path                        = j['res']['user.macro.path']
+                # joints axes positions with state machine SM_DISCONNECTED
+                data.jpdc_axis_x                            = j['res']['jpdc.axis.x']
+                data.jpdc_axis_y                            = j['res']['jpdc.axis.y']
+                data.jpdc_axis_z                            = j['res']['jpdc.axis.z']
+                data.jpdc_axis_a                            = j['res']['jpdc.axis.a']
+                data.jpdc_axis_b                            = j['res']['jpdc.axis.b']
+                data.jpdc_axis_c                            = j['res']['jpdc.axis.c']
+                # start/resume from this line/point
+                data.restart_default_movement_mode          = j['res']['restart.default.movement.mode']
+                data.restart_first_movement_feed            = j['res']['restart.first.movement.feed']
+                data.restart_max_distance                   = j['res']['restart.max.distance']
+                data.restart_force_tool_measurement         = j['res']['restart.force.tool.measurement']
+                # toolpath
+                data.toolpath_resolution                    = j['res']['toolpath.resolution']
+                data.use_points_per_block                   = j['res']['use.points.per.block']
+                data.points_per_block                       = j['res']['points.per.block']
+                data.tool_xx0_color                         = j['res']['tool.xx0.color']
+                data.tool_xx1_color                         = j['res']['tool.xx1.color']
+                data.tool_xx2_color                         = j['res']['tool.xx2.color']
+                data.tool_xx3_color                         = j['res']['tool.xx3.color']
+                data.tool_xx4_color                         = j['res']['tool.xx4.color']
+                data.tool_xx5_color                         = j['res']['tool.xx5.color']
+                data.tool_xx6_color                         = j['res']['tool.xx6.color']
+                data.tool_xx7_color                         = j['res']['tool.xx7.color']
+                data.tool_xx8_color                         = j['res']['tool.xx8.color']
+                data.tool_xx9_color                         = j['res']['tool.xx9.color']
+                data.rapid_move_color                       = j['res']['rapid.move.color']
+                # analysis and simulation
+                data.rf_threshold                           = j['res']['rf.threshold']
+                data.rf_threshold_color_lower               = j['res']['rf.threshold.color.lower']
+                data.rf_threshold_color_equal               = j['res']['rf.threshold.color.equal']
+                data.rf_threshold_color_upper               = j['res']['rf.threshold.color.upper']
+                data.rv_color_mode                          = j['res']['rv.color.mode']
+                data.rv_wavelength_min                      = j['res']['rv.wavelength.min']
+                data.rv_wavelength_max                      = j['res']['rv.wavelength.max']
+                data.rv_gradient_color_min                  = j['res']['rv.gradient.color.min']
+                data.rv_gradient_color_max                  = j['res']['rv.gradient.color.max']
+                data.rz_color_mode                          = j['res']['rz.color.mode']
+                data.rz_wavelength_min                      = j['res']['rz.wavelength.min']
+                data.rz_wavelength_max                      = j['res']['rz.wavelength.max']
+                data.rz_gradient_color_min                  = j['res']['rz.gradient.color.min']
+                data.rz_gradient_color_max                  = j['res']['rz.gradient.color.max']
                 data.has_data = True
             return data
         except Exception:
@@ -2822,6 +3214,7 @@ class CncAPIClientCore:
                 data.reset_alarms_history               = j['res']['reset.alarms.history']
                 data.reset_warnings                     = j['res']['reset.warnings']
                 data.reset_warnings_history             = j['res']['reset.warnings.history']
+                data.set_compiler_settings              = j['res']['set.compiler.settings']
                 data.set_dynamic_offsets                = j['res']['set.dynamic.offsets']
                 data.set_kinematics                     = j['res']['set.kinematics']
                 data.set_program_position               = j['res']['set.program.position']
@@ -3134,6 +3527,9 @@ class CncAPIClientCore:
             response = self.__send_command(request)
             if response:
                 j = json.loads(response)
+                data.laser_offset_x                     = j['res']['laser.offset.x']
+                data.laser_offset_y                     = j['res']['laser.offset.y']
+                data.laser_offset_z                     = j['res']['laser.offset.z']
                 data.laser_out_bit                      = j['res']['laser.out.bit']
                 data.laser_out_umf                      = j['res']['laser.out.umf']
                 data.laser_h_measure                    = j['res']['laser.h.measure']
@@ -3144,6 +3540,39 @@ class CncAPIClientCore:
             return data
         except Exception:
             return APIScanningLaserInfo()
+
+    def get_simulator_data(self, data_type: int = SDT_FULL) -> APISimulatorData:
+        """Get simulator data as numpy data array of int."""
+        try:
+            data = APISimulatorData()
+            if not self.is_connected:
+                return data
+
+            if not isinstance(data_type, int) or isinstance(data_type, bool):
+                return data
+            if not data_type in [SDT_FULL, SDT_MINIMAL]:
+                return data
+
+            data.data_type = data_type
+
+            if data_type == SDT_FULL:
+                request = '{"get":"simulator.data","data.type":0}'
+                raw = self.__send_command_raw(request, DEFAULT_REQUEST_FIRST_TIMEOUT_HO, DEFAULT_REQUEST_CHUNK_TIMEOUT)
+                if raw is None:
+                    return data
+                data.data = raw
+                data.has_data = len(data.data) > 0
+            elif data_type == SDT_MINIMAL:
+                request = '{"get":"simulator.data","data.type":1}'
+                raw = self.__send_command_raw(request, DEFAULT_REQUEST_FIRST_TIMEOUT_HO, DEFAULT_REQUEST_CHUNK_TIMEOUT)
+                if raw is None:
+                    return data
+                data.data = raw
+                data.has_data = len(data.data) > 0
+
+            return data
+        except Exception:
+            return APISimulatorData()
 
     def get_system_info(self) -> APISystemInfo:
         """Return system information."""
@@ -3568,6 +3997,50 @@ class CncAPIClientCore:
 
     # == BEG: API Server "set" requests section
     #
+    def set_compiler_settings(self, data: APICompilerSettingsForSet = None) -> bool:
+        """Set compiler settings."""
+        try:
+            if not self.is_connected:
+                return False
+            if not isinstance(data, APICompilerSettingsForSet):
+                return False
+
+            request_data = {"set": "compiler.settings"}
+
+            for field_name, field_type in APICompilerSettingsForSet.REQUEST_FIELDS:
+                value = getattr(data, field_name)
+                if value is None:
+                    continue
+
+                request_name = field_name.replace('_', '.')
+
+                if field_type is bool:
+                    if type(value) is not bool:
+                        return False
+                    request_data[request_name] = value
+                elif field_type is int:
+                    if type(value) is not int:
+                        return False
+                    request_data[request_name] = value
+                elif field_type is float:
+                    if not isinstance(value, (int, float)) or isinstance(value, bool):
+                        return False
+                    request_data[request_name] = float(value)
+                elif field_type is str:
+                    if not isinstance(value, str):
+                        return False
+                    request_data[request_name] = value
+                else:
+                    return False
+
+            if len(request_data) == 1:
+                return False
+
+            request = self.create_compact_json_request(request_data)
+            return self.__execute_request(request)
+        except Exception:
+            return False
+
     def set_cnc_parameters(self, address: int, values: list | None = None, descriptions: list | None = None) -> bool:
         """
         Set CNC parameters with validation for values and descriptions.
