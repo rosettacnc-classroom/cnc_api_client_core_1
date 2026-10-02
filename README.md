@@ -3,6 +3,9 @@ The RosettaCNC numerical control has an API Server with which to access its inte
 Requests/Responses over TCP/IP sockets. Versions of a Client API for various programming languages will<br>
 be available in this repository.
 
+# Versions
+The version 1.5.3 is coupled with Control Software version 14.4.4.
+
 # Examples
 ---
 ## Python with QT PySide6
