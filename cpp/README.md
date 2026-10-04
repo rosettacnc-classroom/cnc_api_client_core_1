@@ -23,7 +23,7 @@ This project contains a partial C++ port of the RosettaCNC API client implemente
 ### 📊 Overall Summary
 - **GET Methods**: 36/36 ✅ (100%)
 - **SET Methods**: 31/32 ✅ (97%)
-- **CMD Methods**: 8/56 ✅ (14%)
+- **CMD Methods**: 56/56 ✅ (100%)
 
 The totals above are based on the public synchronous methods currently exposed by
 `../python/cnc_api_client_core.py`. The 10 Python convenience wrappers whose names end
@@ -119,101 +119,17 @@ The following GET methods have a C++ implementation:
 
 ---
 
-## ✅ Implemented CMD Methods (8/56 - 14%)
+## ✅ Implemented CMD Methods (56/56 - 100%)
 
-### Execution Control (4/5) ✅
-1. ✅ `cnc_start()` - Start program execution
-2. ✅ `cnc_stop()` - Stop execution
-3. ✅ `cnc_pause()` - Pause program execution
-4. ✅ `cnc_resume(force_sync, timeout)` - Resume program execution
+All public synchronous CMD methods exposed by the Python reference are implemented.
+This includes CNC execution and connection control, homing and JOG, MDI, file
+import/export, MRU management, program editing and persistence, analysis,
+alarms/warnings, simulator control, tool-library operations, work orders, logging,
+and UI dialogs.
 
-### Motion Control
-5. ✅ `cnc_jog_command(int command)` - Execute a validated JOG command
-
-### Start/Resume from Specific Point
-6. ✅ `cnc_resume_from_line(int line, force_sync, timeout)` - Resume from a line
-
-### Program Management (1/10) ✅
-7. ✅ `program_load(const std::string& file_name)` - Load program
-
-### Reset and Alarm Management
-8. ✅ `reset_alarms()` - Reset current alarms
-
-### ❌ CMD Methods To Implement (48)
-
-#### Execution Control
-- ❌ `cnc_continue()` - Continue execution
-
-#### Start/Resume from Specific Point (3)
-- ❌ `cnc_start_from_line(int line)` - Start from line
-- ❌ `cnc_start_from_point(int point)` - Start from point
-- ❌ `cnc_resume_from_point(int point)` - Resume from point
-
-#### Connection and Configuration (3)
-- ❌ `cnc_connection_open(...)` - Open CNC connection
-- ❌ `cnc_connection_close()` - Close CNC connection
-- ❌ `cnc_change_function_state_mode(int name, int mode)` - Change function state mode
-
-#### Movement and Homing
-- ❌ `cnc_homing(int axes_mask)` - Execute axes homing
-
-#### MDI Commands
-- ❌ `cnc_mdi_command(const std::string& command)` - Execute MDI command
-
-#### File Import and Export
-- ❌ `file_export_cpf(file_name)`
-- ❌ `file_export_csf(file_name)`
-- ❌ `file_export_ctf(file_name)`
-- ❌ `file_export_msg(file_name)`
-- ❌ `file_export_psf(file_name)`
-- ❌ `file_import_cpf(file_name)`
-- ❌ `file_import_csf(file_name)`
-- ❌ `file_import_ctf(file_name)`
-- ❌ `file_import_msg(file_name)`
-- ❌ `file_import_psf(file_name)`
-
-#### Most Recently Used Programs
-- ❌ `mru_programs_list_clear()`
-- ❌ `mru_programs_list_remove_item(index)`
-
-#### Program Management
-- ❌ `program_new()` - New program
-- ❌ `program_save()` - Save program
-- ❌ `program_save_as(const std::string& file_name)` - Save program as
-- ❌ `program_gcode_add_text(const std::string& text)` - Add GCode text
-- ❌ `program_gcode_clear()` - Clear GCode
-- ❌ `program_gcode_modified()` - Notify that GCode was modified
-- ❌ `program_gcode_set_text(const std::string& text)` - Set GCode text
-- ❌ `program_analysis(int mode)` - Analyze program
-- ❌ `program_analysis_abort()` - Abort analysis
-
-#### Reset and Alarm Management
-- ❌ `reset_alarms_history()` - Reset alarms history
-- ❌ `reset_warnings()` - Reset warnings
-- ❌ `reset_warnings_history()` - Reset warnings history
-
-#### Simulator
-- ❌ `simulator_continue()`
-- ❌ `simulator_pause()`
-- ❌ `simulator_place_and_pause_to_line(line)`
-- ❌ `simulator_start()`
-- ❌ `simulator_step_backward()`
-- ❌ `simulator_step_forward()`
-- ❌ `simulator_stop()`
-
-#### Tool Library
-- ❌ `tools_lib_add(const APIToolsLibInfoForSet* info)` - Add tool
-- ❌ `tools_lib_clear()` - Clear tool library
-- ❌ `tools_lib_delete(int index)` - Delete tool
-- ❌ `tools_lib_insert(const APIToolsLibInfoForSet* info)` - Insert tool
-
-#### Work Orders
-- ❌ `work_order_add(order_code, data)` - Add work order
-- ❌ `work_order_delete(const std::string& order_code)` - Delete work order
-
-#### Other Commands
-- ❌ `log_add(const std::string& text)` - Add log entry
-- ❌ `show_ui_dialog(int uid_id)` - Show UI dialog
+Commands supporting the Python `force_sync` option use the same request flag and a
+configurable first-response timeout. Numeric and boolean request fields are emitted as
+JSON values rather than strings, and strings are JSON-escaped.
 
 ### ❌ Threaded Convenience Methods To Implement (10, excluded from CMD total)
 

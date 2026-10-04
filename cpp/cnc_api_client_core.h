@@ -48,11 +48,11 @@
 #define DEFAULT_FORCE_SYNC_TIMEOUT 160.0
 
 // Analysis mode
-#define ANALYSIS_MT "mt"    // model path with tools colors
-#define ANALYSIS_RT "rt"    // real path with tools colors
-#define ANALYSIS_RF "rf"    // real path with colors related to feed
-#define ANALYSIS_RV "rv"    // real path with colors related to velocity
-#define ANALYSIS_RZ "rz"    // real path with colors related to the Z level of the feed
+#define ANALYSIS_MT 0    // model path with tools colors
+#define ANALYSIS_RT 1    // real path with tools colors
+#define ANALYSIS_RF 2    // real path with colors related to feed
+#define ANALYSIS_RV 3    // real path with colors related to velocity
+#define ANALYSIS_RZ 4    // real path with colors related to the Z level of the feed
 
 // Axis ID
 #define X_AXIS_ID 1
@@ -350,6 +350,22 @@
 #define UID_TOOLS_LIBRARY "tools.library"
 #define UID_WORK_COORDINATES "work.coordinates"
 
+// UI dialog IDs
+#define UID_ID_ABOUT 1
+#define UID_ID_ATC_MANAGEMENT 2
+#define UID_ID_BOARD_ETHERCAT_MONITOR 3
+#define UID_ID_BOARD_FIRMWARE_MANAGER 4
+#define UID_ID_BOARD_MONITOR 5
+#define UID_ID_BOARD_SETTINGS 6
+#define UID_ID_CHANGE_BOARD_IP 7
+#define UID_ID_MACROS_MANAGEMENT 8
+#define UID_ID_PARAMETERS_LIBRARY 9
+#define UID_ID_PROGRAM_SETTINGS 10
+#define UID_ID_TOOLS_LIBRARY 11
+#define UID_ID_WORK_COORDINATES 12
+#define UID_ID_FIRST UID_ID_ABOUT
+#define UID_ID_LAST UID_ID_WORK_COORDINATES
+
 // Service popup menu enabling mask
 #define SPMEM_ABOUT (1 << 0)
 #define SPMEM_ATC_MANAGEMENT (1 << 1)
@@ -578,8 +594,8 @@ public:
 class APICompilerSettingsForGet {
 public:
     bool has_data;
-    std::string current_toolpath_mode;
-    std::string default_toolpath_mode;
+    int current_toolpath_mode;
+    int default_toolpath_mode;
     int modal_macro_motion_mode;
     int cutter_compensation_mode;
     int cutter_compensation_gouging_threshold;
@@ -1381,26 +1397,52 @@ public:
     bool cnc_resume(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool cnc_resume_from_line(int line, bool force_sync = false,
                               double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
-    bool cnc_resume_from_point(int point);
-    bool cnc_start();
-    bool cnc_start_from_line(int line);
-    bool cnc_start_from_point(int point);
+    bool cnc_resume_from_point(int point, bool force_sync = false,
+                               double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start_from_line(int line, bool force_sync = false,
+                             double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start_from_point(int point, bool force_sync = false,
+                              double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool cnc_stop();
+    bool file_export_cpf(const std::string& file_name);
+    bool file_export_csf(const std::string& file_name);
+    bool file_export_ctf(const std::string& file_name);
+    bool file_export_msg(const std::string& file_name);
+    bool file_export_psf(const std::string& file_name);
+    bool file_import_cpf(const std::string& file_name);
+    bool file_import_csf(const std::string& file_name);
+    bool file_import_ctf(const std::string& file_name);
+    bool file_import_msg(const std::string& file_name);
+    bool file_import_psf(const std::string& file_name);
     bool log_add(const std::string& text);
-    bool program_analysis(const std::string& mode);
+    bool mru_programs_list_clear();
+    bool mru_programs_list_remove_item(int index);
+    bool program_analysis(int mode = -1, bool force_sync = false,
+                          double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool program_analysis_abort();
     bool program_gcode_add_text(const std::string& text);
     bool program_gcode_clear();
+    bool program_gcode_modified();
     bool program_gcode_set_text(const std::string& text);
-    bool program_load(const std::string& file_name);
+    bool program_load(const std::string& file_name, bool force_sync = false,
+                      double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool program_new();
-    bool program_save();
-    bool program_save_as(const std::string& file_name);
+    bool program_save(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool program_save_as(const std::string& file_name, bool force_sync = false,
+                         double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool reset_alarms();
     bool reset_alarms_history();
     bool reset_warnings();
     bool reset_warnings_history();
-    bool show_ui_dialog(const std::string& name = "");
+    bool show_ui_dialog(int uid_id = 0);
+    bool simulator_continue();
+    bool simulator_pause();
+    bool simulator_place_and_pause_to_line(int line);
+    bool simulator_start();
+    bool simulator_step_backward();
+    bool simulator_step_forward();
+    bool simulator_stop();
     bool tools_lib_add(const APIToolsLibInfoForSet* info = nullptr);
     bool tools_lib_clear();
     bool tools_lib_delete(int index);
@@ -1512,6 +1554,7 @@ private:
     bool send_command_raw(const std::string& request, std::vector<unsigned char>& payload,
                           DWORD first_timeout_ms = 5000, DWORD chunk_timeout_ms = 2000);
     bool execute_request(const std::string& request);
+    bool execute_force_sync_request(std::string request, bool force_sync, double timeout);
     static bool evaluate_response(const std::string& response);
     void flush_receiving_buffer();
     

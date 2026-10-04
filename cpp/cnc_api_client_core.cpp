@@ -1533,6 +1533,19 @@ bool CncAPIClientCore::execute_request(const std::string& request) {
     }
 }
 
+bool CncAPIClientCore::execute_force_sync_request(std::string request, bool force_sync,
+                                                   double timeout) {
+    if (!m_is_connected || request.empty() || request.back() != '}') return false;
+    DWORD first_timeout_ms = static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
+    if (force_sync) {
+        const double max_seconds = static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0;
+        if (!std::isfinite(timeout) || timeout <= 0.0 || timeout > max_seconds) return false;
+        request.insert(request.size() - 1, ",\"force.sync\":true");
+        first_timeout_ms = static_cast<DWORD>(std::ceil(timeout * 1000.0));
+    }
+    return evaluate_response(send_command(request, first_timeout_ms));
+}
+
 // ========== Helper Methods ==========
 std::string CncAPIClientCore::escape_json_string(const std::string& str) {
     return SimpleJSON::escape(str);
@@ -1612,57 +1625,40 @@ std::string CncAPIClientCore::build_json_bool(const std::string& key, bool value
 
 // ========== API Command Methods ==========
 
-bool CncAPIClientCore::reset_alarms() {
-    return execute_request("{\"cmd\":\"reset.alarms\"}");
+bool CncAPIClientCore::cnc_change_function_state_mode(int name, int mode) {
+    const bool digital_name = name == FS_NM_SPINDLE_CW || name == FS_NM_SPINDLE_CCW ||
+        name == FS_NM_MIST || name == FS_NM_FLOOD || name == FS_NM_TORCH ||
+        name == FS_NM_THC_DISABLED || (name >= FS_NM_AUX_01 && name <= FS_NM_AUX_32);
+    const bool valid = (digital_name && mode >= FS_MD_OFF && mode <= FS_MD_TOGGLE) ||
+        (name == FS_NM_JOG_MODE && mode >= FS_MD_JOG_MODE_DEFAULT &&
+         mode <= FS_MD_JOG_MODE_TOGGLE);
+    if (!valid) return false;
+    return execute_request("{\"cmd\":\"cnc.change.function.state.mode\",\"name\":" +
+                           std::to_string(name) + ",\"mode\":" + std::to_string(mode) + "}");
 }
 
-bool CncAPIClientCore::cnc_start() {
-    std::string request = "{\"cmd\":\"cnc.start\"}";
-    std::string response = send_command(request);
-    return evaluate_response(response);
+bool CncAPIClientCore::cnc_connection_close() {
+    return execute_request("{\"cmd\":\"cnc.connection.close\"}");
 }
 
-bool CncAPIClientCore::cnc_pause() {
-    return execute_request("{\"cmd\":\"cnc.pause\"}");
+bool CncAPIClientCore::cnc_connection_open(bool use_ui, bool use_fast_mode,
+                                            bool skip_firmware_check,
+                                            bool overwrite_cnc_settings) {
+    return execute_request("{\"cmd\":\"cnc.connection.open\",\"use.ui\":" +
+        std::string(use_ui ? "true" : "false") + ",\"use.fast.mode\":" +
+        (use_fast_mode ? "true" : "false") + ",\"skip.firmware.check\":" +
+        (skip_firmware_check ? "true" : "false") + ",\"overwrite.cnc.settings\":" +
+        (overwrite_cnc_settings ? "true" : "false") + "}");
 }
 
-bool CncAPIClientCore::cnc_resume(bool force_sync, double timeout) {
-    if (!m_is_connected) return false;
-    if (force_sync && (!std::isfinite(timeout) || timeout <= 0.0 ||
-                       timeout > static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0)) {
-        return false;
-    }
-
-    const std::string request = force_sync
-        ? "{\"cmd\":\"cnc.resume\",\"force.sync\":true}"
-        : "{\"cmd\":\"cnc.resume\"}";
-    const DWORD first_timeout_ms = force_sync
-        ? static_cast<DWORD>(timeout * 1000.0)
-        : static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
-    return evaluate_response(send_command(request, first_timeout_ms));
+bool CncAPIClientCore::cnc_continue() {
+    return execute_request("{\"cmd\":\"cnc.continue\"}");
 }
 
-bool CncAPIClientCore::cnc_resume_from_line(int line, bool force_sync, double timeout) {
-    if (!m_is_connected) return false;
-    if (force_sync && (!std::isfinite(timeout) || timeout <= 0.0 ||
-                       timeout > static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0)) {
-        return false;
-    }
-
-    std::string request = "{\"cmd\":\"cnc.resume.from.line\",\"line\":" +
-                          std::to_string(line);
-    if (force_sync) request += ",\"force.sync\":true";
-    request += '}';
-    const DWORD first_timeout_ms = force_sync
-        ? static_cast<DWORD>(timeout * 1000.0)
-        : static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
-    return evaluate_response(send_command(request, first_timeout_ms));
-}
-
-bool CncAPIClientCore::cnc_stop() {
-    std::string request = "{\"cmd\":\"cnc.stop\"}";
-    std::string response = send_command(request);
-    return evaluate_response(response);
+bool CncAPIClientCore::cnc_homing(int axes_mask) {
+    if (axes_mask <= 0 || axes_mask > X2C_AXIS_MASK) return false;
+    return execute_request("{\"cmd\":\"cnc.homing\",\"axes.mask\":" +
+                           std::to_string(axes_mask) + "}");
 }
 
 bool CncAPIClientCore::cnc_jog_command(int command) {
@@ -1671,15 +1667,327 @@ bool CncAPIClientCore::cnc_jog_command(int command) {
                            std::to_string(command) + "}");
 }
 
-bool CncAPIClientCore::program_load(const std::string& file_name) {
-    if (file_name.empty()) {
-        return false;
+bool CncAPIClientCore::cnc_mdi_command(const std::string& command) {
+    return execute_request("{\"cmd\":\"cnc.mdi.command\",\"command\":\"" +
+                           escape_json_string(command) + "\"}");
+}
+
+bool CncAPIClientCore::cnc_pause() { return execute_request("{\"cmd\":\"cnc.pause\"}"); }
+
+bool CncAPIClientCore::cnc_resume(bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.resume\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_resume_from_line(int line, bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.resume.from.line\",\"line\":" +
+        std::to_string(line) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_resume_from_point(int point, bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.resume.from.point\",\"point\":" +
+        std::to_string(point) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_start(bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.start\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_start_from_line(int line, bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.start.from.line\",\"line\":" +
+        std::to_string(line) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_start_from_point(int point, bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"cnc.start.from.point\",\"point\":" +
+        std::to_string(point) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_stop() { return execute_request("{\"cmd\":\"cnc.stop\"}"); }
+
+#define FILE_COMMAND_BODY(command_name) \
+    return execute_request("{\"cmd\":\"" command_name "\",\"file.name\":\"" + \
+                           escape_json_string(file_name) + "\"}")
+bool CncAPIClientCore::file_export_cpf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.export.cpf");
+}
+bool CncAPIClientCore::file_export_csf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.export.csf");
+}
+bool CncAPIClientCore::file_export_ctf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.export.ctf");
+}
+bool CncAPIClientCore::file_export_msg(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.export.msg");
+}
+bool CncAPIClientCore::file_export_psf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.export.psf");
+}
+bool CncAPIClientCore::file_import_cpf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.import.cpf");
+}
+bool CncAPIClientCore::file_import_csf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.import.csf");
+}
+bool CncAPIClientCore::file_import_ctf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.import.ctf");
+}
+bool CncAPIClientCore::file_import_msg(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.import.msg");
+}
+bool CncAPIClientCore::file_import_psf(const std::string& file_name) {
+    FILE_COMMAND_BODY("file.import.psf");
+}
+#undef FILE_COMMAND_BODY
+
+bool CncAPIClientCore::log_add(const std::string& text) {
+    return execute_request("{\"cmd\":\"log.add\",\"text\":\"" +
+                           escape_json_string(text) + "\"}");
+}
+
+bool CncAPIClientCore::mru_programs_list_clear() {
+    return execute_request("{\"cmd\":\"mdi.programs.list.clear\"}");
+}
+
+bool CncAPIClientCore::mru_programs_list_remove_item(int index) {
+    return execute_request("{\"cmd\":\"mru.programs.list.remove.item\",\"index\":" +
+                           std::to_string(index) + "}");
+}
+
+bool CncAPIClientCore::program_analysis(int mode, bool force_sync, double timeout) {
+    if (mode < -1 || mode > ANALYSIS_RZ) return false;
+    std::string request = "{\"cmd\":\"program.analysis\"";
+    if (mode >= ANALYSIS_MT) request += ",\"mode\":" + std::to_string(mode);
+    request += '}';
+    return execute_force_sync_request(request, force_sync, timeout);
+}
+
+bool CncAPIClientCore::program_analysis_abort() {
+    return execute_request("{\"cmd\":\"program.analysis.abort\"}");
+}
+
+bool CncAPIClientCore::program_gcode_add_text(const std::string& text) {
+    return execute_request("{\"cmd\":\"program.gcode.add.text\",\"text\":\"" +
+                           escape_json_string(text) + "\"}");
+}
+
+bool CncAPIClientCore::program_gcode_clear() {
+    return execute_request("{\"cmd\":\"program.gcode.clear\"}");
+}
+
+bool CncAPIClientCore::program_gcode_modified() {
+    return execute_request("{\"cmd\":\"program.gcode.modified\"}");
+}
+
+bool CncAPIClientCore::program_gcode_set_text(const std::string& text) {
+    return execute_request("{\"cmd\":\"program.gcode.set.text\",\"text\":\"" +
+                           escape_json_string(text) + "\"}");
+}
+
+bool CncAPIClientCore::program_load(const std::string& file_name, bool force_sync,
+                                    double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"program.load\",\"name\":\"" +
+        escape_json_string(file_name) + "\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::program_new() { return execute_request("{\"cmd\":\"program.new\"}"); }
+
+bool CncAPIClientCore::program_save(bool force_sync, double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"program.save\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::program_save_as(const std::string& file_name, bool force_sync,
+                                       double timeout) {
+    return execute_force_sync_request("{\"cmd\":\"program.save.as\",\"file.name\":\"" +
+        escape_json_string(file_name) + "\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::reset_alarms() {
+    return execute_request("{\"cmd\":\"reset.alarms\"}");
+}
+bool CncAPIClientCore::reset_alarms_history() {
+    return execute_request("{\"cmd\":\"reset.alarms.history\"}");
+}
+bool CncAPIClientCore::reset_warnings() {
+    return execute_request("{\"cmd\":\"reset.warnings\"}");
+}
+bool CncAPIClientCore::reset_warnings_history() {
+    return execute_request("{\"cmd\":\"reset.warnings.history\"}");
+}
+
+bool CncAPIClientCore::show_ui_dialog(int uid_id) {
+    if (uid_id < UID_ID_FIRST || uid_id > UID_ID_LAST) return false;
+    return execute_request("{\"cmd\":\"show.ui.dialog\",\"uid_id\":" +
+                           std::to_string(uid_id) + "}");
+}
+
+bool CncAPIClientCore::simulator_continue() {
+    return execute_request("{\"cmd\":\"simulator.continue\"}");
+}
+bool CncAPIClientCore::simulator_pause() {
+    return execute_request("{\"cmd\":\"simulator.pause\"}");
+}
+bool CncAPIClientCore::simulator_place_and_pause_to_line(int line) {
+    return execute_request("{\"cmd\":\"simulator.place.and.pause.to.line\",\"line\":" +
+                           std::to_string(line) + "}");
+}
+bool CncAPIClientCore::simulator_start() {
+    return execute_request("{\"cmd\":\"simulator.start\"}");
+}
+bool CncAPIClientCore::simulator_step_backward() {
+    return execute_request("{\"cmd\":\"simulator.step.backward\"}");
+}
+bool CncAPIClientCore::simulator_step_forward() {
+    return execute_request("{\"cmd\":\"simulator.step.forward\"}");
+}
+bool CncAPIClientCore::simulator_stop() {
+    return execute_request("{\"cmd\":\"simulator.stop\"}");
+}
+
+namespace {
+    bool append_tool_command_fields(std::string& request, bool& first,
+                                    const APIToolsLibInfoForSet& info) {
+#define APPEND_TOOL_INT(field, key) if (info.field != nullptr) \
+        append_json_raw(request, first, key, std::to_string(*info.field))
+#define APPEND_TOOL_DOUBLE(field, key) if (info.field != nullptr) { \
+        if (!std::isfinite(*info.field)) return false; \
+        append_json_raw(request, first, key, json_number(*info.field)); }
+        APPEND_TOOL_INT(tool_id, "id");
+        APPEND_TOOL_INT(tool_slot, "slot");
+        APPEND_TOOL_INT(tool_type, "type");
+        APPEND_TOOL_DOUBLE(tool_diameter, "diameter");
+        APPEND_TOOL_DOUBLE(tool_offset_x, "offset.x");
+        APPEND_TOOL_DOUBLE(tool_offset_y, "offset.y");
+        APPEND_TOOL_DOUBLE(tool_offset_z, "offset.z");
+        APPEND_TOOL_DOUBLE(tool_param_1, "param.1");
+        APPEND_TOOL_DOUBLE(tool_param_2, "param.2");
+        APPEND_TOOL_DOUBLE(tool_param_3, "param.3");
+        APPEND_TOOL_DOUBLE(tool_param_4, "param.4");
+        APPEND_TOOL_DOUBLE(tool_param_5, "param.5");
+        APPEND_TOOL_DOUBLE(tool_param_6, "param.6");
+        APPEND_TOOL_DOUBLE(tool_param_7, "param.7");
+        APPEND_TOOL_DOUBLE(tool_param_8, "param.8");
+        APPEND_TOOL_DOUBLE(tool_param_9, "param.9");
+        APPEND_TOOL_DOUBLE(tool_param_10, "param.10");
+        APPEND_TOOL_DOUBLE(tool_param_51, "param.51");
+        APPEND_TOOL_DOUBLE(tool_param_52, "param.52");
+        APPEND_TOOL_DOUBLE(tool_param_53, "param.53");
+        APPEND_TOOL_DOUBLE(tool_param_54, "param.54");
+        APPEND_TOOL_DOUBLE(tool_param_55, "param.55");
+        APPEND_TOOL_DOUBLE(tool_param_56, "param.56");
+        APPEND_TOOL_DOUBLE(tool_param_57, "param.57");
+        APPEND_TOOL_DOUBLE(tool_param_58, "param.58");
+        APPEND_TOOL_DOUBLE(tool_param_59, "param.59");
+        APPEND_TOOL_DOUBLE(tool_param_60, "param.60");
+#undef APPEND_TOOL_INT
+#undef APPEND_TOOL_DOUBLE
+        if (info.tool_description != nullptr) {
+            append_json_string(request, first, "description", *info.tool_description);
+        }
+        return true;
     }
-    
-    std::string escaped_name = escape_json_string(file_name);
-    std::string request = "{\"cmd\":\"program.load\",\"name\":\"" + escaped_name + "\"}";
-    std::string response = send_command(request);
-    return evaluate_response(response);
+}
+
+bool CncAPIClientCore::tools_lib_add(const APIToolsLibInfoForSet* info) {
+    if (!m_is_connected || info == nullptr) return false;
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "cmd", "tools.lib.add");
+    if (!append_tool_command_fields(request, first, *info)) return false;
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::tools_lib_clear() {
+    return execute_request("{\"cmd\":\"tools.lib.clear\"}");
+}
+
+bool CncAPIClientCore::tools_lib_delete(int index) {
+    return execute_request("{\"cmd\":\"tools.lib.delete\",\"index\":" +
+                           std::to_string(index) + "}");
+}
+
+bool CncAPIClientCore::tools_lib_insert(const APIToolsLibInfoForSet* info) {
+    if (!m_is_connected || info == nullptr || info->tool_index == nullptr) return false;
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "cmd", "tools.lib.insert");
+    append_json_raw(request, first, "index", std::to_string(*info->tool_index));
+    if (!append_tool_command_fields(request, first, *info)) return false;
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::work_order_add(const std::string& order_code,
+                                      const APIWorkOrderDataForAdd* data) {
+    if (!m_is_connected) return false;
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "cmd", "work.order.add");
+    append_json_string(request, first, "order.code", order_code);
+
+    if (data != nullptr) {
+        if (data->order_priority != nullptr &&
+            (*data->order_priority < WO_PR_LOWEST || *data->order_priority > WO_PR_HIGHEST)) {
+            return false;
+        }
+        std::string order_data = "{";
+        bool first_data = true;
+        if (data->order_locked != nullptr)
+            append_json_raw(order_data, first_data, "order.locked",
+                            *data->order_locked ? "true" : "false");
+        if (data->order_priority != nullptr)
+            append_json_raw(order_data, first_data, "order.priority",
+                            std::to_string(*data->order_priority));
+        if (data->job_order_code != nullptr)
+            append_json_string(order_data, first_data, "job.order.code", *data->job_order_code);
+        if (data->customer_code != nullptr)
+            append_json_string(order_data, first_data, "customer.code", *data->customer_code);
+        if (data->item_code != nullptr)
+            append_json_string(order_data, first_data, "item.code", *data->item_code);
+        if (data->material_code != nullptr)
+            append_json_string(order_data, first_data, "material.code", *data->material_code);
+        if (data->order_notes != nullptr)
+            append_json_string(order_data, first_data, "order.notes", *data->order_notes);
+        if (data->use_deadline_datetime != nullptr) {
+            append_json_raw(order_data, first_data, "use.deadline.datetime",
+                            *data->use_deadline_datetime ? "true" : "false");
+            if (*data->use_deadline_datetime) {
+                if (data->deadline_datetime == nullptr) return false;
+                const int64_t deadline = datetime_to_filetime(*data->deadline_datetime);
+                if (deadline == 0) return false;
+                append_json_raw(order_data, first_data, "deadline.datetime",
+                                std::to_string(deadline));
+            }
+        }
+        if (!data->files.empty()) {
+            std::string files = "[";
+            for (size_t i = 0; i < data->files.size(); ++i) {
+                if (i > 0) files += ',';
+                files += '{';
+                bool first_file = true;
+                if (data->files[i].file_name != nullptr)
+                    append_json_string(files, first_file, "file.name", *data->files[i].file_name);
+                if (data->files[i].pieces_per_file != nullptr)
+                    append_json_raw(files, first_file, "pieces.per.file",
+                                    std::to_string(*data->files[i].pieces_per_file));
+                if (data->files[i].requested_pieces != nullptr)
+                    append_json_raw(files, first_file, "requested.pieces",
+                                    std::to_string(*data->files[i].requested_pieces));
+                files += '}';
+            }
+            files += ']';
+            append_json_raw(order_data, first_data, "files", files);
+        }
+        order_data += '}';
+        append_json_raw(request, first, "data", order_data);
+    }
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::work_order_delete(const std::string& order_code) {
+    return execute_request("{\"cmd\":\"work.order.delete\",\"order.code\":\"" +
+                           escape_json_string(order_code) + "\"}");
 }
 
 // ========== API Get Methods ==========
@@ -2972,8 +3280,8 @@ APICompilerSettingsForGet CncAPIClientCore::get_compiler_settings() {
         return SimpleJSON::Parser::get_nested_value(response, "res", key);
     };
 
-    result.current_toolpath_mode = value("current.toolpath.mode");
-    result.default_toolpath_mode = value("default.toolpath.mode");
+    result.current_toolpath_mode = json_to_int(value("current.toolpath.mode"));
+    result.default_toolpath_mode = json_to_int(value("default.toolpath.mode"));
     result.modal_macro_motion_mode = json_to_int(value("modal.macro.motion.mode"));
     result.cutter_compensation_mode = json_to_int(value("cutter.compensation.mode"));
     result.cutter_compensation_gouging_threshold = json_to_int(value("cutter.compensation.gouging.threshold"));
