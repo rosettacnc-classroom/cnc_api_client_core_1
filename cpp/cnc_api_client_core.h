@@ -125,6 +125,10 @@
 #define ORQT_USER_MESSAGE_VALUE_OR_STOP 9
 #define ORQT_USER_MESSAGE_VALUES_OR_STOP 10
 
+// Operator response type
+#define ORPT_CONTINUE 0
+#define ORPT_STOP 1
+
 // Runtime data
 #define RDST_IDLE 0
 #define RDST_WAITING_DATA 1
@@ -627,6 +631,69 @@ public:
     APICompilerSettingsForGet();
 };
 
+class APICompilerSettingsForSet {
+public:
+    bool has_data;
+    int* current_toolpath_mode;
+    int* default_toolpath_mode;
+    int* modal_macro_motion_mode;
+    int* cutter_compensation_mode;
+    int* cutter_compensation_gouging_threshold;
+    double* arc_radius_tolerance;
+    int* infinite_loop_threshold;
+    bool* gcode_block_skip_enabled;
+    bool* g43_persistent;
+    bool* g52_independent;
+    bool* g92_persistent;
+    bool* origin_offset_persistent;
+    bool* user_m_codes_arguments_enabled;
+    int* user_macro_path_mode;
+    std::string* user_macro_path;
+    double* jpdc_axis_x;
+    double* jpdc_axis_y;
+    double* jpdc_axis_z;
+    double* jpdc_axis_a;
+    double* jpdc_axis_b;
+    double* jpdc_axis_c;
+    int* restart_default_movement_mode;
+    double* restart_first_movement_feed;
+    double* restart_max_distance;
+    bool* restart_force_tool_measurement;
+    double* toolpath_resolution;
+    bool* use_points_per_block;
+    int* points_per_block;
+    int* tool_xx0_color;
+    int* tool_xx1_color;
+    int* tool_xx2_color;
+    int* tool_xx3_color;
+    int* tool_xx4_color;
+    int* tool_xx5_color;
+    int* tool_xx6_color;
+    int* tool_xx7_color;
+    int* tool_xx8_color;
+    int* tool_xx9_color;
+    int* rapid_move_color;
+    int* rf_threshold;
+    int* rf_threshold_color_lower;
+    int* rf_threshold_color_equal;
+    int* rf_threshold_color_upper;
+    int* rv_color_mode;
+    int* rv_wavelength_min;
+    int* rv_wavelength_max;
+    int* rv_gradient_color_min;
+    int* rv_gradient_color_max;
+    int* rz_color_mode;
+    int* rz_wavelength_min;
+    int* rz_wavelength_max;
+    int* rz_gradient_color_min;
+    int* rz_gradient_color_max;
+
+    APICompilerSettingsForSet();
+    ~APICompilerSettingsForSet();
+    APICompilerSettingsForSet(const APICompilerSettingsForSet&) = delete;
+    APICompilerSettingsForSet& operator=(const APICompilerSettingsForSet&) = delete;
+};
+
 class APICoordinateSystemsInfo {
 public:
     bool has_data;
@@ -675,6 +742,26 @@ public:
     bool external_continue_requested;
 
     APIOperatorRequest();
+};
+
+class APIOperatorResponse {
+public:
+    std::string id;
+    int type;
+    int data_elements;
+    double data_d01;
+    double data_d02;
+    double data_d03;
+    double data_d04;
+    double data_d05;
+    double data_d06;
+    double data_d07;
+    double data_d08;
+    double data_d09;
+    double data_d10;
+
+    APIOperatorResponse();
+    bool copy_data_from_request(const APIOperatorRequest& request);
 };
 
 class APIProgramInfo {
@@ -948,6 +1035,9 @@ public:
 class APIScanningLaserInfo {
 public:
     bool has_data;
+    double laser_offset_x;
+    double laser_offset_y;
+    double laser_offset_z;
     int laser_out_bit;
     int laser_out_umf;
     double laser_h_measure;
@@ -955,7 +1045,8 @@ public:
     double laser_mcs_y_position;
     double laser_mcs_z_position;
     
-    APIScanningLaserInfo() : has_data(false), laser_out_bit(0), laser_out_umf(0),
+    APIScanningLaserInfo() : has_data(false), laser_offset_x(0.0), laser_offset_y(0.0),
+        laser_offset_z(0.0), laser_out_bit(0), laser_out_umf(0),
         laser_h_measure(0.0), laser_mcs_x_position(0.0), laser_mcs_y_position(0.0),
         laser_mcs_z_position(0.0) {}
 };
@@ -1351,9 +1442,17 @@ public:
     APIWorkOrderFileList get_work_order_file_list(const std::string& path = "", const std::string& file_filter = "");
     
     // ========== API Server "set" Requests ==========
+    bool set_compiler_settings(const APICompilerSettingsForSet* data);
     bool set_cnc_parameters(int address, const std::vector<double>* values = nullptr,
                            const std::vector<std::string>* descriptions = nullptr);
+    bool set_dynamic_offset_x(double value);
+    bool set_dynamic_offset_y(double value);
+    bool set_dynamic_offset_z(double value);
+    bool set_dynamic_offsets(const double* x = nullptr, const double* y = nullptr,
+                             const double* z = nullptr);
+    bool set_kinematics();
     bool set_localization(int units_mode = -1, const std::string& locale_name = "");
+    bool set_operator_response(const APIOperatorResponse* response);
     bool set_override_fast(int value);
     bool set_override_feed(int value);
     bool set_override_feed_custom_1(int value);
@@ -1366,9 +1465,15 @@ public:
     bool set_program_position_b(double value);
     bool set_program_position_c(double value);
     bool set_program_position_x(double value);
+    bool set_program_position_x_with_laser_reference(double value = 0.0);
     bool set_program_position_y(double value);
+    bool set_program_position_y_with_laser_reference(double value = 0.0);
     bool set_program_position_z(double value);
+    bool set_program_position_z_with_laser_reference(double value = 0.0, int sample_count = 3);
+    bool set_simulator_current_time_ms(int value);
+    bool set_simulator_speed_track(int value);
     bool set_tools_lib_info(const APIToolsLibInfoForSet* info);
+    bool set_wcs_info(int wcs, const std::vector<double>& offset, bool activate = false);
     bool set_vm_geometry_info(const std::vector<APIVMGeometryInfo>& values);
     bool set_work_order_data(const std::string& order_code, const APIWorkOrderDataForSet& data);
     

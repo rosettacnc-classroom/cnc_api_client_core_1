@@ -16,6 +16,7 @@
 #include <cstring>
 #include <cstdint>
 #include <limits>
+#include <thread>
 
 // For JSON parsing - simplified version
 // NOTE: In production, use nlohmann/json library instead
@@ -430,6 +431,24 @@ namespace {
         }
         return true;
     }
+
+    std::string json_number(double value) {
+        std::ostringstream stream;
+        stream << std::setprecision(17) << value;
+        return stream.str();
+    }
+
+    void append_json_raw(std::string& json, bool& first, const std::string& key,
+                         const std::string& value) {
+        if (!first) json += ',';
+        json += "\"" + key + "\":" + value;
+        first = false;
+    }
+
+    void append_json_string(std::string& json, bool& first, const std::string& key,
+                            const std::string& value) {
+        append_json_raw(json, first, key, "\"" + SimpleJSON::escape(value) + "\"");
+    }
 }
 
 namespace RosettaCNC {
@@ -473,6 +492,60 @@ APICompilerSettingsForGet::APICompilerSettingsForGet() :
     rz_wavelength_max(700), rz_gradient_color_min(0x00000000),
     rz_gradient_color_max(0x00FFFFFF) {}
 
+APICompilerSettingsForSet::APICompilerSettingsForSet() : has_data(false) {
+#define SET_NULL(field) field = nullptr
+    SET_NULL(current_toolpath_mode); SET_NULL(default_toolpath_mode);
+    SET_NULL(modal_macro_motion_mode); SET_NULL(cutter_compensation_mode);
+    SET_NULL(cutter_compensation_gouging_threshold); SET_NULL(arc_radius_tolerance);
+    SET_NULL(infinite_loop_threshold); SET_NULL(gcode_block_skip_enabled);
+    SET_NULL(g43_persistent); SET_NULL(g52_independent); SET_NULL(g92_persistent);
+    SET_NULL(origin_offset_persistent); SET_NULL(user_m_codes_arguments_enabled);
+    SET_NULL(user_macro_path_mode); SET_NULL(user_macro_path);
+    SET_NULL(jpdc_axis_x); SET_NULL(jpdc_axis_y); SET_NULL(jpdc_axis_z);
+    SET_NULL(jpdc_axis_a); SET_NULL(jpdc_axis_b); SET_NULL(jpdc_axis_c);
+    SET_NULL(restart_default_movement_mode); SET_NULL(restart_first_movement_feed);
+    SET_NULL(restart_max_distance); SET_NULL(restart_force_tool_measurement);
+    SET_NULL(toolpath_resolution); SET_NULL(use_points_per_block); SET_NULL(points_per_block);
+    SET_NULL(tool_xx0_color); SET_NULL(tool_xx1_color); SET_NULL(tool_xx2_color);
+    SET_NULL(tool_xx3_color); SET_NULL(tool_xx4_color); SET_NULL(tool_xx5_color);
+    SET_NULL(tool_xx6_color); SET_NULL(tool_xx7_color); SET_NULL(tool_xx8_color);
+    SET_NULL(tool_xx9_color); SET_NULL(rapid_move_color); SET_NULL(rf_threshold);
+    SET_NULL(rf_threshold_color_lower); SET_NULL(rf_threshold_color_equal);
+    SET_NULL(rf_threshold_color_upper); SET_NULL(rv_color_mode);
+    SET_NULL(rv_wavelength_min); SET_NULL(rv_wavelength_max);
+    SET_NULL(rv_gradient_color_min); SET_NULL(rv_gradient_color_max);
+    SET_NULL(rz_color_mode); SET_NULL(rz_wavelength_min); SET_NULL(rz_wavelength_max);
+    SET_NULL(rz_gradient_color_min); SET_NULL(rz_gradient_color_max);
+#undef SET_NULL
+}
+
+APICompilerSettingsForSet::~APICompilerSettingsForSet() {
+#define DELETE_FIELD(field) delete field
+    DELETE_FIELD(current_toolpath_mode); DELETE_FIELD(default_toolpath_mode);
+    DELETE_FIELD(modal_macro_motion_mode); DELETE_FIELD(cutter_compensation_mode);
+    DELETE_FIELD(cutter_compensation_gouging_threshold); DELETE_FIELD(arc_radius_tolerance);
+    DELETE_FIELD(infinite_loop_threshold); DELETE_FIELD(gcode_block_skip_enabled);
+    DELETE_FIELD(g43_persistent); DELETE_FIELD(g52_independent); DELETE_FIELD(g92_persistent);
+    DELETE_FIELD(origin_offset_persistent); DELETE_FIELD(user_m_codes_arguments_enabled);
+    DELETE_FIELD(user_macro_path_mode); DELETE_FIELD(user_macro_path);
+    DELETE_FIELD(jpdc_axis_x); DELETE_FIELD(jpdc_axis_y); DELETE_FIELD(jpdc_axis_z);
+    DELETE_FIELD(jpdc_axis_a); DELETE_FIELD(jpdc_axis_b); DELETE_FIELD(jpdc_axis_c);
+    DELETE_FIELD(restart_default_movement_mode); DELETE_FIELD(restart_first_movement_feed);
+    DELETE_FIELD(restart_max_distance); DELETE_FIELD(restart_force_tool_measurement);
+    DELETE_FIELD(toolpath_resolution); DELETE_FIELD(use_points_per_block); DELETE_FIELD(points_per_block);
+    DELETE_FIELD(tool_xx0_color); DELETE_FIELD(tool_xx1_color); DELETE_FIELD(tool_xx2_color);
+    DELETE_FIELD(tool_xx3_color); DELETE_FIELD(tool_xx4_color); DELETE_FIELD(tool_xx5_color);
+    DELETE_FIELD(tool_xx6_color); DELETE_FIELD(tool_xx7_color); DELETE_FIELD(tool_xx8_color);
+    DELETE_FIELD(tool_xx9_color); DELETE_FIELD(rapid_move_color); DELETE_FIELD(rf_threshold);
+    DELETE_FIELD(rf_threshold_color_lower); DELETE_FIELD(rf_threshold_color_equal);
+    DELETE_FIELD(rf_threshold_color_upper); DELETE_FIELD(rv_color_mode);
+    DELETE_FIELD(rv_wavelength_min); DELETE_FIELD(rv_wavelength_max);
+    DELETE_FIELD(rv_gradient_color_min); DELETE_FIELD(rv_gradient_color_max);
+    DELETE_FIELD(rz_color_mode); DELETE_FIELD(rz_wavelength_min); DELETE_FIELD(rz_wavelength_max);
+    DELETE_FIELD(rz_gradient_color_min); DELETE_FIELD(rz_gradient_color_max);
+#undef DELETE_FIELD
+}
+
 APICoordinateSystemsInfo::APICoordinateSystemsInfo() :
     has_data(false), working_wcs(0), working_offset(6, 0.0),
     wcs_1(6, 0.0), wcs_2(6, 0.0), wcs_3(6, 0.0),
@@ -492,6 +565,29 @@ APIOperatorRequest::APIOperatorRequest() :
     data_d09(std::numeric_limits<double>::quiet_NaN()),
     data_d10(std::numeric_limits<double>::quiet_NaN()),
     external_continue_requested(false) {}
+
+APIOperatorResponse::APIOperatorResponse() :
+    type(ORPT_STOP), data_elements(0),
+    data_d01(std::numeric_limits<double>::quiet_NaN()),
+    data_d02(std::numeric_limits<double>::quiet_NaN()),
+    data_d03(std::numeric_limits<double>::quiet_NaN()),
+    data_d04(std::numeric_limits<double>::quiet_NaN()),
+    data_d05(std::numeric_limits<double>::quiet_NaN()),
+    data_d06(std::numeric_limits<double>::quiet_NaN()),
+    data_d07(std::numeric_limits<double>::quiet_NaN()),
+    data_d08(std::numeric_limits<double>::quiet_NaN()),
+    data_d09(std::numeric_limits<double>::quiet_NaN()),
+    data_d10(std::numeric_limits<double>::quiet_NaN()) {}
+
+bool APIOperatorResponse::copy_data_from_request(const APIOperatorRequest& request) {
+    data_elements = request.data_elements;
+    data_d01 = request.data_d01; data_d02 = request.data_d02;
+    data_d03 = request.data_d03; data_d04 = request.data_d04;
+    data_d05 = request.data_d05; data_d06 = request.data_d06;
+    data_d07 = request.data_d07; data_d08 = request.data_d08;
+    data_d09 = request.data_d09; data_d10 = request.data_d10;
+    return true;
+}
 
 // ========== APICncInfo Constructor ==========
 APICncInfo::APICncInfo() :
@@ -1443,69 +1539,44 @@ std::string CncAPIClientCore::escape_json_string(const std::string& str) {
 }
 
 DateTime CncAPIClientCore::filetime_to_datetime(int64_t filetime) {
-    try {
-        DateTime dt;
-        
-        // FILETIME is in 100-nanosecond intervals since January 1, 1601
-        // Convert to microseconds
-        int64_t microseconds = filetime / 10;
-        
-        // Calculate total seconds and remaining microseconds
-        int64_t total_seconds = microseconds / 1000000;
-        dt.microsecond = static_cast<int>(microseconds % 1000000);
-        
-        // Convert seconds to date/time components
-        // This is a simplified conversion - for production use proper date/time library
-        const int64_t seconds_per_day = 86400;
-        const int64_t days = total_seconds / seconds_per_day;
-        const int64_t remaining_seconds = total_seconds % seconds_per_day;
-        
-        dt.hour = static_cast<int>(remaining_seconds / 3600);
-        dt.minute = static_cast<int>((remaining_seconds % 3600) / 60);
-        dt.second = static_cast<int>(remaining_seconds % 60);
-        
-        // Convert days to year/month/day (simplified)
-        // Starting from 1601-01-01
-        dt.year = 1601 + static_cast<int>(days / 365); // Approximate
-        dt.month = 1;
-        dt.day = 1;
-        
-        return dt;
-    } catch (...) {
-        return DateTime::min_value();
-    }
+    if (filetime < 0) return DateTime::min_value();
+    ULARGE_INTEGER value;
+    value.QuadPart = static_cast<ULONGLONG>(filetime);
+    FILETIME ft;
+    ft.dwLowDateTime = value.LowPart;
+    ft.dwHighDateTime = value.HighPart;
+    SYSTEMTIME st = {};
+    if (!FileTimeToSystemTime(&ft, &st)) return DateTime::min_value();
+
+    DateTime dt;
+    dt.year = st.wYear;
+    dt.month = st.wMonth;
+    dt.day = st.wDay;
+    dt.hour = st.wHour;
+    dt.minute = st.wMinute;
+    dt.second = st.wSecond;
+    dt.microsecond = st.wMilliseconds * 1000 + static_cast<int>((value.QuadPart % 10000ULL) / 10ULL);
+    return dt;
 }
 
 int64_t CncAPIClientCore::datetime_to_filetime(const DateTime& dt) {
-    try {
-        // Convert DateTime to FILETIME (100-nanosecond intervals since January 1, 1601)
-        // This is a simplified conversion
-        
-        // Calculate days from 1601-01-01
-        int64_t days = 0;
-        
-        // Add years (approximate - doesn't account for leap years properly)
-        days += (dt.year - 1601) * 365;
-        
-        // Add months (approximate)
-        const int days_per_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        for (int m = 1; m < dt.month; ++m) {
-            days += days_per_month[m - 1];
-        }
-        
-        // Add days
-        days += dt.day - 1;
-        
-        // Convert to seconds
-        int64_t total_seconds = days * 86400 + dt.hour * 3600 + dt.minute * 60 + dt.second;
-        
-        // Convert to 100-nanosecond intervals
-        int64_t filetime = total_seconds * 10000000LL + dt.microsecond * 10;
-        
-        return filetime;
-    } catch (...) {
-        return 0;
-    }
+    if (dt.microsecond < 0 || dt.microsecond > 999999) return 0;
+    SYSTEMTIME st = {};
+    st.wYear = static_cast<WORD>(dt.year);
+    st.wMonth = static_cast<WORD>(dt.month);
+    st.wDay = static_cast<WORD>(dt.day);
+    st.wHour = static_cast<WORD>(dt.hour);
+    st.wMinute = static_cast<WORD>(dt.minute);
+    st.wSecond = static_cast<WORD>(dt.second);
+    st.wMilliseconds = static_cast<WORD>(dt.microsecond / 1000);
+    FILETIME ft = {};
+    if (!SystemTimeToFileTime(&st, &ft)) return 0;
+    ULARGE_INTEGER value;
+    value.LowPart = ft.dwLowDateTime;
+    value.HighPart = ft.dwHighDateTime;
+    value.QuadPart += static_cast<ULONGLONG>(dt.microsecond % 1000) * 10ULL;
+    if (value.QuadPart > static_cast<ULONGLONG>((std::numeric_limits<int64_t>::max)())) return 0;
+    return static_cast<int64_t>(value.QuadPart);
 }
 
 std::string CncAPIClientCore::create_compact_json_request(const std::map<std::string, std::string>& data) {
@@ -2669,6 +2740,13 @@ APIScanningLaserInfo CncAPIClientCore::get_scanning_laser_info() {
     result.has_data = true;
     
     // Parse laser info fields
+    result.laser_offset_x = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.offset.x"));
+    result.laser_offset_y = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.offset.y"));
+    result.laser_offset_z = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.offset.z"));
+
     std::string laser_out_bit = SimpleJSON::Parser::get_nested_value(response, "res", "laser.out.bit");
     if (!laser_out_bit.empty()) {
         try { result.laser_out_bit = std::stoi(laser_out_bit); } catch (...) {}
@@ -2678,6 +2756,15 @@ APIScanningLaserInfo CncAPIClientCore::get_scanning_laser_info() {
     if (!laser_h_measure.empty()) {
         try { result.laser_h_measure = std::stod(laser_h_measure); } catch (...) {}
     }
+
+    result.laser_out_umf = json_to_int(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.out.umf"));
+    result.laser_mcs_x_position = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.mcs.x.position"));
+    result.laser_mcs_y_position = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.mcs.y.position"));
+    result.laser_mcs_z_position = json_to_double(
+        SimpleJSON::Parser::get_nested_value(response, "res", "laser.mcs.z.position"));
     
     return result;
 }
@@ -3113,6 +3200,357 @@ std::vector<APIVMGeometryInfo> CncAPIClientCore::get_vm_geometry_info(
         result.push_back(item);
     }
     return result;
+}
+
+bool CncAPIClientCore::set_compiler_settings(const APICompilerSettingsForSet* data) {
+    if (!m_is_connected || data == nullptr) return false;
+
+    std::string request = "{";
+    bool first = true;
+    size_t settings_count = 0;
+    append_json_string(request, first, "set", "compiler.settings");
+
+#define APPEND_INT(field, key) if (data->field != nullptr) { \
+    append_json_raw(request, first, key, std::to_string(*data->field)); ++settings_count; }
+#define APPEND_BOOL(field, key) if (data->field != nullptr) { \
+    append_json_raw(request, first, key, *data->field ? "true" : "false"); ++settings_count; }
+#define APPEND_DOUBLE(field, key) if (data->field != nullptr) { \
+    if (!std::isfinite(*data->field)) return false; \
+    append_json_raw(request, first, key, json_number(*data->field)); ++settings_count; }
+
+    APPEND_INT(current_toolpath_mode, "current.toolpath.mode");
+    APPEND_INT(default_toolpath_mode, "default.toolpath.mode");
+    APPEND_INT(modal_macro_motion_mode, "modal.macro.motion.mode");
+    APPEND_INT(cutter_compensation_mode, "cutter.compensation.mode");
+    APPEND_INT(cutter_compensation_gouging_threshold, "cutter.compensation.gouging.threshold");
+    APPEND_DOUBLE(arc_radius_tolerance, "arc.radius.tolerance");
+    APPEND_INT(infinite_loop_threshold, "infinite.loop.threshold");
+    APPEND_BOOL(gcode_block_skip_enabled, "gcode.block.skip.enabled");
+    APPEND_BOOL(g43_persistent, "g43.persistent");
+    APPEND_BOOL(g52_independent, "g52.independent");
+    APPEND_BOOL(g92_persistent, "g92.persistent");
+    APPEND_BOOL(origin_offset_persistent, "origin.offset.persistent");
+    APPEND_BOOL(user_m_codes_arguments_enabled, "user.m.codes.arguments.enabled");
+    APPEND_INT(user_macro_path_mode, "user.macro.path.mode");
+    if (data->user_macro_path != nullptr) {
+        append_json_string(request, first, "user.macro.path", *data->user_macro_path);
+        ++settings_count;
+    }
+    APPEND_DOUBLE(jpdc_axis_x, "jpdc.axis.x");
+    APPEND_DOUBLE(jpdc_axis_y, "jpdc.axis.y");
+    APPEND_DOUBLE(jpdc_axis_z, "jpdc.axis.z");
+    APPEND_DOUBLE(jpdc_axis_a, "jpdc.axis.a");
+    APPEND_DOUBLE(jpdc_axis_b, "jpdc.axis.b");
+    APPEND_DOUBLE(jpdc_axis_c, "jpdc.axis.c");
+    APPEND_INT(restart_default_movement_mode, "restart.default.movement.mode");
+    APPEND_DOUBLE(restart_first_movement_feed, "restart.first.movement.feed");
+    APPEND_DOUBLE(restart_max_distance, "restart.max.distance");
+    APPEND_BOOL(restart_force_tool_measurement, "restart.force.tool.measurement");
+    APPEND_DOUBLE(toolpath_resolution, "toolpath.resolution");
+    APPEND_BOOL(use_points_per_block, "use.points.per.block");
+    APPEND_INT(points_per_block, "points.per.block");
+    APPEND_INT(tool_xx0_color, "tool.xx0.color");
+    APPEND_INT(tool_xx1_color, "tool.xx1.color");
+    APPEND_INT(tool_xx2_color, "tool.xx2.color");
+    APPEND_INT(tool_xx3_color, "tool.xx3.color");
+    APPEND_INT(tool_xx4_color, "tool.xx4.color");
+    APPEND_INT(tool_xx5_color, "tool.xx5.color");
+    APPEND_INT(tool_xx6_color, "tool.xx6.color");
+    APPEND_INT(tool_xx7_color, "tool.xx7.color");
+    APPEND_INT(tool_xx8_color, "tool.xx8.color");
+    APPEND_INT(tool_xx9_color, "tool.xx9.color");
+    APPEND_INT(rapid_move_color, "rapid.move.color");
+    APPEND_INT(rf_threshold, "rf.threshold");
+    APPEND_INT(rf_threshold_color_lower, "rf.threshold.color.lower");
+    APPEND_INT(rf_threshold_color_equal, "rf.threshold.color.equal");
+    APPEND_INT(rf_threshold_color_upper, "rf.threshold.color.upper");
+    APPEND_INT(rv_color_mode, "rv.color.mode");
+    APPEND_INT(rv_wavelength_min, "rv.wavelength.min");
+    APPEND_INT(rv_wavelength_max, "rv.wavelength.max");
+    APPEND_INT(rv_gradient_color_min, "rv.gradient.color.min");
+    APPEND_INT(rv_gradient_color_max, "rv.gradient.color.max");
+    APPEND_INT(rz_color_mode, "rz.color.mode");
+    APPEND_INT(rz_wavelength_min, "rz.wavelength.min");
+    APPEND_INT(rz_wavelength_max, "rz.wavelength.max");
+    APPEND_INT(rz_gradient_color_min, "rz.gradient.color.min");
+    APPEND_INT(rz_gradient_color_max, "rz.gradient.color.max");
+
+#undef APPEND_INT
+#undef APPEND_BOOL
+#undef APPEND_DOUBLE
+
+    if (settings_count == 0) return false;
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_dynamic_offset_x(double value) {
+    if (!m_is_connected || !std::isfinite(value)) return false;
+    return execute_request("{\"set\":\"dynamic.offsets\",\"offset.x\":" +
+                           json_number(value) + "}");
+}
+
+bool CncAPIClientCore::set_dynamic_offset_y(double value) {
+    if (!m_is_connected || !std::isfinite(value)) return false;
+    return execute_request("{\"set\":\"dynamic.offsets\",\"offset.y\":" +
+                           json_number(value) + "}");
+}
+
+bool CncAPIClientCore::set_dynamic_offset_z(double value) {
+    if (!m_is_connected || !std::isfinite(value)) return false;
+    return execute_request("{\"set\":\"dynamic.offsets\",\"offset.z\":" +
+                           json_number(value) + "}");
+}
+
+bool CncAPIClientCore::set_dynamic_offsets(const double* x, const double* y, const double* z) {
+    if (!m_is_connected || (x == nullptr && y == nullptr && z == nullptr)) return false;
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "set", "dynamic.offsets");
+    if (x != nullptr) {
+        if (!std::isfinite(*x)) return false;
+        append_json_raw(request, first, "offset.x", json_number(*x));
+    }
+    if (y != nullptr) {
+        if (!std::isfinite(*y)) return false;
+        append_json_raw(request, first, "offset.y", json_number(*y));
+    }
+    if (z != nullptr) {
+        if (!std::isfinite(*z)) return false;
+        append_json_raw(request, first, "offset.z", json_number(*z));
+    }
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_kinematics() {
+    // The Python v1.5.3 reference intentionally has no protocol implementation.
+    return false;
+}
+
+bool CncAPIClientCore::set_operator_response(const APIOperatorResponse* response) {
+    if (!m_is_connected || response == nullptr) return false;
+    if (response->type != ORPT_CONTINUE && response->type != ORPT_STOP) return false;
+    if (response->data_elements < 0 || response->data_elements > 10) return false;
+
+    const double values[10] = {
+        response->data_d01, response->data_d02, response->data_d03, response->data_d04,
+        response->data_d05, response->data_d06, response->data_d07, response->data_d08,
+        response->data_d09, response->data_d10
+    };
+
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "set", "operator.response");
+    append_json_string(request, first, "id", response->id);
+    append_json_raw(request, first, "type", std::to_string(response->type));
+    if (!first) request += ',';
+    request += "\"data\":{\"elements\":" + std::to_string(response->data_elements);
+    for (int i = 0; i < response->data_elements; ++i) {
+        const std::string name = "d" + std::string(i + 1 < 10 ? "0" : "") +
+                                 std::to_string(i + 1);
+        request += ",\"" + name + "\":";
+        request += std::isfinite(values[i]) ? json_number(values[i]) : "null";
+    }
+    request += "}}";
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_program_position_x_with_laser_reference(double value) {
+    if (!m_is_connected || !std::isfinite(value)) return false;
+    const APIScanningLaserInfo laser = get_scanning_laser_info();
+    if (!laser.has_data) return false;
+    return set_program_position_x(value - laser.laser_mcs_x_position);
+}
+
+bool CncAPIClientCore::set_program_position_y_with_laser_reference(double value) {
+    if (!m_is_connected || !std::isfinite(value)) return false;
+    const APIScanningLaserInfo laser = get_scanning_laser_info();
+    if (!laser.has_data) return false;
+    return set_program_position_y(value - laser.laser_mcs_y_position);
+}
+
+bool CncAPIClientCore::set_program_position_z_with_laser_reference(double value,
+                                                                    int sample_count) {
+    if (!m_is_connected || !std::isfinite(value) || sample_count < 1 || sample_count > 10) {
+        return false;
+    }
+    std::vector<double> samples;
+    samples.reserve(static_cast<size_t>(sample_count));
+    for (int i = 0; i < sample_count; ++i) {
+        const APIScanningLaserInfo laser = get_scanning_laser_info();
+        if (!laser.has_data) return false;
+        samples.push_back(laser.laser_mcs_z_position);
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+    std::sort(samples.begin(), samples.end());
+    const size_t middle = samples.size() / 2;
+    const double median = (samples.size() % 2 != 0)
+        ? samples[middle]
+        : (samples[middle - 1] + samples[middle]) / 2.0;
+    return set_program_position_z(-median - value);
+}
+
+bool CncAPIClientCore::set_simulator_current_time_ms(int value) {
+    if (!m_is_connected) return false;
+    return execute_request("{\"set\":\"simulator.current.time.ms\",\"value\":" +
+                           std::to_string(value) + "}");
+}
+
+bool CncAPIClientCore::set_simulator_speed_track(int value) {
+    if (!m_is_connected) return false;
+    return execute_request("{\"set\":\"simulator.speed.track\",\"value\":" +
+                           std::to_string(value) + "}");
+}
+
+bool CncAPIClientCore::set_tools_lib_info(const APIToolsLibInfoForSet* info) {
+    if (!m_is_connected || info == nullptr || info->tool_index == nullptr) return false;
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "set", "tools.lib.info");
+    append_json_raw(request, first, "index", std::to_string(*info->tool_index));
+
+#define APPEND_TOOL_INT(field, key) if (info->field != nullptr) \
+    append_json_raw(request, first, key, std::to_string(*info->field))
+#define APPEND_TOOL_DOUBLE(field, key) if (info->field != nullptr) { \
+    if (!std::isfinite(*info->field)) return false; \
+    append_json_raw(request, first, key, json_number(*info->field)); }
+    APPEND_TOOL_INT(tool_id, "id"); APPEND_TOOL_INT(tool_slot, "slot");
+    APPEND_TOOL_INT(tool_type, "type"); APPEND_TOOL_DOUBLE(tool_diameter, "diameter");
+    APPEND_TOOL_DOUBLE(tool_offset_x, "offset.x");
+    APPEND_TOOL_DOUBLE(tool_offset_y, "offset.y");
+    APPEND_TOOL_DOUBLE(tool_offset_z, "offset.z");
+    APPEND_TOOL_DOUBLE(tool_param_1, "param.1"); APPEND_TOOL_DOUBLE(tool_param_2, "param.2");
+    APPEND_TOOL_DOUBLE(tool_param_3, "param.3"); APPEND_TOOL_DOUBLE(tool_param_4, "param.4");
+    APPEND_TOOL_DOUBLE(tool_param_5, "param.5"); APPEND_TOOL_DOUBLE(tool_param_6, "param.6");
+    APPEND_TOOL_DOUBLE(tool_param_7, "param.7"); APPEND_TOOL_DOUBLE(tool_param_8, "param.8");
+    APPEND_TOOL_DOUBLE(tool_param_9, "param.9"); APPEND_TOOL_DOUBLE(tool_param_10, "param.10");
+    APPEND_TOOL_DOUBLE(tool_param_51, "param.51"); APPEND_TOOL_DOUBLE(tool_param_52, "param.52");
+    APPEND_TOOL_DOUBLE(tool_param_53, "param.53"); APPEND_TOOL_DOUBLE(tool_param_54, "param.54");
+    APPEND_TOOL_DOUBLE(tool_param_55, "param.55"); APPEND_TOOL_DOUBLE(tool_param_56, "param.56");
+    APPEND_TOOL_DOUBLE(tool_param_57, "param.57"); APPEND_TOOL_DOUBLE(tool_param_58, "param.58");
+    APPEND_TOOL_DOUBLE(tool_param_59, "param.59"); APPEND_TOOL_DOUBLE(tool_param_60, "param.60");
+#undef APPEND_TOOL_INT
+#undef APPEND_TOOL_DOUBLE
+    if (info->tool_description != nullptr) {
+        append_json_string(request, first, "description", *info->tool_description);
+    }
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_wcs_info(int wcs, const std::vector<double>& offset,
+                                    bool activate) {
+    if (!m_is_connected || wcs < 1 || wcs > 9 || offset.size() != 6) return false;
+    const char* axes[6] = {"x", "y", "z", "a", "b", "c"};
+    bool has_offset = false;
+    std::string offset_data = "{";
+    bool first_offset = true;
+    for (size_t i = 0; i < offset.size(); ++i) {
+        if (std::isnan(offset[i])) continue;
+        if (!std::isfinite(offset[i])) return false;
+        append_json_raw(offset_data, first_offset, axes[i], json_number(offset[i]));
+        has_offset = true;
+    }
+    offset_data += '}';
+    if (!has_offset && !activate) return false;
+
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "set", "wcs.info");
+    append_json_raw(request, first, "wcs", std::to_string(wcs));
+    if (activate) append_json_raw(request, first, "activate", "true");
+    append_json_raw(request, first, "data", offset_data);
+    request += '}';
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_vm_geometry_info(const std::vector<APIVMGeometryInfo>& values) {
+    if (!m_is_connected || values.empty()) return false;
+    std::string request = "{\"set\":\"vm.geometry.info\",\"data\":[";
+    for (size_t i = 0; i < values.size(); ++i) {
+        const APIVMGeometryInfo& value = values[i];
+        if (!std::isfinite(value.x) || !std::isfinite(value.y) || !std::isfinite(value.z) ||
+            !std::isfinite(value.scale) || !std::isfinite(value.edges_angle)) return false;
+        if (i > 0) request += ',';
+        request += "{\"name\":\"" + SimpleJSON::escape(value.name) + "\"";
+        request += ",\"x\":" + json_number(value.x);
+        request += ",\"y\":" + json_number(value.y);
+        request += ",\"z\":" + json_number(value.z);
+        request += ",\"color\":" + std::to_string(value.color);
+        request += ",\"scale\":" + json_number(value.scale);
+        request += std::string(",\"visible\":") + (value.visible ? "true" : "false");
+        request += ",\"edges.angle\":" + json_number(value.edges_angle);
+        request += std::string(",\"edges.visible\":") +
+                   (value.edges_visible ? "true" : "false") + "}";
+    }
+    request += "]}";
+    return execute_request(request);
+}
+
+bool CncAPIClientCore::set_work_order_data(const std::string& order_code,
+                                           const APIWorkOrderDataForSet& data) {
+    if (!m_is_connected) return false;
+    if (data.order_state != nullptr &&
+        (*data.order_state < WO_ST_DRAFT || *data.order_state > WO_ST_ARCHIVED)) return false;
+    if (data.order_priority != nullptr &&
+        (*data.order_priority < WO_PR_LOWEST || *data.order_priority > WO_PR_HIGHEST)) return false;
+
+    std::string order_data = "{";
+    bool first_data = true;
+    if (data.order_state != nullptr)
+        append_json_raw(order_data, first_data, "order.state", std::to_string(*data.order_state));
+    if (data.order_locked != nullptr)
+        append_json_raw(order_data, first_data, "order.locked", *data.order_locked ? "true" : "false");
+    if (data.order_priority != nullptr)
+        append_json_raw(order_data, first_data, "order.priority", std::to_string(*data.order_priority));
+    if (data.job_order_code != nullptr)
+        append_json_string(order_data, first_data, "job.order.code", *data.job_order_code);
+    if (data.customer_code != nullptr)
+        append_json_string(order_data, first_data, "customer.code", *data.customer_code);
+    if (data.item_code != nullptr)
+        append_json_string(order_data, first_data, "item.code", *data.item_code);
+    if (data.material_code != nullptr)
+        append_json_string(order_data, first_data, "material.code", *data.material_code);
+    if (data.order_notes != nullptr)
+        append_json_string(order_data, first_data, "order.notes", *data.order_notes);
+    if (data.use_deadline_datetime != nullptr) {
+        append_json_raw(order_data, first_data, "use.deadline.datetime",
+                        *data.use_deadline_datetime ? "true" : "false");
+        if (data.deadline_datetime != nullptr) {
+            append_json_raw(order_data, first_data, "deadline.datetime",
+                            std::to_string(datetime_to_filetime(*data.deadline_datetime)));
+        }
+    }
+
+    if (!data.files.empty()) {
+        std::string files = "[";
+        for (size_t i = 0; i < data.files.size(); ++i) {
+            if (i > 0) files += ',';
+            files += '{';
+            bool first_file = true;
+            if (data.files[i].file_name != nullptr)
+                append_json_string(files, first_file, "file.name", *data.files[i].file_name);
+            if (data.files[i].pieces_per_file != nullptr)
+                append_json_raw(files, first_file, "pieces.per.file",
+                                std::to_string(*data.files[i].pieces_per_file));
+            if (data.files[i].requested_pieces != nullptr)
+                append_json_raw(files, first_file, "requested.pieces",
+                                std::to_string(*data.files[i].requested_pieces));
+            files += '}';
+        }
+        files += ']';
+        append_json_raw(order_data, first_data, "files", files);
+    }
+    order_data += '}';
+
+    std::string request = "{";
+    bool first = true;
+    append_json_string(request, first, "set", "work.order.data");
+    append_json_string(request, first, "order.code", order_code);
+    append_json_raw(request, first, "data", order_data);
+    request += '}';
+    return execute_request(request);
 }
 
 bool CncAPIClientCore::set_override_jog(int value) {

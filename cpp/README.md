@@ -22,7 +22,7 @@ This project contains a partial C++ port of the RosettaCNC API client implemente
 
 ### 📊 Overall Summary
 - **GET Methods**: 36/36 ✅ (100%)
-- **SET Methods**: 16/32 ✅ (50%)
+- **SET Methods**: 31/32 ✅ (97%)
 - **CMD Methods**: 3/56 ✅ (5%)
 
 The totals above are based on the public synchronous methods currently exposed by
@@ -74,7 +74,7 @@ The following GET methods have a C++ implementation:
 
 ---
 
-## ✅ Implemented SET Methods (16/32 - 50%)
+## ✅ Implemented SET Methods (31/32 - 97%)
 
 ### Override (8/8) ✅
 1. ✅ `set_override_jog(int value)` - Jog speed override
@@ -94,28 +94,28 @@ The following GET methods have a C++ implementation:
 13. ✅ `set_program_position_b(double value)` - Set B position
 14. ✅ `set_program_position_c(double value)` - Set C position
 
-### Other SET (2/18) ✅
+### Other SET (17/18) ✅
 15. ✅ `set_cnc_parameters(address, values, descriptions)` - Set CNC parameters
 16. ✅ `set_localization(units_mode, locale_name)` - Set localization (units and locale)
+17. ✅ `set_compiler_settings(data)` - Set selected compiler settings
+18. ✅ `set_dynamic_offset_x(value)` - Set X dynamic offset
+19. ✅ `set_dynamic_offset_y(value)` - Set Y dynamic offset
+20. ✅ `set_dynamic_offset_z(value)` - Set Z dynamic offset
+21. ✅ `set_dynamic_offsets(x, y, z)` - Set selected XYZ dynamic offsets
+22. ✅ `set_operator_response(response)` - Send an operator response
+23. ✅ `set_program_position_x_with_laser_reference(value)` - Set X using the laser reference
+24. ✅ `set_program_position_y_with_laser_reference(value)` - Set Y using the laser reference
+25. ✅ `set_program_position_z_with_laser_reference(value, sample_count)` - Set Z using median laser samples
+26. ✅ `set_simulator_current_time_ms(value)` - Set simulator current time
+27. ✅ `set_simulator_speed_track(value)` - Set simulator speed track
+28. ✅ `set_tools_lib_info(info)` - Update tool information
+29. ✅ `set_wcs_info(wcs, offset, activate)` - Set WCS offsets and activation
+30. ✅ `set_vm_geometry_info(values)` - Set virtual machine geometry
+31. ✅ `set_work_order_data(order_code, data)` - Update work order data
 
-### ❌ SET Methods To Implement (16)
+### ⚠️ SET Method Unsupported By The Python Reference (1)
 
-- ❌ `set_compiler_settings(data)`
-- ❌ `set_dynamic_offset_x(value)`
-- ❌ `set_dynamic_offset_y(value)`
-- ❌ `set_dynamic_offset_z(value)`
-- ❌ `set_dynamic_offsets(x, y, z)`
-- ❌ `set_kinematics()`
-- ❌ `set_operator_response(response)`
-- ❌ `set_program_position_x_with_laser_reference(value)`
-- ❌ `set_program_position_y_with_laser_reference(value)`
-- ❌ `set_program_position_z_with_laser_reference(value, sample_count)`
-- ❌ `set_simulator_current_time_ms(value)`
-- ❌ `set_simulator_speed_track(value)`
-- ❌ `set_tools_lib_info(info)`
-- ❌ `set_wcs_info(wcs, offset, activate)`
-- ❌ `set_vm_geometry_info(values)`
-- ❌ `set_work_order_data(order_code, data)`
+- ⚠️ `set_kinematics()` — the Python v1.5.3 reference contains only a placeholder that returns `False`; no request payload is defined
 
 ---
 
@@ -250,7 +250,7 @@ The `main.cpp` program includes tests for the currently implemented subset:
 
 1. **GET Methods Test** - Automatic calls for all 36 GET methods
 2. **Real-time Monitoring** - 10 seconds of real-time CNC monitoring
-3. **SET Methods Test** (interactive) - Tests for all 16 implemented SET methods
+3. **SET Methods Test** (interactive) - Tests for the core SET methods
 4. **CMD Methods Test** (interactive) - Test program_load, cnc_start/stop
 
 Run:
