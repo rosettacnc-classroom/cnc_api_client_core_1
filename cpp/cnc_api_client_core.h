@@ -25,6 +25,8 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <functional>
+#include <thread>
 #include <ctime>
 #include <chrono>
 #include <winsock2.h>
@@ -1374,6 +1376,8 @@ public:
 
 class CncAPIClientCore {
 public:
+    using CompletionCallback = std::function<void(bool)>;
+
     CncAPIClientCore();
     ~CncAPIClientCore();
     
@@ -1395,15 +1399,27 @@ public:
     bool cnc_mdi_command(const std::string& command);
     bool cnc_pause();
     bool cnc_resume(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_resume_threaded(double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                             CompletionCallback on_done = CompletionCallback());
     bool cnc_resume_from_line(int line, bool force_sync = false,
                               double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_resume_from_line_threaded(int line, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                       CompletionCallback on_done = CompletionCallback());
     bool cnc_resume_from_point(int point, bool force_sync = false,
                                double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_resume_from_point_threaded(int point, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                        CompletionCallback on_done = CompletionCallback());
     bool cnc_start(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start_threaded(double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                            CompletionCallback on_done = CompletionCallback());
     bool cnc_start_from_line(int line, bool force_sync = false,
                              double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start_from_line_threaded(int line, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                      CompletionCallback on_done = CompletionCallback());
     bool cnc_start_from_point(int point, bool force_sync = false,
                               double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_start_from_point_threaded(int point, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                       CompletionCallback on_done = CompletionCallback());
     bool cnc_stop();
     bool file_export_cpf(const std::string& file_name);
     bool file_export_csf(const std::string& file_name);
@@ -1420,6 +1436,8 @@ public:
     bool mru_programs_list_remove_item(int index);
     bool program_analysis(int mode = -1, bool force_sync = false,
                           double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool program_analysis_threaded(int mode, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                   CompletionCallback on_done = CompletionCallback());
     bool program_analysis_abort();
     bool program_gcode_add_text(const std::string& text);
     bool program_gcode_clear();
@@ -1427,10 +1445,18 @@ public:
     bool program_gcode_set_text(const std::string& text);
     bool program_load(const std::string& file_name, bool force_sync = false,
                       double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool program_load_threaded(const std::string& file_name,
+                               double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                               CompletionCallback on_done = CompletionCallback());
     bool program_new();
     bool program_save(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool program_save_threaded(double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                               CompletionCallback on_done = CompletionCallback());
     bool program_save_as(const std::string& file_name, bool force_sync = false,
                          double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool program_save_as_threaded(const std::string& file_name,
+                                  double timeout = DEFAULT_FORCE_SYNC_TIMEOUT,
+                                  CompletionCallback on_done = CompletionCallback());
     bool reset_alarms();
     bool reset_alarms_history();
     bool reset_warnings();
@@ -1529,6 +1555,8 @@ public:
     static int64_t datetime_to_filetime(const DateTime& dt);
     
 private:
+    struct ForceSyncState;
+
     // Socket and connection
     SOCKET m_socket;
     bool m_is_connected;
@@ -1537,6 +1565,8 @@ private:
     std::string m_host;
     int m_port;
     std::string m_last_response;  // Store last server response for debugging
+    std::shared_ptr<ForceSyncState> m_force_sync_state;
+    std::thread m_force_sync_thread;
     
     // SSL context (for TLS 1.2)
     CredHandle m_cred_handle;
@@ -1555,6 +1585,10 @@ private:
                           DWORD first_timeout_ms = 5000, DWORD chunk_timeout_ms = 2000);
     bool execute_request(const std::string& request);
     bool execute_force_sync_request(std::string request, bool force_sync, double timeout);
+    bool start_force_sync_async_request(
+        std::function<bool(CncAPIClientCore&)> worker_proc,
+        CompletionCallback on_done);
+    void stop_force_sync_worker();
     static bool evaluate_response(const std::string& response);
     void flush_receiving_buffer();
     

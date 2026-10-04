@@ -24,6 +24,7 @@ This project contains a partial C++ port of the RosettaCNC API client implemente
 - **GET Methods**: 36/36 ✅ (100%)
 - **SET Methods**: 31/32 ✅ (97%)
 - **CMD Methods**: 56/56 ✅ (100%)
+- **Threaded Convenience Methods**: 10/10 ✅ (100%)
 
 The totals above are based on the public synchronous methods currently exposed by
 `../python/cnc_api_client_core.py`. The 10 Python convenience wrappers whose names end
@@ -131,18 +132,12 @@ Commands supporting the Python `force_sync` option use the same request flag and
 configurable first-response timeout. Numeric and boolean request fields are emitted as
 JSON values rather than strings, and strings are JSON-escaped.
 
-### ❌ Threaded Convenience Methods To Implement (10, excluded from CMD total)
+### ✅ Threaded Convenience Methods (10/10, excluded from CMD total)
 
-- ❌ `cnc_resume_threaded(...)`
-- ❌ `cnc_resume_from_line_threaded(...)`
-- ❌ `cnc_resume_from_point_threaded(...)`
-- ❌ `cnc_start_threaded(...)`
-- ❌ `cnc_start_from_line_threaded(...)`
-- ❌ `cnc_start_from_point_threaded(...)`
-- ❌ `program_analysis_threaded(...)`
-- ❌ `program_load_threaded(...)`
-- ❌ `program_save_threaded(...)`
-- ❌ `program_save_as_threaded(...)`
+All ten Python `_threaded` convenience methods have C++ equivalents. Each operation
+uses a dedicated cloned API connection, allows only one active worker per client, and
+reports the final command result through `CompletionCallback`. The callback runs on the
+worker thread; UI applications must marshal UI updates to their UI thread.
 
 ---
 

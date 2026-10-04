@@ -17,6 +17,8 @@
 #include <cstdint>
 #include <limits>
 #include <thread>
+#include <mutex>
+#include <atomic>
 
 // For JSON parsing - simplified version
 // NOTE: In production, use nlohmann/json library instead
@@ -449,12 +451,26 @@ namespace {
                             const std::string& value) {
         append_json_raw(json, first, key, "\"" + SimpleJSON::escape(value) + "\"");
     }
+
+    bool valid_force_sync_timeout(double timeout) {
+        const double max_seconds =
+            static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0;
+        return std::isfinite(timeout) && timeout > 0.0 && timeout <= max_seconds;
+    }
 }
 
 namespace RosettaCNC {
 
 // ========== Static Initialization ==========
 bool CncAPIClientCore::s_winsock_initialized = false;
+
+struct CncAPIClientCore::ForceSyncState {
+    std::atomic<bool> running;
+    std::mutex mutex;
+    std::shared_ptr<CncAPIClientCore> api;
+
+    ForceSyncState() : running(false) {}
+};
 
 APICompilerSettingsForGet::APICompilerSettingsForGet() :
     has_data(false),
@@ -1035,8 +1051,9 @@ CncAPIClientCore::CncAPIClientCore() :
     m_use_ssl(false),
     m_use_cnc_direct_access(false),
     m_port(15011),
-    m_ssl_initialized(false),
-    m_last_response("") {
+    m_last_response(""),
+    m_force_sync_state(std::make_shared<ForceSyncState>()),
+    m_ssl_initialized(false) {
     
     initialize_winsock();
     ZeroMemory(&m_cred_handle, sizeof(m_cred_handle));
@@ -1147,6 +1164,7 @@ bool CncAPIClientCore::connect_direct() {
 }
 
 bool CncAPIClientCore::close() {
+    stop_force_sync_worker();
     if (m_is_connected) {
         try {
             if (!m_use_cnc_direct_access) {
@@ -1538,12 +1556,92 @@ bool CncAPIClientCore::execute_force_sync_request(std::string request, bool forc
     if (!m_is_connected || request.empty() || request.back() != '}') return false;
     DWORD first_timeout_ms = static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
     if (force_sync) {
-        const double max_seconds = static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0;
-        if (!std::isfinite(timeout) || timeout <= 0.0 || timeout > max_seconds) return false;
+        if (!valid_force_sync_timeout(timeout)) return false;
         request.insert(request.size() - 1, ",\"force.sync\":true");
         first_timeout_ms = static_cast<DWORD>(std::ceil(timeout * 1000.0));
     }
     return evaluate_response(send_command(request, first_timeout_ms));
+}
+
+bool CncAPIClientCore::start_force_sync_async_request(
+        std::function<bool(CncAPIClientCore&)> worker_proc,
+        CompletionCallback on_done) {
+    if (!worker_proc || !m_is_connected || m_use_cnc_direct_access ||
+        !m_force_sync_state) return false;
+
+    bool expected = false;
+    if (!m_force_sync_state->running.compare_exchange_strong(expected, true)) return false;
+
+    if (m_force_sync_thread.joinable()) {
+        if (m_force_sync_thread.get_id() == std::this_thread::get_id()) {
+            m_force_sync_thread.detach();
+        } else {
+            m_force_sync_thread.join();
+        }
+    }
+
+    std::shared_ptr<CncAPIClientCore> api = std::make_shared<CncAPIClientCore>();
+    if (!api->connect(m_host, m_port, m_use_ssl)) {
+        m_force_sync_state->running.store(false);
+        return false;
+    }
+    {
+        std::lock_guard<std::mutex> lock(m_force_sync_state->mutex);
+        m_force_sync_state->api = api;
+    }
+
+    const std::shared_ptr<ForceSyncState> state = m_force_sync_state;
+    try {
+        m_force_sync_thread = std::thread([state, api, worker_proc, on_done]() {
+            bool result = false;
+            try {
+                if (api->is_connected()) result = worker_proc(*api);
+            } catch (...) {
+                result = false;
+            }
+            {
+                std::lock_guard<std::mutex> lock(state->mutex);
+                if (state->api == api) {
+                    api->close();
+                    state->api.reset();
+                }
+            }
+            state->running.store(false);
+            try {
+                if (on_done) on_done(result);
+            } catch (...) {
+                // Callback exceptions do not escape the worker thread.
+            }
+        });
+        return true;
+    } catch (...) {
+        {
+            std::lock_guard<std::mutex> lock(state->mutex);
+            state->api.reset();
+        }
+        api->close();
+        state->running.store(false);
+        return false;
+    }
+}
+
+void CncAPIClientCore::stop_force_sync_worker() {
+    if (!m_force_sync_state) return;
+    std::shared_ptr<CncAPIClientCore> api;
+    {
+        std::lock_guard<std::mutex> lock(m_force_sync_state->mutex);
+        api = m_force_sync_state->api;
+        m_force_sync_state->api.reset();
+    }
+    if (api) api->close();
+    if (m_force_sync_thread.joinable()) {
+        if (m_force_sync_thread.get_id() == std::this_thread::get_id()) {
+            m_force_sync_thread.detach();
+        } else {
+            m_force_sync_thread.join();
+        }
+    }
+    m_force_sync_state->running.store(false);
 }
 
 // ========== Helper Methods ==========
@@ -1678,9 +1776,24 @@ bool CncAPIClientCore::cnc_resume(bool force_sync, double timeout) {
     return execute_force_sync_request("{\"cmd\":\"cnc.resume\"}", force_sync, timeout);
 }
 
+bool CncAPIClientCore::cnc_resume_threaded(double timeout, CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [timeout](CncAPIClientCore& api) { return api.cnc_resume(true, timeout); }, on_done);
+}
+
 bool CncAPIClientCore::cnc_resume_from_line(int line, bool force_sync, double timeout) {
     return execute_force_sync_request("{\"cmd\":\"cnc.resume.from.line\",\"line\":" +
         std::to_string(line) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_resume_from_line_threaded(int line, double timeout,
+                                                      CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [line, timeout](CncAPIClientCore& api) {
+            return api.cnc_resume_from_line(line, true, timeout);
+        }, on_done);
 }
 
 bool CncAPIClientCore::cnc_resume_from_point(int point, bool force_sync, double timeout) {
@@ -1688,8 +1801,23 @@ bool CncAPIClientCore::cnc_resume_from_point(int point, bool force_sync, double 
         std::to_string(point) + "}", force_sync, timeout);
 }
 
+bool CncAPIClientCore::cnc_resume_from_point_threaded(int point, double timeout,
+                                                       CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [point, timeout](CncAPIClientCore& api) {
+            return api.cnc_resume_from_point(point, true, timeout);
+        }, on_done);
+}
+
 bool CncAPIClientCore::cnc_start(bool force_sync, double timeout) {
     return execute_force_sync_request("{\"cmd\":\"cnc.start\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_start_threaded(double timeout, CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [timeout](CncAPIClientCore& api) { return api.cnc_start(true, timeout); }, on_done);
 }
 
 bool CncAPIClientCore::cnc_start_from_line(int line, bool force_sync, double timeout) {
@@ -1697,9 +1825,27 @@ bool CncAPIClientCore::cnc_start_from_line(int line, bool force_sync, double tim
         std::to_string(line) + "}", force_sync, timeout);
 }
 
+bool CncAPIClientCore::cnc_start_from_line_threaded(int line, double timeout,
+                                                     CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [line, timeout](CncAPIClientCore& api) {
+            return api.cnc_start_from_line(line, true, timeout);
+        }, on_done);
+}
+
 bool CncAPIClientCore::cnc_start_from_point(int point, bool force_sync, double timeout) {
     return execute_force_sync_request("{\"cmd\":\"cnc.start.from.point\",\"point\":" +
         std::to_string(point) + "}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::cnc_start_from_point_threaded(int point, double timeout,
+                                                      CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [point, timeout](CncAPIClientCore& api) {
+            return api.cnc_start_from_point(point, true, timeout);
+        }, on_done);
 }
 
 bool CncAPIClientCore::cnc_stop() { return execute_request("{\"cmd\":\"cnc.stop\"}"); }
@@ -1761,6 +1907,15 @@ bool CncAPIClientCore::program_analysis(int mode, bool force_sync, double timeou
     return execute_force_sync_request(request, force_sync, timeout);
 }
 
+bool CncAPIClientCore::program_analysis_threaded(int mode, double timeout,
+                                                  CompletionCallback on_done) {
+    if (mode < -1 || mode > ANALYSIS_RZ || !valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [mode, timeout](CncAPIClientCore& api) {
+            return api.program_analysis(mode, true, timeout);
+        }, on_done);
+}
+
 bool CncAPIClientCore::program_analysis_abort() {
     return execute_request("{\"cmd\":\"program.analysis.abort\"}");
 }
@@ -1789,16 +1944,40 @@ bool CncAPIClientCore::program_load(const std::string& file_name, bool force_syn
         escape_json_string(file_name) + "\"}", force_sync, timeout);
 }
 
+bool CncAPIClientCore::program_load_threaded(const std::string& file_name, double timeout,
+                                              CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [file_name, timeout](CncAPIClientCore& api) {
+            return api.program_load(file_name, true, timeout);
+        }, on_done);
+}
+
 bool CncAPIClientCore::program_new() { return execute_request("{\"cmd\":\"program.new\"}"); }
 
 bool CncAPIClientCore::program_save(bool force_sync, double timeout) {
     return execute_force_sync_request("{\"cmd\":\"program.save\"}", force_sync, timeout);
 }
 
+bool CncAPIClientCore::program_save_threaded(double timeout, CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [timeout](CncAPIClientCore& api) { return api.program_save(true, timeout); }, on_done);
+}
+
 bool CncAPIClientCore::program_save_as(const std::string& file_name, bool force_sync,
                                        double timeout) {
     return execute_force_sync_request("{\"cmd\":\"program.save.as\",\"file.name\":\"" +
         escape_json_string(file_name) + "\"}", force_sync, timeout);
+}
+
+bool CncAPIClientCore::program_save_as_threaded(const std::string& file_name, double timeout,
+                                                 CompletionCallback on_done) {
+    if (!valid_force_sync_timeout(timeout)) return false;
+    return start_force_sync_async_request(
+        [file_name, timeout](CncAPIClientCore& api) {
+            return api.program_save_as(file_name, true, timeout);
+        }, on_done);
 }
 
 bool CncAPIClientCore::reset_alarms() {
