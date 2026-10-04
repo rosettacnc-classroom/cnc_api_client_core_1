@@ -23,7 +23,7 @@ This project contains a partial C++ port of the RosettaCNC API client implemente
 ### 📊 Overall Summary
 - **GET Methods**: 36/36 ✅ (100%)
 - **SET Methods**: 31/32 ✅ (97%)
-- **CMD Methods**: 3/56 ✅ (5%)
+- **CMD Methods**: 8/56 ✅ (14%)
 
 The totals above are based on the public synchronous methods currently exposed by
 `../python/cnc_api_client_core.py`. The 10 Python convenience wrappers whose names end
@@ -119,34 +119,34 @@ The following GET methods have a C++ implementation:
 
 ---
 
-## ✅ Implemented CMD Methods (3/56 - 5%)
+## ✅ Implemented CMD Methods (8/56 - 14%)
 
-### Execution Control (2/5) ✅
+### Execution Control (4/5) ✅
 1. ✅ `cnc_start()` - Start program execution
 2. ✅ `cnc_stop()` - Stop execution
+3. ✅ `cnc_pause()` - Pause program execution
+4. ✅ `cnc_resume(force_sync, timeout)` - Resume program execution
+
+### Motion Control
+5. ✅ `cnc_jog_command(int command)` - Execute a validated JOG command
+
+### Start/Resume from Specific Point
+6. ✅ `cnc_resume_from_line(int line, force_sync, timeout)` - Resume from a line
 
 ### Program Management (1/10) ✅
-3. ✅ `program_load(const std::string& file_name)` - Load program
+7. ✅ `program_load(const std::string& file_name)` - Load program
 
-### ⚠️ Partial/Stub CMD Methods (4)
+### Reset and Alarm Management
+8. ✅ `reset_alarms()` - Reset current alarms
 
-These methods have a C++ body, but their request names or signatures do not match the
-current Python implementation and therefore are not counted as implemented:
-
-- ⚠️ `cnc_pause()` — sends `cnc_pause` instead of `cnc.pause`
-- ⚠️ `cnc_resume(int line)` — sends `cnc_resume` instead of `cnc.resume`; the Python signature uses `force_sync` and `timeout`
-- ⚠️ `cnc_jog_command(int command)` — sends `cnc_jog_command` instead of `cnc.jog.command`
-- ⚠️ `reset_alarms()` — sends `reset_alarms` instead of `reset.alarms`
-
-### ❌ CMD Methods To Implement (49)
+### ❌ CMD Methods To Implement (48)
 
 #### Execution Control
 - ❌ `cnc_continue()` - Continue execution
 
-#### Start/Resume from Specific Point (4)
+#### Start/Resume from Specific Point (3)
 - ❌ `cnc_start_from_line(int line)` - Start from line
 - ❌ `cnc_start_from_point(int point)` - Start from point
-- ❌ `cnc_resume_from_line(int line)` - Resume from line
 - ❌ `cnc_resume_from_point(int point)` - Resume from point
 
 #### Connection and Configuration (3)

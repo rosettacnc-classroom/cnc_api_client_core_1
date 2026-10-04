@@ -43,6 +43,10 @@
 // Module version
 #define MODULE_VERSION "1.5.3"
 
+// Request timeouts (seconds)
+#define DEFAULT_REQUEST_FIRST_TIMEOUT 5.0
+#define DEFAULT_FORCE_SYNC_TIMEOUT 160.0
+
 // Analysis mode
 #define ANALYSIS_MT "mt"    // model path with tools colors
 #define ANALYSIS_RT "rt"    // real path with tools colors
@@ -1374,8 +1378,9 @@ public:
     bool cnc_jog_command(int command);
     bool cnc_mdi_command(const std::string& command);
     bool cnc_pause();
-    bool cnc_resume(int line = 0);
-    bool cnc_resume_from_line(int line);
+    bool cnc_resume(bool force_sync = false, double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
+    bool cnc_resume_from_line(int line, bool force_sync = false,
+                              double timeout = DEFAULT_FORCE_SYNC_TIMEOUT);
     bool cnc_resume_from_point(int point);
     bool cnc_start();
     bool cnc_start_from_line(int line);

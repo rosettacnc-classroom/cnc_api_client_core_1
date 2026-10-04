@@ -1610,13 +1610,10 @@ std::string CncAPIClientCore::build_json_bool(const std::string& key, bool value
     return "\"" + key + "\":" + (value ? "true" : "false");
 }
 
-// ========== API Command Methods (Stub Implementations) ==========
+// ========== API Command Methods ==========
 
 bool CncAPIClientCore::reset_alarms() {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "reset_alarms";
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    return execute_request("{\"cmd\":\"reset.alarms\"}");
 }
 
 bool CncAPIClientCore::cnc_start() {
@@ -1626,20 +1623,40 @@ bool CncAPIClientCore::cnc_start() {
 }
 
 bool CncAPIClientCore::cnc_pause() {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "cnc_pause";
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    return execute_request("{\"cmd\":\"cnc.pause\"}");
 }
 
-bool CncAPIClientCore::cnc_resume(int line) {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "cnc_resume";
-    if (line > 0) {
-        data["line"] = std::to_string(line);
+bool CncAPIClientCore::cnc_resume(bool force_sync, double timeout) {
+    if (!m_is_connected) return false;
+    if (force_sync && (!std::isfinite(timeout) || timeout <= 0.0 ||
+                       timeout > static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0)) {
+        return false;
     }
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+
+    const std::string request = force_sync
+        ? "{\"cmd\":\"cnc.resume\",\"force.sync\":true}"
+        : "{\"cmd\":\"cnc.resume\"}";
+    const DWORD first_timeout_ms = force_sync
+        ? static_cast<DWORD>(timeout * 1000.0)
+        : static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
+    return evaluate_response(send_command(request, first_timeout_ms));
+}
+
+bool CncAPIClientCore::cnc_resume_from_line(int line, bool force_sync, double timeout) {
+    if (!m_is_connected) return false;
+    if (force_sync && (!std::isfinite(timeout) || timeout <= 0.0 ||
+                       timeout > static_cast<double>((std::numeric_limits<DWORD>::max)()) / 1000.0)) {
+        return false;
+    }
+
+    std::string request = "{\"cmd\":\"cnc.resume.from.line\",\"line\":" +
+                          std::to_string(line);
+    if (force_sync) request += ",\"force.sync\":true";
+    request += '}';
+    const DWORD first_timeout_ms = force_sync
+        ? static_cast<DWORD>(timeout * 1000.0)
+        : static_cast<DWORD>(DEFAULT_REQUEST_FIRST_TIMEOUT * 1000.0);
+    return evaluate_response(send_command(request, first_timeout_ms));
 }
 
 bool CncAPIClientCore::cnc_stop() {
@@ -1649,11 +1666,9 @@ bool CncAPIClientCore::cnc_stop() {
 }
 
 bool CncAPIClientCore::cnc_jog_command(int command) {
-    std::map<std::string, std::string> data;
-    data["cmd"] = "cnc_jog_command";
-    data["command"] = std::to_string(command);
-    std::string request = create_compact_json_request(data);
-    return execute_request(request);
+    if (command < JC_NONE || command > JC_C_FW) return false;
+    return execute_request("{\"cmd\":\"cnc.jog.command\",\"command\":" +
+                           std::to_string(command) + "}");
 }
 
 bool CncAPIClientCore::program_load(const std::string& file_name) {
