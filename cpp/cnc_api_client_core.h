@@ -458,6 +458,9 @@ public:
     std::vector<double> dynamic_offset;
     bool homing_done;
     int homing_done_mask;
+    int homing_running_mask;
+    int homing_sensors_mask;
+    std::vector<double> homing_correction_space;
     
     APIAxesInfo() : 
         has_data(false),
@@ -471,19 +474,30 @@ public:
         working_offset(6, 0.0),
         dynamic_offset(3, 0.0),
         homing_done(false),
-        homing_done_mask(0) {}
+        homing_done_mask(0),
+        homing_running_mask(0),
+        homing_sensors_mask(0),
+        homing_correction_space(6, 0.0) {}
 };
 
 class APICncInfo {
 public:
     bool has_data;
+    std::string file_name;
     int units_mode;
     int axes_mask;
     int state_machine;
+    int connection_state;
+    int controller_settings_crc;
+    int interp_buffer_level;
     int gcode_line;
+    bool gcode_block_skip_enabled;
     std::string planned_time;
     std::string worked_time;
     std::string hud_user_message;
+    std::string toolpath_id;
+    std::string operator_request_id_pending;
+    bool program_gcode_sync_required;
     DateTime current_alarm_datetime;
     int current_alarm_code;
     int current_alarm_info1;
@@ -509,6 +523,7 @@ public:
     int spindle_actual;
     int spindle_load;
     int spindle_torque;
+    double spindle_phase;
     int spindle_direction;
     bool spindle_not_ready;
     int spindle_shaft;
@@ -566,6 +581,12 @@ public:
     double tool_param_2;
     double tool_param_3;
     std::string tool_description;
+    bool simulator_available;
+    std::string simulator_data_id;
+    int simulator_state;
+    int simulator_planned_time_ms;
+    int simulator_current_time_ms;
+    int simulator_speed_track;
     
     APICncInfo();
 };
@@ -588,9 +609,10 @@ public:
     int file_line;
     std::string file_name;
     std::string message;
+    int mode;
     int state;
     
-    APICompileInfo() : has_data(false), code(0), code_line(0), file_line(0), state(CS_INIT) {}
+    APICompileInfo() : has_data(false), code(0), code_line(0), file_line(0), mode(CM_NONE), state(CS_INIT) {}
 };
 
 class APICompilerSettingsForGet {
@@ -867,6 +889,14 @@ public:
 class APIEnabledCommands {
 public:
     bool has_data;
+    int cnc_csfm_aux;
+    bool cnc_csfm_cooler_flood;
+    bool cnc_csfm_cooler_mist;
+    bool cnc_csfm_jog_mode;
+    bool cnc_csfm_spindle_cw;
+    bool cnc_csfm_spindle_ccw;
+    bool cnc_csfm_thc_disabled;
+    bool cnc_csfm_torch;
     bool cnc_connection_close;
     bool cnc_connection_open;
     bool cnc_continue;
@@ -886,6 +916,7 @@ public:
     bool program_analysis_abort;
     bool program_gcode_add_text;
     bool program_gcode_clear;
+    bool program_gcode_modified;
     bool program_gcode_set_text;
     bool program_load;
     bool program_new;
@@ -895,8 +926,19 @@ public:
     bool reset_alarms_history;
     bool reset_warnings;
     bool reset_warnings_history;
+    bool set_compiler_settings;
+    int set_dynamic_offsets;
+    bool set_kinematics;
     int set_program_position;
+    bool set_simulator_current_time_ms;
+    bool set_simulator_speed_track;
     bool show_ui_dialog;
+    bool simulator_continue;
+    bool simulator_pause;
+    bool simulator_start;
+    bool simulator_step_backward;
+    bool simulator_step_forward;
+    bool simulator_stop;
     bool tools_lib_write;
     
     APIEnabledCommands();
@@ -1092,8 +1134,21 @@ public:
     std::string operative_system;
     std::string operative_system_crc;
     std::string pld_version;
+    bool licensed_feature_panel_pc;
+    bool licensed_feature_panel_pc_demo;
+    bool licensed_feature_work_orders;
+    bool licensed_feature_opc_ua_server;
+    bool licensed_feature_probe_sdk_g1;
+    bool licensed_feature_probe_sdk_g2;
+    bool licensed_feature_probe_sdk_g3;
+    bool licensed_feature_probe_sdk_g4;
+    bool licensed_feature_probe_sdk_g5;
     
-    APISystemInfo() : has_data(false) {}
+    APISystemInfo() : has_data(false), licensed_feature_panel_pc(false),
+        licensed_feature_panel_pc_demo(false), licensed_feature_work_orders(false),
+        licensed_feature_opc_ua_server(false), licensed_feature_probe_sdk_g1(false),
+        licensed_feature_probe_sdk_g2(false), licensed_feature_probe_sdk_g3(false),
+        licensed_feature_probe_sdk_g4(false), licensed_feature_probe_sdk_g5(false) {}
     
     bool is_equal(const APISystemInfo& data) const;
     static bool are_equal(const APISystemInfo& data_a, const APISystemInfo& data_b);
@@ -1111,7 +1166,7 @@ class APIToolsLibInfoForGet {
 public:
     int tool_index;
     int tool_id;
-    bool tool_slot;
+    int tool_slot;
     int tool_type;
     double tool_diameter;
     double tool_offset_x;
@@ -1176,6 +1231,8 @@ public:
     
     APIToolsLibInfoForSet();
     ~APIToolsLibInfoForSet();
+    APIToolsLibInfoForSet(const APIToolsLibInfoForSet&) = delete;
+    APIToolsLibInfoForSet& operator=(const APIToolsLibInfoForSet&) = delete;
 };
 
 class APIToolsLibInfo {
@@ -1257,6 +1314,10 @@ public:
         
         FileData();
         ~FileData();
+        FileData(const FileData&) = delete;
+        FileData& operator=(const FileData&) = delete;
+        FileData(FileData&& other) noexcept;
+        FileData& operator=(FileData&& other) noexcept;
     };
     
     bool* order_locked;
@@ -1272,6 +1333,8 @@ public:
     
     APIWorkOrderDataForAdd();
     ~APIWorkOrderDataForAdd();
+    APIWorkOrderDataForAdd(const APIWorkOrderDataForAdd&) = delete;
+    APIWorkOrderDataForAdd& operator=(const APIWorkOrderDataForAdd&) = delete;
 };
 
 class APIWorkOrderDataForGet {
@@ -1335,6 +1398,10 @@ public:
         
         FileData();
         ~FileData();
+        FileData(const FileData&) = delete;
+        FileData& operator=(const FileData&) = delete;
+        FileData(FileData&& other) noexcept;
+        FileData& operator=(FileData&& other) noexcept;
     };
     
     int* order_state;
@@ -1351,6 +1418,8 @@ public:
     
     APIWorkOrderDataForSet();
     ~APIWorkOrderDataForSet();
+    APIWorkOrderDataForSet(const APIWorkOrderDataForSet&) = delete;
+    APIWorkOrderDataForSet& operator=(const APIWorkOrderDataForSet&) = delete;
 };
 
 class APIWorkOrderFileList {
@@ -1386,6 +1455,11 @@ public:
     bool connect_direct();
     bool close();
     bool is_connected() const { return m_is_connected; }
+    const std::string& socket_ssl_info() const { return m_socket_ssl_info; }
+    const std::string& connection_host() const { return m_host; }
+    int connection_port() const { return m_port; }
+    bool connection_use_ssl() const { return m_use_ssl; }
+    std::unique_ptr<CncAPIClientCore> connection_clone() const;
     std::string get_last_response() const { return m_last_response; }  // For debugging
     
     // ========== API Server "cmd" Requests ==========
@@ -1564,6 +1638,7 @@ private:
     bool m_use_cnc_direct_access;
     std::string m_host;
     int m_port;
+    std::string m_socket_ssl_info;
     std::string m_last_response;  // Store last server response for debugging
     std::shared_ptr<ForceSyncState> m_force_sync_state;
     std::thread m_force_sync_thread;
@@ -1572,6 +1647,8 @@ private:
     CredHandle m_cred_handle;
     CtxtHandle m_context_handle;
     bool m_ssl_initialized;
+    SecPkgContext_StreamSizes m_ssl_stream_sizes;
+    std::vector<unsigned char> m_ssl_received;
     
     // Windows Sockets initialization
     static bool s_winsock_initialized;
