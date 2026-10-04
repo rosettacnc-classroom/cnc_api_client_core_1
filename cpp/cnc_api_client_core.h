@@ -8,8 +8,8 @@
  *               x (on 1.x.y) means version
  *               y (on 1.x.y) means release
  * 
- * Note:         Complete C++ port from Python (one-to-one conversion)
- *               Requires nlohmann/json library for JSON parsing
+ * Note:         Partial native C++ port aligned with the Python reference.
+ *               Uses the built-in lightweight JSON parser.
  * 
  * Author:       support@rosettacnc.com
  * Created:      05/02/2026
@@ -94,6 +94,51 @@
 #define CS_WAITING_FOR_DATA 5
 #define CS_WAITING_FOR_DATA_RUNNING 6
 #define CS_FINISHED 7
+
+// Compiler settings
+#define CP_MODAL_MACRO_MOTION_MODE_IN_FAST 0
+#define CP_MODAL_MACRO_MOTION_MODE_IN_FEED 1
+#define CP_CUTTER_COMPENSATION_MODE_NIST 0
+#define CP_CUTTER_COMPENSATION_MODE_LEAD_IN 1
+#define CP_CUTTER_COMPENSATION_MODE_NORMAL 2
+#define CP_USER_MACRO_PATH_MODE_DISABLED 0
+#define CP_USER_MACRO_PATH_MODE_PART_PRG 1
+#define CP_USER_MACRO_PATH_MODE_USER_DEF 2
+#define CP_RESTART_DEF_MOV_MODE_IN_FEED 0
+#define CP_RESTART_DEF_MOV_MODE_IN_FAST 1
+#define CP_RESTART_DEF_MOV_MODE_CNC_HANDLED 2
+#define CP_RV_COLOR_MODE_SPECTRAL 0
+#define CP_RV_COLOR_MODE_GRADIENT 1
+#define CP_RZ_COLOR_MODE_SPECTRAL 0
+#define CP_RZ_COLOR_MODE_GRADIENT 1
+
+// Operator request type
+#define ORQT_NONE 0
+#define ORQT_USER_MEDIA_CONTINUE 1
+#define ORQT_USER_MEDIA_STOP 2
+#define ORQT_USER_MEDIA_STOP_CONTINUE 3
+#define ORQT_USER_MEDIA_VALUE_OR_STOP 4
+#define ORQT_USER_MEDIA_VALUES_OR_STOP 5
+#define ORQT_USER_MESSAGE_CONTINUE 6
+#define ORQT_USER_MESSAGE_STOP 7
+#define ORQT_USER_MESSAGE_STOP_CONTINUE 8
+#define ORQT_USER_MESSAGE_VALUE_OR_STOP 9
+#define ORQT_USER_MESSAGE_VALUES_OR_STOP 10
+
+// Runtime data
+#define RDST_IDLE 0
+#define RDST_WAITING_DATA 1
+#define RDST_DATA_READY 2
+#define RDCC_NOP 0
+#define RDCC_STRAIGHT_PROBE 24
+#define RDCC_WAIT_INPUT 48
+#define RDCC_USER_MESSAGE 59
+#define RDCC_USER_MEDIA_PATH 60
+#define RDCC_READ_INPUT_GROUP 66
+
+// Simulator data type
+#define SDT_FULL 0
+#define SDT_MINIMAL 1
 
 // Jog command
 #define JC_NONE 0
@@ -520,6 +565,178 @@ public:
     int state;
     
     APICompileInfo() : has_data(false), code(0), code_line(0), file_line(0), state(CS_INIT) {}
+};
+
+class APICompilerSettingsForGet {
+public:
+    bool has_data;
+    std::string current_toolpath_mode;
+    std::string default_toolpath_mode;
+    int modal_macro_motion_mode;
+    int cutter_compensation_mode;
+    int cutter_compensation_gouging_threshold;
+    double arc_radius_tolerance;
+    int infinite_loop_threshold;
+    bool gcode_block_skip_enabled;
+    bool g43_persistent;
+    bool g52_independent;
+    bool g92_persistent;
+    bool origin_offset_persistent;
+    bool user_m_codes_arguments_enabled;
+    int user_macro_path_mode;
+    std::string user_macro_path;
+    double jpdc_axis_x;
+    double jpdc_axis_y;
+    double jpdc_axis_z;
+    double jpdc_axis_a;
+    double jpdc_axis_b;
+    double jpdc_axis_c;
+    int restart_default_movement_mode;
+    double restart_first_movement_feed;
+    double restart_max_distance;
+    bool restart_force_tool_measurement;
+    double toolpath_resolution;
+    bool use_points_per_block;
+    int points_per_block;
+    int tool_xx0_color;
+    int tool_xx1_color;
+    int tool_xx2_color;
+    int tool_xx3_color;
+    int tool_xx4_color;
+    int tool_xx5_color;
+    int tool_xx6_color;
+    int tool_xx7_color;
+    int tool_xx8_color;
+    int tool_xx9_color;
+    int rapid_move_color;
+    int rf_threshold;
+    int rf_threshold_color_lower;
+    int rf_threshold_color_equal;
+    int rf_threshold_color_upper;
+    int rv_color_mode;
+    int rv_wavelength_min;
+    int rv_wavelength_max;
+    int rv_gradient_color_min;
+    int rv_gradient_color_max;
+    int rz_color_mode;
+    int rz_wavelength_min;
+    int rz_wavelength_max;
+    int rz_gradient_color_min;
+    int rz_gradient_color_max;
+
+    APICompilerSettingsForGet();
+};
+
+class APICoordinateSystemsInfo {
+public:
+    bool has_data;
+    int working_wcs;
+    std::vector<double> working_offset;
+    std::vector<double> wcs_1;
+    std::vector<double> wcs_2;
+    std::vector<double> wcs_3;
+    std::vector<double> wcs_4;
+    std::vector<double> wcs_5;
+    std::vector<double> wcs_6;
+    std::vector<double> wcs_7;
+    std::vector<double> wcs_8;
+    std::vector<double> wcs_9;
+
+    APICoordinateSystemsInfo();
+};
+
+class APIMRUProgramsList {
+public:
+    bool has_data;
+    std::vector<std::string> items;
+
+    APIMRUProgramsList() : has_data(false) {}
+};
+
+class APIOperatorRequest {
+public:
+    bool has_data;
+    std::string id;
+    int type;
+    std::string media;
+    std::string message;
+    int data_elements;
+    double data_d01;
+    double data_d02;
+    double data_d03;
+    double data_d04;
+    double data_d05;
+    double data_d06;
+    double data_d07;
+    double data_d08;
+    double data_d09;
+    double data_d10;
+    std::vector<double> data;
+    bool external_continue_requested;
+
+    APIOperatorRequest();
+};
+
+class APIProgramInfo {
+public:
+    bool has_data;
+    std::string file_name;
+    std::string code;
+
+    APIProgramInfo() : has_data(false) {}
+};
+
+class APIRuntimeDataPendingItem {
+public:
+    int gcode_line;
+    int canon_id;
+    int canon_code;
+    int canon_segment;
+    std::string text;
+
+    APIRuntimeDataPendingItem() : gcode_line(0), canon_id(0), canon_code(RDCC_NOP),
+        canon_segment(0) {}
+};
+
+class APIRuntimeDataAcquiredItem {
+public:
+    DateTime datetime;
+    int gcode_line;
+    int canon_id;
+    int canon_code;
+    int canon_segment;
+    std::string text;
+    std::vector<double> data;
+
+    APIRuntimeDataAcquiredItem() : gcode_line(0), canon_id(0), canon_code(RDCC_NOP),
+        canon_segment(0) {}
+};
+
+class APIRuntimeData {
+public:
+    bool has_data;
+    int state;
+    APIRuntimeDataPendingItem pending_item;
+    std::vector<APIRuntimeDataAcquiredItem> acquired_items;
+
+    APIRuntimeData() : has_data(false), state(RDST_IDLE) {}
+};
+
+class APISimulatorData {
+public:
+    bool has_data;
+    int data_type;
+    std::vector<unsigned char> data;
+
+    APISimulatorData() : has_data(false), data_type(SDT_FULL) {}
+};
+
+class APIToolpathData {
+public:
+    bool has_data;
+    std::vector<unsigned char> data;
+
+    APIToolpathData() : has_data(false) {}
 };
 
 class APIDigitalInputs {
@@ -1104,15 +1321,23 @@ public:
     APICncInfo get_cnc_info();
     APICncParameters get_cnc_parameters(int address, int elements);
     APICompileInfo get_compile_info();
+    APICompilerSettingsForGet get_compiler_settings();
+    APICoordinateSystemsInfo get_coordinate_systems_info();
     APIDigitalInputs get_digital_inputs();
     APIDigitalOutputs get_digital_outputs();
     APIEnabledCommands get_enabled_commands();
     APILocalizationInfo get_localization_info();
     APIMachineSettings get_machine_settings();
     APIMachiningInfo get_machining_info();
+    APIMRUProgramsList get_mru_programs_list();
+    APIOperatorRequest get_operator_request();
+    APIProgramInfo get_program_info();
     APIProgrammedPoints get_programmed_points();
+    APIRuntimeData get_runtime_data();
     APIScanningLaserInfo get_scanning_laser_info();
+    APISimulatorData get_simulator_data(int data_type = SDT_FULL);
     APISystemInfo get_system_info();
+    APIToolpathData get_toolpath_data(int mode = 0);
     APIToolsLibCount get_tools_lib_count();
     APIToolsLibInfo get_tools_lib_info(int index);
     APIToolsLibInfos get_tools_lib_infos();
@@ -1172,7 +1397,10 @@ private:
     static void cleanup_winsock();
     
     // Communication methods
-    std::string send_command(const std::string& request);
+    std::string send_command(const std::string& request, DWORD first_timeout_ms = 5000,
+                             DWORD chunk_timeout_ms = 2000);
+    bool send_command_raw(const std::string& request, std::vector<unsigned char>& payload,
+                          DWORD first_timeout_ms = 5000, DWORD chunk_timeout_ms = 2000);
     bool execute_request(const std::string& request);
     static bool evaluate_response(const std::string& response);
     void flush_receiving_buffer();

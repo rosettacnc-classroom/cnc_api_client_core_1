@@ -21,7 +21,7 @@ This project contains a partial C++ port of the RosettaCNC API client implemente
 ## Implementation Status
 
 ### 📊 Overall Summary
-- **GET Methods**: 27/36 ✅ (75%)
+- **GET Methods**: 36/36 ✅ (100%)
 - **SET Methods**: 16/32 ✅ (50%)
 - **CMD Methods**: 3/56 ✅ (5%)
 
@@ -31,7 +31,7 @@ in `_threaded` are reported separately and are not included in the CMD total.
 
 ---
 
-## ✅ Implemented GET Methods (27/36 - 75%)
+## ✅ Implemented GET Methods (36/36 - 100%)
 
 The following GET methods have a C++ implementation:
 
@@ -62,18 +62,15 @@ The following GET methods have a C++ implementation:
 25. ✅ `get_work_order_file_list(path, filter)` - Work order file list
 26. ✅ `get_programmed_points()` - Programmed points
 27. ✅ `get_cnc_parameters(address, elements)` - CNC parameters
-
-### ❌ GET Methods To Implement (9)
-
-- ❌ `get_compiler_settings()`
-- ❌ `get_coordinate_systems_info()`
-- ❌ `get_mru_programs_list()`
-- ❌ `get_operator_request()`
-- ❌ `get_program_info()`
-- ❌ `get_runtime_data()`
-- ❌ `get_simulator_data(data_type)`
-- ❌ `get_toolpath_data(mode)`
-- ❌ `get_vm_geometry_info(names)` — declared in the C++ header, but not defined in the C++ source
+28. ✅ `get_compiler_settings()` - Compiler settings
+29. ✅ `get_coordinate_systems_info()` - Coordinate systems and WCS offsets
+30. ✅ `get_mru_programs_list()` - Most recently used programs
+31. ✅ `get_operator_request()` - Pending operator request
+32. ✅ `get_program_info()` - Loaded program information
+33. ✅ `get_runtime_data()` - Runtime pending and acquired data
+34. ✅ `get_simulator_data(data_type)` - Raw simulator data
+35. ✅ `get_toolpath_data(mode)` - Decoded or raw toolpath data
+36. ✅ `get_vm_geometry_info(names)` - Virtual machine geometry information
 
 ---
 
@@ -251,7 +248,7 @@ Or open the `.vcxproj` file in Visual Studio and build (F7).
 
 The `main.cpp` program includes tests for the currently implemented subset:
 
-1. **GET Methods Test** - Automatic tests for all 27 GET methods
+1. **GET Methods Test** - Automatic calls for all 36 GET methods
 2. **Real-time Monitoring** - 10 seconds of real-time CNC monitoring
 3. **SET Methods Test** (interactive) - Tests for all 16 implemented SET methods
 4. **CMD Methods Test** (interactive) - Test program_load, cnc_start/stop

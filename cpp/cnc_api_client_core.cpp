@@ -1,6 +1,6 @@
 /**
  * CNC API Client Core for RosettaCNC & derivated NC Systems
- * Implementation file - Complete C++ port from Python
+ * Implementation file - Native C++ port from Python
  * 
  * IMPORTANT: This implementation uses a simplified JSON parser.
  * For production use, please integrate nlohmann/json library:
@@ -13,6 +13,9 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <cstring>
+#include <cstdint>
+#include <limits>
 
 // For JSON parsing - simplified version
 // NOTE: In production, use nlohmann/json library instead
@@ -55,7 +58,30 @@ namespace SimpleJSON {
         static std::string unquote(const std::string& str) {
             std::string s = trim(str);
             if (s.length() >= 2 && s.front() == '"' && s.back() == '"') {
-                return s.substr(1, s.length() - 2);
+                std::string result;
+                for (size_t i = 1; i + 1 < s.length(); ++i) {
+                    if (s[i] != '\\' || i + 2 >= s.length()) {
+                        result += s[i];
+                        continue;
+                    }
+                    const char escaped = s[++i];
+                    switch (escaped) {
+                        case '"': result += '"'; break;
+                        case '\\': result += '\\'; break;
+                        case '/': result += '/'; break;
+                        case 'b': result += '\b'; break;
+                        case 'f': result += '\f'; break;
+                        case 'n': result += '\n'; break;
+                        case 'r': result += '\r'; break;
+                        case 't': result += '\t'; break;
+                        default:
+                            // Preserve unsupported escapes (including \uXXXX) verbatim.
+                            result += '\\';
+                            result += escaped;
+                            break;
+                    }
+                }
+                return result;
             }
             return s;
         }
@@ -160,6 +186,62 @@ namespace SimpleJSON {
             }
             return result;
         }
+
+        static std::vector<std::string> split_array_items(const std::string& array_str) {
+            std::vector<std::string> result;
+            std::string s = trim(array_str);
+            if (s.empty()) return result;
+            if (s.front() == '[') s.erase(s.begin());
+            if (!s.empty() && s.back() == ']') s.pop_back();
+
+            size_t item_start = 0;
+            int brace_depth = 0;
+            int bracket_depth = 0;
+            bool in_string = false;
+            bool escaped = false;
+            for (size_t i = 0; i < s.size(); ++i) {
+                const char c = s[i];
+                if (in_string) {
+                    if (escaped) escaped = false;
+                    else if (c == '\\') escaped = true;
+                    else if (c == '"') in_string = false;
+                    continue;
+                }
+                if (c == '"') in_string = true;
+                else if (c == '{') ++brace_depth;
+                else if (c == '}') --brace_depth;
+                else if (c == '[') ++bracket_depth;
+                else if (c == ']') --bracket_depth;
+                else if (c == ',' && brace_depth == 0 && bracket_depth == 0) {
+                    result.push_back(trim(s.substr(item_start, i - item_start)));
+                    item_start = i + 1;
+                }
+            }
+            if (item_start < s.size()) result.push_back(trim(s.substr(item_start)));
+            return result;
+        }
+
+        static std::vector<std::string> parse_string_array(const std::string& array_str) {
+            std::vector<std::string> result;
+            const std::vector<std::string> items = split_array_items(array_str);
+            for (size_t i = 0; i < items.size(); ++i) {
+                result.push_back(unquote(items[i]));
+            }
+            return result;
+        }
+
+        static std::string get_value(const std::string& json, const std::string& key) {
+            const std::string search = "\"" + key + "\":";
+            size_t pos = json.find(search);
+            if (pos == std::string::npos) return "";
+            pos += search.length();
+            while (pos < json.length() && (json[pos] == ' ' || json[pos] == '\t')) ++pos;
+            return extract_value(json, pos);
+        }
+
+        static bool has_key(const std::string& json, const std::string& key) {
+            return json.find("\"" + key + "\":") != std::string::npos;
+        }
         
         // Extract nested object value from JSON response
         // e.g., get_nested_value(json, "res", "current.alarm", "code") 
@@ -204,17 +286,32 @@ namespace SimpleJSON {
             
             // Handle string value
             if (json[start_pos] == '"') {
-                size_t end = json.find('"', start_pos + 1);
-                if (end == std::string::npos) return "";
-                return json.substr(start_pos + 1, end - start_pos - 1);
+                bool escaped = false;
+                for (size_t end = start_pos + 1; end < json.length(); ++end) {
+                    if (escaped) {
+                        escaped = false;
+                    } else if (json[end] == '\\') {
+                        escaped = true;
+                    } else if (json[end] == '"') {
+                        return unquote(json.substr(start_pos, end - start_pos + 1));
+                    }
+                }
+                return "";
             }
             
             // Handle array value
             if (json[start_pos] == '[') {
                 int bracket_count = 1;
                 size_t pos = start_pos + 1;
+                bool in_string = false;
+                bool escaped = false;
                 while (pos < json.length() && bracket_count > 0) {
-                    if (json[pos] == '[') bracket_count++;
+                    if (in_string) {
+                        if (escaped) escaped = false;
+                        else if (json[pos] == '\\') escaped = true;
+                        else if (json[pos] == '"') in_string = false;
+                    } else if (json[pos] == '"') in_string = true;
+                    else if (json[pos] == '[') bracket_count++;
                     else if (json[pos] == ']') bracket_count--;
                     pos++;
                 }
@@ -287,10 +384,114 @@ namespace SimpleJSON {
     };
 }
 
+namespace {
+    int json_to_int(const std::string& value, int default_value = 0) {
+        try { return value.empty() ? default_value : std::stoi(value); }
+        catch (...) { return default_value; }
+    }
+
+    int64_t json_to_int64(const std::string& value, int64_t default_value = 0) {
+        try { return value.empty() ? default_value : std::stoll(value); }
+        catch (...) { return default_value; }
+    }
+
+    double json_to_double(const std::string& value, double default_value = 0.0) {
+        try { return value.empty() ? default_value : std::stod(value); }
+        catch (...) { return default_value; }
+    }
+
+    bool json_to_bool(const std::string& value, bool default_value = false) {
+        if (value == "true" || value == "1") return true;
+        if (value == "false" || value == "0") return false;
+        return default_value;
+    }
+
+    bool decode_base64(const std::string& encoded, std::vector<unsigned char>& decoded) {
+        static const std::string alphabet =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        decoded.clear();
+        unsigned int accumulator = 0;
+        int bits = -8;
+        for (size_t i = 0; i < encoded.size(); ++i) {
+            const unsigned char c = static_cast<unsigned char>(encoded[i]);
+            if (c == '=') break;
+            if (c == ' ' || c == '\r' || c == '\n' || c == '\t') continue;
+            const size_t value = alphabet.find(static_cast<char>(c));
+            if (value == std::string::npos) {
+                decoded.clear();
+                return false;
+            }
+            accumulator = (accumulator << 6) | static_cast<unsigned int>(value);
+            bits += 6;
+            if (bits >= 0) {
+                decoded.push_back(static_cast<unsigned char>((accumulator >> bits) & 0xFF));
+                bits -= 8;
+            }
+        }
+        return true;
+    }
+}
+
 namespace RosettaCNC {
 
 // ========== Static Initialization ==========
 bool CncAPIClientCore::s_winsock_initialized = false;
+
+APICompilerSettingsForGet::APICompilerSettingsForGet() :
+    has_data(false),
+    current_toolpath_mode(ANALYSIS_MT),
+    default_toolpath_mode(ANALYSIS_MT),
+    modal_macro_motion_mode(CP_MODAL_MACRO_MOTION_MODE_IN_FAST),
+    cutter_compensation_mode(CP_CUTTER_COMPENSATION_MODE_NORMAL),
+    cutter_compensation_gouging_threshold(0),
+    arc_radius_tolerance(0.005),
+    infinite_loop_threshold(0),
+    gcode_block_skip_enabled(false),
+    g43_persistent(true),
+    g52_independent(true),
+    g92_persistent(false),
+    origin_offset_persistent(true),
+    user_m_codes_arguments_enabled(true),
+    user_macro_path_mode(CP_USER_MACRO_PATH_MODE_DISABLED),
+    jpdc_axis_x(0.0), jpdc_axis_y(0.0), jpdc_axis_z(0.0),
+    jpdc_axis_a(0.0), jpdc_axis_b(0.0), jpdc_axis_c(0.0),
+    restart_default_movement_mode(CP_RESTART_DEF_MOV_MODE_IN_FEED),
+    restart_first_movement_feed(100.0), restart_max_distance(1.0),
+    restart_force_tool_measurement(false), toolpath_resolution(0.2),
+    use_points_per_block(false), points_per_block(100),
+    tool_xx0_color(0x00C02E1D), tool_xx1_color(0x00F16C20),
+    tool_xx2_color(0x00DBB417), tool_xx3_color(0x00879F4D),
+    tool_xx4_color(0x00028097), tool_xx5_color(0x000D3C56),
+    tool_xx6_color(0x00800080), tool_xx7_color(0x00800000),
+    tool_xx8_color(0x00436B58), tool_xx9_color(0x008000FF),
+    rapid_move_color(0x0000CB9A), rf_threshold(50),
+    rf_threshold_color_lower(0x000000FF), rf_threshold_color_equal(0x0000FF00),
+    rf_threshold_color_upper(0x00FF0000), rv_color_mode(CP_RV_COLOR_MODE_SPECTRAL),
+    rv_wavelength_min(520), rv_wavelength_max(700),
+    rv_gradient_color_min(0x0000FFFF), rv_gradient_color_max(0x00FF0000),
+    rz_color_mode(CP_RZ_COLOR_MODE_GRADIENT), rz_wavelength_min(520),
+    rz_wavelength_max(700), rz_gradient_color_min(0x00000000),
+    rz_gradient_color_max(0x00FFFFFF) {}
+
+APICoordinateSystemsInfo::APICoordinateSystemsInfo() :
+    has_data(false), working_wcs(0), working_offset(6, 0.0),
+    wcs_1(6, 0.0), wcs_2(6, 0.0), wcs_3(6, 0.0),
+    wcs_4(6, 0.0), wcs_5(6, 0.0), wcs_6(6, 0.0),
+    wcs_7(6, 0.0), wcs_8(6, 0.0), wcs_9(6, 0.0) {}
+
+APIOperatorRequest::APIOperatorRequest() :
+    has_data(false), type(ORQT_NONE), data_elements(0),
+    data_d01(std::numeric_limits<double>::quiet_NaN()),
+    data_d02(std::numeric_limits<double>::quiet_NaN()),
+    data_d03(std::numeric_limits<double>::quiet_NaN()),
+    data_d04(std::numeric_limits<double>::quiet_NaN()),
+    data_d05(std::numeric_limits<double>::quiet_NaN()),
+    data_d06(std::numeric_limits<double>::quiet_NaN()),
+    data_d07(std::numeric_limits<double>::quiet_NaN()),
+    data_d08(std::numeric_limits<double>::quiet_NaN()),
+    data_d09(std::numeric_limits<double>::quiet_NaN()),
+    data_d10(std::numeric_limits<double>::quiet_NaN()),
+    external_continue_requested(false) {}
 
 // ========== APICncInfo Constructor ==========
 APICncInfo::APICncInfo() :
@@ -1011,8 +1212,14 @@ void CncAPIClientCore::flush_receiving_buffer() {
         u_long mode = 1;
         ioctlsocket(m_socket, FIONBIO, &mode);
         
-        char buffer[1024];
-        recv(m_socket, buffer, sizeof(buffer), 0);
+        char buffer[4096];
+        size_t flushed = 0;
+        const size_t max_flush = 1024 * 1024;
+        while (flushed < max_flush) {
+            const int received = recv(m_socket, buffer, sizeof(buffer), 0);
+            if (received <= 0) break;
+            flushed += static_cast<size_t>(received);
+        }
         
         // Set back to blocking mode
         mode = 0;
@@ -1022,7 +1229,8 @@ void CncAPIClientCore::flush_receiving_buffer() {
     }
 }
 
-std::string CncAPIClientCore::send_command(const std::string& request) {
+std::string CncAPIClientCore::send_command(const std::string& request, DWORD first_timeout_ms,
+                                           DWORD chunk_timeout_ms) {
     if (!m_is_connected) {
         return "";
     }
@@ -1054,41 +1262,48 @@ std::string CncAPIClientCore::send_command(const std::string& request) {
             return ssl_send_receive(cmd);
         } else {
             // Regular socket send
-            int send_result = send(m_socket, cmd.c_str(), static_cast<int>(cmd.length()), 0);
-            if (send_result == SOCKET_ERROR) {
-                std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
-                close();
-                return "";
+            size_t sent = 0;
+            while (sent < cmd.size()) {
+                const int send_result = send(m_socket, cmd.data() + sent,
+                                             static_cast<int>(cmd.size() - sent), 0);
+                if (send_result == SOCKET_ERROR || send_result == 0) {
+                    std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                    close();
+                    return "";
+                }
+                sent += static_cast<size_t>(send_result);
             }
         }
         
         // Receive response
         std::string response;
-        char buffer[1];
+        char buffer[65536];
         
         // Set timeout for first byte (5 seconds)
-        DWORD timeout_ms = 5000;
+        DWORD timeout_ms = first_timeout_ms;
         setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
         
         while (true) {
-            int bytes_received = recv(m_socket, buffer, 1, 0);
+            const int bytes_received = recv(m_socket, buffer, sizeof(buffer), 0);
             
             if (bytes_received <= 0) {
-                if (bytes_received == 0 || WSAGetLastError() == WSAETIMEDOUT) {
-                    close();
-                }
+                if (bytes_received == 0) close();
+                else if (WSAGetLastError() != WSAETIMEDOUT) close();
                 break;
             }
             
             // Reduce timeout after first byte (1 second)
-            timeout_ms = 1000;
+            timeout_ms = chunk_timeout_ms;
             setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
             
-            if (buffer[0] == '\n') {
+            const char* newline = static_cast<const char*>(
+                std::memchr(buffer, '\n', static_cast<size_t>(bytes_received)));
+            if (newline != nullptr) {
+                response.append(buffer, static_cast<size_t>(newline - buffer));
                 break;
             }
-            
-            response += buffer[0];
+
+            response.append(buffer, static_cast<size_t>(bytes_received));
         }
         
         m_last_response = response;  // Store for debugging
@@ -1096,6 +1311,93 @@ std::string CncAPIClientCore::send_command(const std::string& request) {
     } catch (...) {
         close();
         return "";
+    }
+}
+
+bool CncAPIClientCore::send_command_raw(const std::string& request,
+                                        std::vector<unsigned char>& payload,
+                                        DWORD first_timeout_ms,
+                                        DWORD chunk_timeout_ms) {
+    payload.clear();
+    if (!m_is_connected || request.empty() || m_use_cnc_direct_access ||
+        (m_use_ssl && m_ssl_initialized)) {
+        return false;
+    }
+
+    std::string cmd = request;
+    if (cmd.back() != '\n') cmd += '\n';
+
+    try {
+        flush_receiving_buffer();
+
+        size_t sent = 0;
+        while (sent < cmd.size()) {
+            const int result = send(m_socket, cmd.data() + sent,
+                                    static_cast<int>(cmd.size() - sent), 0);
+            if (result == SOCKET_ERROR || result == 0) {
+                close();
+                return false;
+            }
+            sent += static_cast<size_t>(result);
+        }
+
+        DWORD timeout_ms = first_timeout_ms;
+        setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
+                   reinterpret_cast<const char*>(&timeout_ms), sizeof(timeout_ms));
+
+        std::string header;
+        std::vector<unsigned char> received_payload;
+        char buffer[65536];
+        bool header_complete = false;
+
+        while (!header_complete) {
+            const int count = recv(m_socket, buffer, sizeof(buffer), 0);
+            if (count <= 0) return false;
+
+            timeout_ms = chunk_timeout_ms;
+            setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
+                       reinterpret_cast<const char*>(&timeout_ms), sizeof(timeout_ms));
+
+            const char* newline = static_cast<const char*>(
+                std::memchr(buffer, '\n', static_cast<size_t>(count)));
+            if (newline == nullptr) {
+                header.append(buffer, static_cast<size_t>(count));
+                continue;
+            }
+
+            const size_t header_part = static_cast<size_t>(newline - buffer);
+            header.append(buffer, header_part);
+            const size_t payload_part = static_cast<size_t>(count) - header_part - 1;
+            if (payload_part > 0) {
+                const unsigned char* begin = reinterpret_cast<const unsigned char*>(newline + 1);
+                received_payload.insert(received_payload.end(), begin, begin + payload_part);
+            }
+            header_complete = true;
+        }
+
+        m_last_response = header;
+        const int64_t data_size = json_to_int64(
+            SimpleJSON::Parser::get_nested_value(header, "res", "data_size"), -1);
+        if (data_size < 0 || static_cast<uint64_t>(data_size) >
+                static_cast<uint64_t>(std::numeric_limits<size_t>::max())) {
+            return false;
+        }
+
+        const size_t expected_size = static_cast<size_t>(data_size);
+        while (received_payload.size() < expected_size) {
+            const size_t remaining = expected_size - received_payload.size();
+            const int count = recv(m_socket, buffer,
+                                   static_cast<int>((std::min)(remaining, sizeof(buffer))), 0);
+            if (count <= 0) return false;
+            const unsigned char* begin = reinterpret_cast<const unsigned char*>(buffer);
+            received_payload.insert(received_payload.end(), begin, begin + count);
+        }
+
+        if (received_payload.size() > expected_size) received_payload.resize(expected_size);
+        payload.swap(received_payload);
+        return true;
+    } catch (...) {
+        return false;
     }
 }
 
@@ -2554,6 +2856,262 @@ APICncParameters CncAPIClientCore::get_cnc_parameters(int address, int elements)
         result.values = values;
     }
     
+    return result;
+}
+
+APICompilerSettingsForGet CncAPIClientCore::get_compiler_settings() {
+    APICompilerSettingsForGet result;
+    if (!m_is_connected) return result;
+
+    const std::string response = send_command("{\"get\":\"compiler.settings\"}");
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "current.toolpath.mode")) return result;
+
+    const auto value = [&response](const std::string& key) {
+        return SimpleJSON::Parser::get_nested_value(response, "res", key);
+    };
+
+    result.current_toolpath_mode = value("current.toolpath.mode");
+    result.default_toolpath_mode = value("default.toolpath.mode");
+    result.modal_macro_motion_mode = json_to_int(value("modal.macro.motion.mode"));
+    result.cutter_compensation_mode = json_to_int(value("cutter.compensation.mode"));
+    result.cutter_compensation_gouging_threshold = json_to_int(value("cutter.compensation.gouging.threshold"));
+    result.arc_radius_tolerance = json_to_double(value("arc.radius.tolerance"));
+    result.infinite_loop_threshold = json_to_int(value("infinite.loop.threshold"));
+    result.gcode_block_skip_enabled = json_to_bool(value("gcode.block.skip.enabled"));
+    result.g43_persistent = json_to_bool(value("g43.persistent"));
+    result.g52_independent = json_to_bool(value("g52.independent"));
+    result.g92_persistent = json_to_bool(value("g92.persistent"));
+    result.origin_offset_persistent = json_to_bool(value("origin.offset.persistent"));
+    result.user_m_codes_arguments_enabled = json_to_bool(value("user.m.codes.arguments.enabled"));
+    result.user_macro_path_mode = json_to_int(value("user.macro.path.mode"));
+    result.user_macro_path = value("user.macro.path");
+    result.jpdc_axis_x = json_to_double(value("jpdc.axis.x"));
+    result.jpdc_axis_y = json_to_double(value("jpdc.axis.y"));
+    result.jpdc_axis_z = json_to_double(value("jpdc.axis.z"));
+    result.jpdc_axis_a = json_to_double(value("jpdc.axis.a"));
+    result.jpdc_axis_b = json_to_double(value("jpdc.axis.b"));
+    result.jpdc_axis_c = json_to_double(value("jpdc.axis.c"));
+    result.restart_default_movement_mode = json_to_int(value("restart.default.movement.mode"));
+    result.restart_first_movement_feed = json_to_double(value("restart.first.movement.feed"));
+    result.restart_max_distance = json_to_double(value("restart.max.distance"));
+    result.restart_force_tool_measurement = json_to_bool(value("restart.force.tool.measurement"));
+    result.toolpath_resolution = json_to_double(value("toolpath.resolution"));
+    result.use_points_per_block = json_to_bool(value("use.points.per.block"));
+    result.points_per_block = json_to_int(value("points.per.block"));
+    result.tool_xx0_color = json_to_int(value("tool.xx0.color"));
+    result.tool_xx1_color = json_to_int(value("tool.xx1.color"));
+    result.tool_xx2_color = json_to_int(value("tool.xx2.color"));
+    result.tool_xx3_color = json_to_int(value("tool.xx3.color"));
+    result.tool_xx4_color = json_to_int(value("tool.xx4.color"));
+    result.tool_xx5_color = json_to_int(value("tool.xx5.color"));
+    result.tool_xx6_color = json_to_int(value("tool.xx6.color"));
+    result.tool_xx7_color = json_to_int(value("tool.xx7.color"));
+    result.tool_xx8_color = json_to_int(value("tool.xx8.color"));
+    result.tool_xx9_color = json_to_int(value("tool.xx9.color"));
+    result.rapid_move_color = json_to_int(value("rapid.move.color"));
+    result.rf_threshold = json_to_int(value("rf.threshold"));
+    result.rf_threshold_color_lower = json_to_int(value("rf.threshold.color.lower"));
+    result.rf_threshold_color_equal = json_to_int(value("rf.threshold.color.equal"));
+    result.rf_threshold_color_upper = json_to_int(value("rf.threshold.color.upper"));
+    result.rv_color_mode = json_to_int(value("rv.color.mode"));
+    result.rv_wavelength_min = json_to_int(value("rv.wavelength.min"));
+    result.rv_wavelength_max = json_to_int(value("rv.wavelength.max"));
+    result.rv_gradient_color_min = json_to_int(value("rv.gradient.color.min"));
+    result.rv_gradient_color_max = json_to_int(value("rv.gradient.color.max"));
+    result.rz_color_mode = json_to_int(value("rz.color.mode"));
+    result.rz_wavelength_min = json_to_int(value("rz.wavelength.min"));
+    result.rz_wavelength_max = json_to_int(value("rz.wavelength.max"));
+    result.rz_gradient_color_min = json_to_int(value("rz.gradient.color.min"));
+    result.rz_gradient_color_max = json_to_int(value("rz.gradient.color.max"));
+    result.has_data = true;
+    return result;
+}
+
+APICoordinateSystemsInfo CncAPIClientCore::get_coordinate_systems_info() {
+    APICoordinateSystemsInfo result;
+    if (!m_is_connected) return result;
+
+    const std::string response = send_command("{\"get\":\"coordinate.systems.info\"}");
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "working.wcs")) return result;
+    const auto value = [&response](const std::string& key) {
+        return SimpleJSON::Parser::get_nested_value(response, "res", key);
+    };
+
+    result.working_wcs = json_to_int(value("working.wcs"));
+    result.working_offset = SimpleJSON::Parser::parse_double_array(value("working.offset"));
+    result.wcs_1 = SimpleJSON::Parser::parse_double_array(value("wcs.1"));
+    result.wcs_2 = SimpleJSON::Parser::parse_double_array(value("wcs.2"));
+    result.wcs_3 = SimpleJSON::Parser::parse_double_array(value("wcs.3"));
+    result.wcs_4 = SimpleJSON::Parser::parse_double_array(value("wcs.4"));
+    result.wcs_5 = SimpleJSON::Parser::parse_double_array(value("wcs.5"));
+    result.wcs_6 = SimpleJSON::Parser::parse_double_array(value("wcs.6"));
+    result.wcs_7 = SimpleJSON::Parser::parse_double_array(value("wcs.7"));
+    result.wcs_8 = SimpleJSON::Parser::parse_double_array(value("wcs.8"));
+    result.wcs_9 = SimpleJSON::Parser::parse_double_array(value("wcs.9"));
+    result.has_data = true;
+    return result;
+}
+
+APIMRUProgramsList CncAPIClientCore::get_mru_programs_list() {
+    APIMRUProgramsList result;
+    if (!m_is_connected) return result;
+    const std::string response = send_command("{\"get\":\"mru.programs.list\"}");
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "items")) return result;
+    result.items = SimpleJSON::Parser::parse_string_array(
+        SimpleJSON::Parser::get_nested_value(response, "res", "items"));
+    result.has_data = true;
+    return result;
+}
+
+APIOperatorRequest CncAPIClientCore::get_operator_request() {
+    APIOperatorRequest result;
+    if (!m_is_connected) return result;
+    const std::string response = send_command("{\"get\":\"operator.request\"}");
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "id") ||
+        !SimpleJSON::Parser::has_key(response, "data")) return result;
+
+    result.id = SimpleJSON::Parser::get_nested_value(response, "res", "id");
+    result.type = json_to_int(SimpleJSON::Parser::get_nested_value(response, "res", "type"));
+    result.media = SimpleJSON::Parser::get_nested_value(response, "res", "media");
+    result.message = SimpleJSON::Parser::get_nested_value(response, "res", "message");
+    result.external_continue_requested = json_to_bool(
+        SimpleJSON::Parser::get_nested_value(response, "res", "external.continue.requested"));
+
+    const std::string data_object =
+        SimpleJSON::Parser::get_nested_value(response, "res", "data");
+    result.data_elements = json_to_int(SimpleJSON::Parser::get_value(data_object, "elements"));
+    const double no_value = std::numeric_limits<double>::quiet_NaN();
+    result.data_d01 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d01"), no_value);
+    result.data_d02 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d02"), no_value);
+    result.data_d03 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d03"), no_value);
+    result.data_d04 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d04"), no_value);
+    result.data_d05 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d05"), no_value);
+    result.data_d06 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d06"), no_value);
+    result.data_d07 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d07"), no_value);
+    result.data_d08 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d08"), no_value);
+    result.data_d09 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d09"), no_value);
+    result.data_d10 = json_to_double(SimpleJSON::Parser::get_value(data_object, "d10"), no_value);
+    result.data = {result.data_d01, result.data_d02, result.data_d03, result.data_d04,
+                   result.data_d05, result.data_d06, result.data_d07, result.data_d08,
+                   result.data_d09, result.data_d10};
+    result.has_data = true;
+    return result;
+}
+
+APIProgramInfo CncAPIClientCore::get_program_info() {
+    APIProgramInfo result;
+    if (!m_is_connected) return result;
+    const std::string response = send_command("{\"get\":\"program.info\"}", 50000, 2000);
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "file.name") ||
+        !SimpleJSON::Parser::has_key(response, "code")) return result;
+    result.file_name = SimpleJSON::Parser::get_nested_value(response, "res", "file.name");
+    result.code = SimpleJSON::Parser::get_nested_value(response, "res", "code");
+    result.has_data = true;
+    return result;
+}
+
+APIRuntimeData CncAPIClientCore::get_runtime_data() {
+    APIRuntimeData result;
+    if (!m_is_connected) return result;
+    const std::string response = send_command("{\"get\":\"runtime.data\"}");
+    if (response.empty() || !SimpleJSON::Parser::has_key(response, "state") ||
+        !SimpleJSON::Parser::has_key(response, "pending.item") ||
+        !SimpleJSON::Parser::has_key(response, "acquired.items")) return result;
+
+    result.state = json_to_int(SimpleJSON::Parser::get_nested_value(response, "res", "state"));
+    const std::string pending =
+        SimpleJSON::Parser::get_nested_value(response, "res", "pending.item");
+    result.pending_item.gcode_line = json_to_int(SimpleJSON::Parser::get_value(pending, "gcode.line"));
+    result.pending_item.canon_id = json_to_int(SimpleJSON::Parser::get_value(pending, "canon.id"));
+    result.pending_item.canon_code = json_to_int(SimpleJSON::Parser::get_value(pending, "canon.code"));
+    result.pending_item.canon_segment = json_to_int(SimpleJSON::Parser::get_value(pending, "canon.segment"));
+    result.pending_item.text = SimpleJSON::Parser::get_value(pending, "text");
+
+    const std::string acquired =
+        SimpleJSON::Parser::get_nested_value(response, "res", "acquired.items");
+    const std::vector<std::string> items = SimpleJSON::Parser::split_array_items(acquired);
+    for (size_t i = 0; i < items.size(); ++i) {
+        if (items[i].empty()) continue;
+        APIRuntimeDataAcquiredItem item;
+        item.datetime = filetime_to_datetime(json_to_int64(SimpleJSON::Parser::get_value(items[i], "datetime")));
+        item.gcode_line = json_to_int(SimpleJSON::Parser::get_value(items[i], "gcode.line"));
+        item.canon_id = json_to_int(SimpleJSON::Parser::get_value(items[i], "canon.id"));
+        item.canon_code = json_to_int(SimpleJSON::Parser::get_value(items[i], "canon.code"));
+        item.canon_segment = json_to_int(SimpleJSON::Parser::get_value(items[i], "canon.segment"));
+        item.text = SimpleJSON::Parser::get_value(items[i], "text");
+        item.data = SimpleJSON::Parser::parse_double_array(
+            SimpleJSON::Parser::get_value(items[i], "data"));
+        result.acquired_items.push_back(item);
+    }
+    result.has_data = true;
+    return result;
+}
+
+APISimulatorData CncAPIClientCore::get_simulator_data(int data_type) {
+    APISimulatorData result;
+    if (!m_is_connected || (data_type != SDT_FULL && data_type != SDT_MINIMAL)) return result;
+    result.data_type = data_type;
+    const std::string request = std::string("{\"get\":\"simulator.data\",\"data.type\":") +
+        std::to_string(data_type) + "}";
+    if (!send_command_raw(request, result.data, 20000, 2000)) return result;
+    result.has_data = !result.data.empty();
+    return result;
+}
+
+APIToolpathData CncAPIClientCore::get_toolpath_data(int mode) {
+    APIToolpathData result;
+    if (!m_is_connected || (mode != 0 && mode != 1)) return result;
+
+    if (mode == 0) {
+        const std::string response = send_command("{\"get\":\"toolpath.data\"}");
+        if (response.empty() || !SimpleJSON::Parser::has_key(response, "data")) return result;
+        const std::string encoded =
+            SimpleJSON::Parser::get_nested_value(response, "res", "data");
+        if (!decode_base64(encoded, result.data)) return result;
+        result.has_data = true;
+        return result;
+    }
+
+    if (!send_command_raw("{\"get\":\"toolpath.data\",\"mode\":1}", result.data)) return result;
+    result.has_data = true;
+    return result;
+}
+
+std::vector<APIVMGeometryInfo> CncAPIClientCore::get_vm_geometry_info(
+        const std::vector<std::string>& names) {
+    std::vector<APIVMGeometryInfo> result;
+    if (!m_is_connected || names.empty()) return result;
+
+    std::string request = "{\"get\":\"vm.geometry.info\",\"name\":[";
+    for (size_t i = 0; i < names.size(); ++i) {
+        if (i > 0) request += ',';
+        request += "\"" + escape_json_string(names[i]) + "\"";
+    }
+    request += "]}";
+
+    const std::string response = send_command(request);
+    if (response.empty()) return result;
+    const std::string response_data = SimpleJSON::Parser::get_value(response, "res");
+    if (response_data.empty() || response_data.front() != '[') return result;
+    const std::vector<std::string> items =
+        SimpleJSON::Parser::split_array_items(response_data);
+    if (items.size() != names.size()) return result;
+
+    result.reserve(items.size());
+    for (size_t i = 0; i < items.size(); ++i) {
+        APIVMGeometryInfo item;
+        item.name = SimpleJSON::Parser::get_value(items[i], "name");
+        item.x = json_to_double(SimpleJSON::Parser::get_value(items[i], "x"));
+        item.y = json_to_double(SimpleJSON::Parser::get_value(items[i], "y"));
+        item.z = json_to_double(SimpleJSON::Parser::get_value(items[i], "z"));
+        item.color = json_to_int(SimpleJSON::Parser::get_value(items[i], "color"));
+        item.scale = json_to_double(SimpleJSON::Parser::get_value(items[i], "scale"));
+        item.visible = json_to_bool(SimpleJSON::Parser::get_value(items[i], "visible"));
+        item.edges_angle = json_to_double(SimpleJSON::Parser::get_value(items[i], "edges.angle"));
+        item.edges_visible = json_to_bool(SimpleJSON::Parser::get_value(items[i], "edges.visible"));
+        item.has_data = !item.name.empty();
+        result.push_back(item);
+    }
     return result;
 }
 

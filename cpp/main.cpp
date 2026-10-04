@@ -449,6 +449,52 @@ int main() {
         std::cout << "  No CNC parameters data available" << std::endl;
     }
     std::cout << std::endl;
+
+    // Test the GET methods added for Python API parity.
+    std::cout << "\n========== Testing Python-parity GET Methods ==========\n" << std::endl;
+
+    APICompilerSettingsForGet compiler_settings = client.get_compiler_settings();
+    std::cout << "get_compiler_settings(): "
+              << (compiler_settings.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APICoordinateSystemsInfo coordinate_systems = client.get_coordinate_systems_info();
+    std::cout << "get_coordinate_systems_info(): "
+              << (coordinate_systems.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APIMRUProgramsList mru_programs = client.get_mru_programs_list();
+    std::cout << "get_mru_programs_list(): "
+              << (mru_programs.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APIOperatorRequest operator_request = client.get_operator_request();
+    std::cout << "get_operator_request(): "
+              << (operator_request.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APIProgramInfo program_info = client.get_program_info();
+    std::cout << "get_program_info(): "
+              << (program_info.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APIRuntimeData runtime_data = client.get_runtime_data();
+    std::cout << "get_runtime_data(): "
+              << (runtime_data.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APISimulatorData simulator_data = client.get_simulator_data(SDT_MINIMAL);
+    std::cout << "get_simulator_data(SDT_MINIMAL): "
+              << (simulator_data.has_data ? "OK" : "NO DATA") << std::endl;
+
+    APIToolpathData toolpath_data = client.get_toolpath_data();
+    std::cout << "get_toolpath_data(): "
+              << (toolpath_data.has_data ? "OK" : "NO DATA") << std::endl;
+
+    const std::vector<std::string> geometry_names = {"f-y-screw", "x-structure"};
+    std::vector<APIVMGeometryInfo> geometry_info =
+        client.get_vm_geometry_info(geometry_names);
+    bool geometry_ok = geometry_info.size() == geometry_names.size();
+    for (size_t i = 0; i < geometry_info.size(); ++i) {
+        geometry_ok = geometry_ok && geometry_info[i].has_data;
+    }
+    std::cout << "get_vm_geometry_info(): "
+              << (geometry_ok ? "OK" : "NO DATA") << std::endl;
+    std::cout << std::endl;
     
     // Ask user if they want to test SET methods
     std::cout << "\n========================================" << std::endl;
