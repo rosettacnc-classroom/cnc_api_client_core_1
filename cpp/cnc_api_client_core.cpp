@@ -1518,7 +1518,7 @@ bool CncAPIClientCore::ssl_handshake() {
     return true;
 }
 
-std::string CncAPIClientCore::ssl_send_receive(const std::string& data) {
+bool CncAPIClientCore::ssl_send_data(const std::string& data) {
     size_t offset = 0;
     while (offset < data.size()) {
         const size_t plain_size = (std::min)(data.size() - offset,
@@ -1534,21 +1534,24 @@ std::string CncAPIClientCore::ssl_send_receive(const std::string& data) {
                       packet.data() + m_ssl_stream_sizes.cbHeader + plain_size};
         buffers[3].BufferType = SECBUFFER_EMPTY;
         SecBufferDesc desc = {SECBUFFER_VERSION, 4, buffers};
-        if (EncryptMessage(&m_context_handle, 0, &desc, 0) != SEC_E_OK) return "";
+        if (EncryptMessage(&m_context_handle, 0, &desc, 0) != SEC_E_OK) return false;
         const size_t packet_size = buffers[0].cbBuffer + buffers[1].cbBuffer + buffers[2].cbBuffer;
         size_t sent = 0;
         while (sent < packet_size) {
             const int count = send(m_socket, reinterpret_cast<const char*>(packet.data()) + sent,
                                    static_cast<int>(packet_size - sent), 0);
-            if (count <= 0) return "";
+            if (count <= 0) return false;
             sent += static_cast<size_t>(count);
         }
         offset += plain_size;
     }
 
-    std::string plaintext;
-    DWORD timeout = 5000;
-    setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+    return true;
+}
+
+bool CncAPIClientCore::ssl_receive_plaintext(std::vector<unsigned char>& plaintext) {
+    plaintext.clear();
+
     for (;;) {
         if (!m_ssl_received.empty()) {
             SecBuffer buffers[4] = {};
@@ -1561,30 +1564,99 @@ std::string CncAPIClientCore::ssl_send_receive(const std::string& data) {
                 std::vector<unsigned char> extra;
                 for (int i = 1; i < 4; ++i) {
                     if (buffers[i].BufferType == SECBUFFER_DATA && buffers[i].cbBuffer) {
-                        plaintext.append(static_cast<const char*>(buffers[i].pvBuffer), buffers[i].cbBuffer);
+                        const unsigned char* begin =
+                            static_cast<const unsigned char*>(buffers[i].pvBuffer);
+                        plaintext.insert(plaintext.end(), begin, begin + buffers[i].cbBuffer);
                     } else if (buffers[i].BufferType == SECBUFFER_EXTRA && buffers[i].cbBuffer) {
-                        const unsigned char* begin = static_cast<const unsigned char*>(buffers[i].pvBuffer);
+                        const unsigned char* begin =
+                            static_cast<const unsigned char*>(buffers[i].pvBuffer);
                         extra.assign(begin, begin + buffers[i].cbBuffer);
                     }
                 }
                 m_ssl_received.swap(extra);
-                const size_t newline = plaintext.find('\n');
-                if (newline != std::string::npos) {
-                    m_last_response = plaintext.substr(0, newline);
-                    return m_last_response;
-                }
-                timeout = 2000;
-                setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
-                           reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+                if (!plaintext.empty()) return true;
                 continue;
             }
-            if (status == SEC_I_CONTEXT_EXPIRED) return "";
-            if (status != SEC_E_INCOMPLETE_MESSAGE) return "";
+            if (status == SEC_I_CONTEXT_EXPIRED) return false;
+            if (status != SEC_E_INCOMPLETE_MESSAGE) return false;
         }
+
         unsigned char input[65536];
         const int received = recv(m_socket, reinterpret_cast<char*>(input), sizeof(input), 0);
-        if (received <= 0) return "";
+        if (received <= 0) return false;
         m_ssl_received.insert(m_ssl_received.end(), input, input + received);
+    }
+}
+
+std::string CncAPIClientCore::ssl_send_receive(const std::string& data,
+                                               DWORD first_timeout_ms,
+                                               DWORD chunk_timeout_ms) {
+    if (!ssl_send_data(data)) return "";
+
+    std::string plaintext;
+    DWORD timeout = first_timeout_ms;
+    setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+    for (;;) {
+        std::vector<unsigned char> chunk;
+        if (!ssl_receive_plaintext(chunk)) return "";
+        plaintext.append(reinterpret_cast<const char*>(chunk.data()), chunk.size());
+        const size_t newline = plaintext.find('\n');
+        if (newline != std::string::npos) {
+            m_last_response = plaintext.substr(0, newline);
+            return m_last_response;
+        }
+        timeout = chunk_timeout_ms;
+        setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
+                   reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+    }
+}
+
+bool CncAPIClientCore::ssl_send_receive_raw(const std::string& data,
+                                            std::vector<unsigned char>& payload,
+                                            DWORD first_timeout_ms,
+                                            DWORD chunk_timeout_ms) {
+    if (!ssl_send_data(data)) return false;
+
+    DWORD timeout = first_timeout_ms;
+    setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
+               reinterpret_cast<const char*>(&timeout), sizeof(timeout));
+
+    std::vector<unsigned char> plaintext;
+    size_t payload_offset = std::string::npos;
+    size_t expected_size = 0;
+    for (;;) {
+        std::vector<unsigned char> chunk;
+        if (!ssl_receive_plaintext(chunk)) return false;
+        plaintext.insert(plaintext.end(), chunk.begin(), chunk.end());
+
+        if (payload_offset == std::string::npos) {
+            const std::vector<unsigned char>::iterator newline =
+                std::find(plaintext.begin(), plaintext.end(), static_cast<unsigned char>('\n'));
+            if (newline != plaintext.end()) {
+                payload_offset = static_cast<size_t>(newline - plaintext.begin()) + 1;
+                const std::string header(plaintext.begin(), newline);
+                m_last_response = header;
+                const int64_t data_size = json_to_int64(
+                    SimpleJSON::Parser::get_nested_value(header, "res", "data_size"), -1);
+                if (data_size < 0 || static_cast<uint64_t>(data_size) >
+                        static_cast<uint64_t>(std::numeric_limits<size_t>::max())) {
+                    return false;
+                }
+                expected_size = static_cast<size_t>(data_size);
+            }
+        }
+
+        if (payload_offset != std::string::npos &&
+            plaintext.size() >= payload_offset &&
+            expected_size <= plaintext.size() - payload_offset) {
+            payload.assign(plaintext.begin() + payload_offset,
+                           plaintext.begin() + payload_offset + expected_size);
+            return true;
+        }
+
+        timeout = chunk_timeout_ms;
+        setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO,
+                   reinterpret_cast<const char*>(&timeout), sizeof(timeout));
     }
 }
 
@@ -1595,6 +1667,7 @@ void CncAPIClientCore::flush_receiving_buffer() {
     }
     
     try {
+        m_ssl_received.clear();
         // Set non-blocking mode temporarily
         u_long mode = 1;
         ioctlsocket(m_socket, FIONBIO, &mode);
@@ -1646,7 +1719,7 @@ std::string CncAPIClientCore::send_command(const std::string& request, DWORD fir
         // Send request
         if (m_use_ssl && m_ssl_initialized) {
             // Use SSL send
-            return ssl_send_receive(cmd);
+            return ssl_send_receive(cmd, first_timeout_ms, chunk_timeout_ms);
         } else {
             // Regular socket send
             size_t sent = 0;
@@ -1666,7 +1739,7 @@ std::string CncAPIClientCore::send_command(const std::string& request, DWORD fir
         std::string response;
         char buffer[65536];
         
-        // Set timeout for first byte (5 seconds)
+        // Set the caller-selected timeout for the first byte.
         DWORD timeout_ms = first_timeout_ms;
         setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
         
@@ -1679,7 +1752,7 @@ std::string CncAPIClientCore::send_command(const std::string& request, DWORD fir
                 break;
             }
             
-            // Reduce timeout after first byte (1 second)
+            // Switch to the caller-selected timeout for subsequent chunks.
             timeout_ms = chunk_timeout_ms;
             setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
             
@@ -1706,8 +1779,7 @@ bool CncAPIClientCore::send_command_raw(const std::string& request,
                                         DWORD first_timeout_ms,
                                         DWORD chunk_timeout_ms) {
     payload.clear();
-    if (!m_is_connected || request.empty() || m_use_cnc_direct_access ||
-        (m_use_ssl && m_ssl_initialized)) {
+    if (!m_is_connected || request.empty() || m_use_cnc_direct_access) {
         return false;
     }
 
@@ -1716,6 +1788,10 @@ bool CncAPIClientCore::send_command_raw(const std::string& request,
 
     try {
         flush_receiving_buffer();
+
+        if (m_use_ssl && m_ssl_initialized) {
+            return ssl_send_receive_raw(cmd, payload, first_timeout_ms, chunk_timeout_ms);
+        }
 
         size_t sent = 0;
         while (sent < cmd.size()) {
@@ -1794,18 +1870,14 @@ bool CncAPIClientCore::evaluate_response(const std::string& response) {
     }
     
     try {
-        // Simple check for "res":true or "res":"true"
-        size_t res_pos = response.find("\"res\"");
-        if (res_pos == std::string::npos) {
-            return false;
-        }
-        
-        size_t true_pos = response.find("true", res_pos);
-        if (true_pos != std::string::npos && (true_pos - res_pos) < 20) {
-            return true;
-        }
-        
-        return false;
+        const std::map<std::string, std::string> object =
+            SimpleJSON::Parser::parse_object(response);
+        const std::map<std::string, std::string>::const_iterator res = object.find("res");
+        if (res == object.end()) return false;
+        std::string value = SimpleJSON::Parser::trim(res->second);
+        std::transform(value.begin(), value.end(), value.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        return value == "true";
     } catch (...) {
         return false;
     }
@@ -4640,7 +4712,8 @@ bool CncAPIClientCore::set_cnc_parameters(int address, const std::vector<double>
 }
 
 bool CncAPIClientCore::set_localization(int units_mode, const std::string& locale_name) {
-    if (units_mode == -1 && locale_name.empty()) {
+    const std::string normalized_locale = SimpleJSON::Parser::trim(locale_name);
+    if (units_mode == -1 && normalized_locale.empty()) {
         return false;
     }
     
@@ -4653,11 +4726,11 @@ bool CncAPIClientCore::set_localization(int units_mode, const std::string& local
     std::string request = "{\"set\":\"localization\"";
     
     if (units_mode != -1) {
-        request += ",\"units_mode\":" + std::to_string(units_mode);
+        request += ",\"units.mode\":" + std::to_string(units_mode);
     }
     
-    if (!locale_name.empty()) {
-        request += ",\"locale.name\":\"" + locale_name + "\"";
+    if (!normalized_locale.empty()) {
+        request += ",\"locale.name\":\"" + escape_json_string(normalized_locale) + "\"";
     }
     
     request += "}";

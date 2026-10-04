@@ -1673,7 +1673,12 @@ private:
     bool initialize_ssl();
     void cleanup_ssl();
     bool ssl_handshake();
-    std::string ssl_send_receive(const std::string& data);
+    bool ssl_send_data(const std::string& data);
+    bool ssl_receive_plaintext(std::vector<unsigned char>& plaintext);
+    std::string ssl_send_receive(const std::string& data, DWORD first_timeout_ms,
+                                 DWORD chunk_timeout_ms);
+    bool ssl_send_receive_raw(const std::string& data, std::vector<unsigned char>& payload,
+                              DWORD first_timeout_ms, DWORD chunk_timeout_ms);
     
     // Helper methods for parsing
     static DateTime filetime_to_datetime(int64_t filetime);

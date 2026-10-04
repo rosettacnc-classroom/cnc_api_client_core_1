@@ -31,8 +31,9 @@ connessione TCP/TLS non è interessata.
 - Serializzazione JSON con tipi corretti e escaping delle stringhe.
 - Parsing JSON dependency-free per tutte le forme restituite dall'API v1.5.3,
   inclusi Unicode, oggetti annidati e array multidimensionali.
-- Dati simulator/toolpath in formato binario e decodifica Base64.
-- Operazioni `force_sync` e wrapper asincroni con callback.
+- Dati simulator/toolpath in formato binario su TCP e TLS, oltre alla decodifica Base64.
+- Operazioni `force_sync` e wrapper asincroni con callback; i timeout richiesti sono
+  applicati anche al trasporto TLS.
 - Strutture con puntatori opzionali rese non copiabili per evitare double-free.
 
 ## File
